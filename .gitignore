@@ -1,16 +1,31 @@
+# --------------------
 # Node
+# --------------------
 node_modules/
 dist/
+build/
 
+# --------------------
 # Python
+# --------------------
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
 
-# Model files
-*.pkl
+# Virtual environments
+venv/
+.env/
+.env.local
 
-# Environment files
-.env
+# --------------------
+# Logs
+# --------------------
+*.log
 
-# Mac
+# --------------------
+# OS files
+# --------------------
 .DS_Store
+Thumbs.db
