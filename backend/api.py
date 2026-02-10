@@ -1,3 +1,4 @@
+import os
 import joblib
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -5,19 +6,22 @@ from plans import generate_plan
 
 print("--- AI Server (V6) is Starting... ---")
 
+# Absolute path to backend directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 try:
-    model_cut = joblib.load('model_cut.pkl')
-    scaler_cut = joblib.load('scaler_cut.pkl')
+    model_cut = joblib.load(os.path.join(BASE_DIR, 'model_cut.pkl'))
+    scaler_cut = joblib.load(os.path.join(BASE_DIR, 'scaler_cut.pkl'))
 
-    model_bulk = joblib.load('model_bulk.pkl')
-    scaler_bulk = joblib.load('scaler_bulk.pkl')
+    model_bulk = joblib.load(os.path.join(BASE_DIR, 'model_bulk.pkl'))
+    scaler_bulk = joblib.load(os.path.join(BASE_DIR, 'scaler_bulk.pkl'))
 
-    model_maintain = joblib.load('model_maintain.pkl')
-    scaler_maintain = joblib.load('scaler_maintain.pkl')
+    model_maintain = joblib.load(os.path.join(BASE_DIR, 'model_maintain.pkl'))
+    scaler_maintain = joblib.load(os.path.join(BASE_DIR, 'scaler_maintain.pkl'))
 
-    le_plan = joblib.load('le_plan.pkl')
-    le_gender = joblib.load('le_gender.pkl')
-    le_activity = joblib.load('le_activity.pkl')
+    le_plan = joblib.load(os.path.join(BASE_DIR, 'le_plan.pkl'))
+    le_gender = joblib.load(os.path.join(BASE_DIR, 'le_gender.pkl'))
+    le_activity = joblib.load(os.path.join(BASE_DIR, 'le_activity.pkl'))
 
     print("✅ All V6 models loaded successfully!")
 
