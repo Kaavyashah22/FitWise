@@ -1,0 +1,16 @@
+# Node
+node_modules/
+dist/
+
+# Python
+__pycache__/
+*.pyc
+
+# Model files
+*.pkl
+
+# Environment files
+.env
+
+# Mac
+.DS_Store
