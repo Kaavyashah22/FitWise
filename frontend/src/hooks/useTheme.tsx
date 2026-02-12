@@ -11,12 +11,12 @@ const ThemeContext = createContext<ThemeCtx>({ theme: "dark", toggle: () => {} }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem("fitdash_theme") as Theme) || "dark";
+    return (localStorage.getItem("fitwise_theme") as Theme) || "dark";
   });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("fitdash_theme", theme);
+    localStorage.setItem("fitwise_theme", theme);
   }, [theme]);
 
   const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));

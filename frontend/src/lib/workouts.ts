@@ -8,7 +8,7 @@ export interface WorkoutEntry {
   weight: number; // kg
 }
 
-const WORKOUTS_KEY = "fitdash_workouts";
+const WORKOUTS_KEY = "fitwise_workouts";
 
 function getAllWorkouts(): WorkoutEntry[] {
   return JSON.parse(localStorage.getItem(WORKOUTS_KEY) || "[]");
@@ -64,7 +64,7 @@ export interface WeightLog {
   weight: number;
 }
 
-const WEIGHT_LOG_KEY = "fitdash_weight_log";
+const WEIGHT_LOG_KEY = "fitwise_weight_log";
 
 export function getWeightLogs(userId: string): WeightLog[] {
   const all: WeightLog[] = JSON.parse(localStorage.getItem(WEIGHT_LOG_KEY) || "[]");

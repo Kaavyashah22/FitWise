@@ -15,9 +15,9 @@ export interface UserProfile {
   goal: "cut" | "bulk" | "maintain";
 }
 
-const USERS_KEY = "fitdash_users";
-const SESSION_KEY = "fitdash_session";
-const PROFILES_KEY = "fitdash_profiles";
+const USERS_KEY = "fitwise_users";
+const SESSION_KEY = "fitwise_session";
+const PROFILES_KEY = "fitwise_profiles";
 
 /* ---------------- USERS ---------------- */
 
