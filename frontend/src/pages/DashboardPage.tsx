@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell } from "lucide-react";
+import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
@@ -179,7 +179,14 @@ const DashboardPage = () => {
                 onClick={handleGenerate}
                 disabled={!profile || loading}
               >
-                {loading ? "Generating..." : "Generate Plan"}
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Generating...
+                  </div>
+                ) : (
+                  "Generate Plan"
+                )}
               </Button>
             </CardContent>
           </Card>
