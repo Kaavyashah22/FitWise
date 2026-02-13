@@ -45,6 +45,7 @@ def predict_plan():
         height = float(data['height'])
         goal = data['goal'].lower()
         gender = data['gender'].capitalize()
+        food_type = data.get('food_type', 'nonveg')
 
         activity_raw = data['activity']
         # Map UI activity levels to model-supported labels
@@ -92,7 +93,8 @@ def predict_plan():
                 bmi=bmi,
                 activity=activity,
                 goal=goal,
-                confidence=confidence
+                confidence=confidence,
+                food_type=food_type
             )
 
             return jsonify(full_plan)

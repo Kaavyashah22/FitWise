@@ -1,7 +1,7 @@
 import random
 
 
-def generate_plan(plan_key, age, bmi, activity, goal, confidence):
+def generate_plan(plan_key, age, bmi, activity, goal, confidence, food_type):
 
     # ------------------------
     # Age Group Logic
@@ -36,38 +36,104 @@ def generate_plan(plan_key, age, bmi, activity, goal, confidence):
         recovery_note = "Higher intensity progression suitable."
 
     # ------------------------
-    # Goal-based meal pools
+    # Goal-based meal pools with food preference
     # ------------------------
+
     if goal == "cut":
-        meal_pool = [
-            "Grilled chicken salad with olive oil",
-            "Egg whites with spinach",
-            "Baked salmon with broccoli",
-            "Greek yogurt with chia seeds",
-            "Lean turkey lettuce wraps",
-            "Protein smoothie (low carb)",
-            "Cottage cheese with almonds"
-        ]
+
+        if food_type == "veg":
+            meal_pool = [
+                "Paneer salad with olive oil",
+                "Greek yogurt with chia seeds",
+                "Lentil soup with vegetables",
+                "Tofu stir fry",
+                "Cottage cheese with almonds",
+                "Vegetable quinoa bowl"
+            ]
+
+        elif food_type == "vegan":
+            meal_pool = [
+                "Tofu scramble with spinach",
+                "Chickpea salad",
+                "Vegan protein smoothie",
+                "Lentil quinoa bowl",
+                "Roasted vegetables with hummus",
+                "Vegan tofu curry"
+            ]
+
+        else:  # nonveg
+            meal_pool = [
+                "Grilled chicken salad",
+                "Egg whites with spinach",
+                "Baked salmon with broccoli",
+                "Lean turkey lettuce wraps",
+                "Protein smoothie (low carb)",
+                "Turkey breast with greens"
+            ]
+
     elif goal == "bulk":
-        meal_pool = [
-            "Chicken rice bowl with avocado",
-            "Oats with peanut butter and banana",
-            "Steak with sweet potatoes",
-            "Whole egg omelette with toast",
-            "Protein shake with oats and milk",
-            "Salmon with quinoa",
-            "Greek yogurt with granola"
-        ]
+
+        if food_type == "veg":
+            meal_pool = [
+                "Paneer rice bowl",
+                "Oats with peanut butter and banana",
+                "Cheese omelette with toast",
+                "Greek yogurt with granola",
+                "Dal with brown rice",
+                "Vegetable pasta with cheese"
+            ]
+
+        elif food_type == "vegan":
+            meal_pool = [
+                "Vegan protein smoothie with oats",
+                "Chickpea curry with rice",
+                "Tofu stir fry with noodles",
+                "Peanut butter banana sandwich",
+                "Vegan lentil pasta",
+                "Quinoa black bean bowl"
+            ]
+
+        else:  # nonveg
+            meal_pool = [
+                "Chicken rice bowl with avocado",
+                "Steak with sweet potatoes",
+                "Whole egg omelette with toast",
+                "Salmon with quinoa",
+                "Protein shake with oats and milk",
+                "Lean beef with rice"
+            ]
+
     else:  # maintain
-        meal_pool = [
-            "Balanced chicken plate with rice and veggies",
-            "Omelette with whole grain toast",
-            "Fish tacos with beans",
-            "Protein smoothie with fruits",
-            "Lean beef with brown rice",
-            "Yogurt with nuts",
-            "Tofu stir fry"
-        ]
+
+        if food_type == "veg":
+            meal_pool = [
+                "Balanced paneer plate with rice",
+                "Omelette with whole grain toast",
+                "Vegetable tofu stir fry",
+                "Yogurt with nuts",
+                "Dal with roti",
+                "Vegetable quinoa salad"
+            ]
+
+        elif food_type == "vegan":
+            meal_pool = [
+                "Tofu vegetable bowl",
+                "Vegan smoothie with almond milk",
+                "Chickpea salad wrap",
+                "Lentil soup",
+                "Roasted vegetables with hummus",
+                "Quinoa black bean salad"
+            ]
+
+        else:  # nonveg
+            meal_pool = [
+                "Balanced chicken plate with rice",
+                "Fish tacos with beans",
+                "Lean beef with brown rice",
+                "Grilled salmon with vegetables",
+                "Chicken sandwich on whole grain",
+                "Egg and avocado toast"
+            ]
 
     # ------------------------
     # Workout Strategy Pool

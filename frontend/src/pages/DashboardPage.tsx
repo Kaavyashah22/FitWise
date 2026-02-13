@@ -29,6 +29,7 @@ const DashboardPage = () => {
   const [goal, setGoal] = useState(existing?.goal || "maintain");
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
   const [loading, setLoading] = useState(false);
+  const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan">("nonveg");
   const planRef = useRef<HTMLDivElement | null>(null);
 
   const profile: UserProfile | null = useMemo(() => {
@@ -76,7 +77,8 @@ const DashboardPage = () => {
           weight: profile.weight,
           gender: profile.gender,
           activity: profile.activityLevel,
-          goal: profile.goal
+          goal: profile.goal,
+          food_type: foodType
         })
       });
   
@@ -91,7 +93,7 @@ const DashboardPage = () => {
       setTimeout(() => {
         planRef.current?.scrollIntoView({ behavior: "smooth" });
       }, 100);
-      
+
       toast({
         title: "Plan Generated",
         description: "AI recommendation successful!"
@@ -172,6 +174,19 @@ const DashboardPage = () => {
                   </Select>
                 </div>
               </div>
+              <div className="space-y-2">
+  <Label>Food Preference</Label>
+  <Select value={foodType} onValueChange={(v) => setFoodType(v as "veg" | "nonveg" | "vegan")}>
+    <SelectTrigger>
+      <SelectValue />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="veg">Vegetarian</SelectItem>
+      <SelectItem value="nonveg">Non-Vegetarian</SelectItem>
+      <SelectItem value="vegan">Vegan</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
               {goalValidation && !goalValidation.valid && (
                 <div className="mt-4 flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                   <AlertTriangle className="h-4 w-4 shrink-0" />
