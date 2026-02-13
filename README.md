@@ -6,44 +6,44 @@ It combines machine learning with a modern TypeScript frontend to deliver intell
 
 ⸻
 
-🌍 Live Demo
+🌍 Live Application  
+🔗 https://fit-wise-seven.vercel.app
 
-🔗 Frontend (Vercel): https://your-frontend-url.vercel.app
-🔗 Backend API (Render): https://your-backend-url.onrender.com
+⚙️ Backend API (Hosted on Render)
 
 ⸻
 
 🚀 Features
-	•	🔢 BMI, BMR & TDEE calculation
-	•	📊 User progress tracking dashboard
-	•	🏋️ Workout history logging
-	•	📈 Graph-based analytics
-	•	🧠 KNN-based AI plan classification
-	•	🥗 Goal-specific diet strategy (Cut / Bulk / Maintain)
-	•	💪 Dynamic workout split generator
-	•	📊 Model confidence scoring
-	•	📈 AI explanation layer (why this plan was generated)
-	•	🌙 Dark mode support
-	•	🔐 Authentication system
-	•	☁️ Cloud deployment (Render + Vercel)
+• 🔢 BMI, BMR & TDEE calculation
+• 📊 User progress tracking dashboard
+• 🏋️ Workout history logging
+• 📈 Graph-based analytics
+• 🧠 KNN-based AI plan classification
+• 🥗 Goal-specific diet strategy (Cut / Bulk / Maintain)
+• 💪 Dynamic workout split generator
+• 📊 Model confidence scoring
+• 📈 AI explanation layer (why this plan was generated)
+• 🌙 Dark mode support
+• 🔐 Authentication system
+• ☁️ Cloud deployment (Render + Vercel)
 
 ⸻
 
 🏗️ Tech Stack
 
 Frontend
-	•	React + TypeScript
-	•	Vite
-	•	Tailwind CSS
-	•	shadcn/ui components
-	•	Hosted on Vercel
+• React + TypeScript
+• Vite
+• Tailwind CSS
+• shadcn/ui components
+• Hosted on Vercel
 
 Backend
-	•	Python
-	•	Flask
-	•	scikit-learn (KNN model)
-	•	Joblib (model serialization)
-	•	Hosted on Render
+• Python
+• Flask
+• scikit-learn (KNN model)
+• Joblib (model serialization)
+• Hosted on Render
 
 ⸻
 
@@ -51,8 +51,8 @@ Backend
 
 FitWise/
 │
-├── backend/          # Flask API + ML models
-├── frontend/         # React + TypeScript frontend
+├── backend/ # Flask API + ML models
+├── frontend/ # React + TypeScript frontend
 ├── .gitignore
 └── README.md
 
@@ -87,27 +87,27 @@ http://localhost:5173
 FitWise uses a K-Nearest Neighbors (KNN) classification model to determine the optimal fitness strategy cluster.
 
 The model evaluates:
-	•	Age
-	•	BMI
-	•	Activity Level
-	•	Goal (Cut / Bulk / Maintain)
+• Age
+• BMI
+• Activity Level
+• Goal (Cut / Bulk / Maintain)
 
 Based on the classification result:
-	•	A strategy cluster is selected
-	•	Diet and workout recommendations are dynamically generated
-	•	Confidence score is returned
-	•	Explainability layer describes why the plan was selected
+• A strategy cluster is selected
+• Diet and workout recommendations are dynamically generated
+• Confidence score is returned
+• Explainability layer describes why the plan was selected
 
 This ensures transparency and data-driven personalization.
 
 ⸻
 
 🔬 Research & Future Development
-	•	🎥 Pose-estimation module using WebCam for exercise form detection
-	•	🔐 JWT-based secure authentication
-	•	🗄️ Database integration (PostgreSQL / MongoDB)
-	•	⚡ Model optimization for larger datasets
-	•	☁️ Advanced scalable cloud infrastructure
+• 🎥 Pose-estimation module using WebCam for exercise form detection
+• 🔐 JWT-based secure authentication
+• 🗄️ Database integration (PostgreSQL / MongoDB)
+• ⚡ Model optimization for larger datasets
+• ☁️ Advanced scalable cloud infrastructure
 
 ⸻
 
