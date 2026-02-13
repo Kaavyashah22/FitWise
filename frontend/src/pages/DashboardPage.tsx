@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getProfile, saveProfile, UserProfile } from "@/lib/auth";
 import { calculateBMI, getBMICategory, calculateBMR, calculateTDEE, getCalorieTarget, validateGoal } from "@/lib/health";
@@ -29,6 +29,7 @@ const DashboardPage = () => {
   const [goal, setGoal] = useState(existing?.goal || "maintain");
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
   const [loading, setLoading] = useState(false);
+  const planRef = useRef<HTMLDivElement | null>(null);
 
   const profile: UserProfile | null = useMemo(() => {
     if (!user || !age || !height || !weight) return null;
@@ -87,7 +88,10 @@ const DashboardPage = () => {
       }
   
       setPlan(data);
-  
+      setTimeout(() => {
+        planRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+      
       toast({
         title: "Plan Generated",
         description: "AI recommendation successful!"
@@ -232,7 +236,7 @@ const DashboardPage = () => {
 
       {/* Plan */}
       {plan && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <motion.div ref={planRef} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <Card className="glass-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
