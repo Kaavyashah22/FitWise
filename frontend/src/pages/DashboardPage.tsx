@@ -28,6 +28,7 @@ const DashboardPage = () => {
   const [activity, setActivity] = useState(existing?.activityLevel || "moderate");
   const [goal, setGoal] = useState(existing?.goal || "maintain");
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const profile: UserProfile | null = useMemo(() => {
     if (!user || !age || !height || !weight) return null;
@@ -51,7 +52,7 @@ const DashboardPage = () => {
   const goalValidation = bmi ? validateGoal(bmi, goal) : null;
 
   const handleGenerate = async () => {
-    if (!profile) return;
+    if (!profile || loading) return;
   
     if (goalValidation && !goalValidation.valid) {
       toast({
@@ -61,7 +62,7 @@ const DashboardPage = () => {
       });
       return;
     }
-  
+    setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/predict`, {
         method: "POST",
@@ -98,6 +99,9 @@ const DashboardPage = () => {
         description: error.message,
         variant: "destructive"
       });
+    }
+    finally {
+      setLoading(false);
     }
   };
 
@@ -170,8 +174,12 @@ const DashboardPage = () => {
                   {goalValidation.message}
                 </div>
               )}
-              <Button className="mt-6 w-full sm:w-auto" onClick={handleGenerate} disabled={!profile}>
-                Generate Plan
+              <Button
+                className="mt-6 w-full sm:w-auto"
+                onClick={handleGenerate}
+                disabled={!profile || loading}
+              >
+                {loading ? "Generating..." : "Generate Plan"}
               </Button>
             </CardContent>
           </Card>
