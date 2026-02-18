@@ -106,6 +106,10 @@ const DashboardPage = () => {
       return;
     }
     saveProfile(profile);
+    toast({
+      title: "Profile Saved",
+      description: "Your profile has been stored locally."
+    });
     setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/predict`, {
