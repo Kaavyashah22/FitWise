@@ -83,7 +83,10 @@ const DashboardPage = () => {
     const fatCalories = fatGrams * 9;
     const remainingCalories = calorieTarget - (proteinCalories + fatCalories);
     const carbGrams = remainingCalories / 4;
-    const totalCalories = calorieTarget;
+    const carbCalories = carbGrams * 4;
+  
+    const totalCalories = proteinCalories + carbCalories + fatCalories;
+  
     const proteinPercent = Math.round((proteinCalories / totalCalories) * 100);
     const fatPercent = Math.round((fatCalories / totalCalories) * 100);
     const carbPercent = 100 - proteinPercent - fatPercent;
@@ -92,6 +95,11 @@ const DashboardPage = () => {
       protein: Math.round(proteinGrams),
       carbs: Math.round(carbGrams),
       fats: Math.round(fatGrams),
+  
+      proteinCalories: Math.round(proteinCalories),
+      carbCalories: Math.round(carbCalories),
+      fatCalories: Math.round(fatCalories),
+  
       proteinPercent,
       carbPercent,
       fatPercent,
@@ -384,35 +392,54 @@ const DashboardPage = () => {
     </h3>
 
     <div className="max-w-sm mx-auto">
-      <Pie
-        data={{
-          labels: ["Protein (g)", "Carbs (g)", "Fats (g)"],
-          datasets: [
-            {
-              data: [
-                macros.protein,
-                macros.carbs,
-                macros.fats
-              ],
-              backgroundColor: [
-                "#22c55e",
-                "#3b82f6",
-                "#f59e0b"
-              ],
-              borderWidth: 1,
-            },
-          ],
-        }}
-        options={{
-          plugins: {
-            legend: {
-              labels: {
-                color: "#e5e7eb",
-              },
-            },
+    <Pie
+  data={{
+    labels: ["Protein", "Carbs", "Fats"],
+    datasets: [
+      {
+        data: [
+          macros.proteinCalories,
+          macros.carbCalories,
+          macros.fatCalories
+        ],
+        backgroundColor: [
+          "#22c55e",
+          "#3b82f6",
+          "#f59e0b"
+        ],
+        borderWidth: 1,
+      },
+    ],
+  }}
+  options={{
+    plugins: {
+      legend: {
+        labels: {
+          color: "#e5e7eb",
+        },
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const label = context.label;
+            const value = context.raw;
+
+            if (label === "Protein") {
+              return `Protein: ${macros.protein}g (${macros.proteinCalories} kcal)`;
+            }
+            if (label === "Carbs") {
+              return `Carbs: ${macros.carbs}g (${macros.carbCalories} kcal)`;
+            }
+            if (label === "Fats") {
+              return `Fats: ${macros.fats}g (${macros.fatCalories} kcal)`;
+            }
+            return "";
           },
-        }}
-      />
+        },
+      },
+    },
+  }}
+/>
     </div>
     <div className="mt-4 space-y-1 text-sm">
       <p>Protein: {macros.proteinPercent}%</p>
