@@ -1,119 +1,161 @@
-🏋️‍♂️ FitWise – AI Powered Fitness Planner
+# 🏋️‍♂️ FitWise — AI Fitness Intelligence System
 
-FitWise is a full-stack AI fitness web application that generates personalized diet and workout plans based on a user’s age, BMI, activity level, and fitness goals.
+FitWise is a full-stack, explainable AI fitness intelligence system that generates personalized diet and workout strategies using machine learning, adaptive health metrics, and goal-specific modeling.
 
-It combines machine learning with a modern TypeScript frontend to deliver intelligent, explainable, and dynamic fitness recommendations.
+It integrates modern frontend engineering with an ML-driven backend to deliver intelligent, transparent, and dynamic fitness recommendations.
 
-⸻
+---
 
-🌍 Live Application  
-🔗 https://fit-wise-seven.vercel.app
+## 🌐 Live Application
 
-⚙️ Backend API (Hosted on Render)
+🔗 https://fit-wise-seven.vercel.app  
+⚙ Backend API hosted on Render  
 
-⸻
+---
 
-🚀 Features
-• 🔢 BMI, BMR & TDEE calculation
-• 📊 User progress tracking dashboard
-• 🏋️ Workout history logging
-• 📈 Graph-based analytics
-• 🧠 KNN-based AI plan classification
-• 🥗 Goal-specific diet strategy (Cut / Bulk / Maintain)
-• 💪 Dynamic workout split generator
-• 📊 Model confidence scoring
-• 📈 AI explanation layer (why this plan was generated)
-• 🌙 Dark mode support
-• 🔐 Authentication system
-• ☁️ Cloud deployment (Render + Vercel)
+# 🚀 Key Features
 
-⸻
+- 📊 BMI, BMR & TDEE calculation engine  
+- 🧠 KNN-based goal classification (Cut / Bulk / Maintain)  
+- 🥗 Goal-specific diet strategy generation  
+- 🏋️ Dynamic workout split recommendation  
+- 📈 Strength analytics & 1RM estimation  
+- 🧮 Calorie-based macronutrient distribution visualization  
+- 🧠 Model confidence scoring  
+- 🔍 AI explanation layer (why this plan was selected)  
+- 🌙 Dark mode support  
+- 🔐 Local profile persistence  
+- ☁️ Cloud deployment (Vercel + Render)
 
-🏗️ Tech Stack
+---
 
-Frontend
-• React + TypeScript
-• Vite
-• Tailwind CSS
-• shadcn/ui components
-• Hosted on Vercel
+# 🏗 System Architecture
 
-Backend
-• Python
-• Flask
-• scikit-learn (KNN model)
-• Joblib (model serialization)
-• Hosted on Render
+## 🖥 Frontend
+- React + TypeScript  
+- Vite  
+- Tailwind CSS  
+- shadcn/ui  
+- Recharts & Chart.js  
+- Hosted on Vercel  
 
-⸻
+## 🧠 Backend
+- Python  
+- Flask API  
+- scikit-learn (KNN model)  
+- Joblib (model serialization)  
+- Hosted on Render  
 
-📂 Project Structure
+---
 
-FitWise/
-│
-├── backend/ # Flask API + ML models
-├── frontend/ # React + TypeScript frontend
-├── .gitignore
-└── README.md
-
-⸻
-
-⚙️ How to Run Locally
-
-1️⃣ Backend
-
-cd backend
-pip install -r requirements.txt
-python3 api.py
-
-Backend runs on:
-http://localhost:5001
-
-⸻
-
-2️⃣ Frontend
-
-cd frontend
-npm install
-npm run dev
-
-Frontend runs on (default Vite):
-http://localhost:5173
-
-⸻
-
-🧠 AI Model Overview
+# 🧠 AI Model Overview
 
 FitWise uses a K-Nearest Neighbors (KNN) classification model to determine the optimal fitness strategy cluster.
 
-The model evaluates:
-• Age
-• BMI
-• Activity Level
-• Goal (Cut / Bulk / Maintain)
+### Input Features:
+- Age  
+- BMI  
+- Activity Level  
+- Fitness Goal  
 
-Based on the classification result:
-• A strategy cluster is selected
-• Diet and workout recommendations are dynamically generated
-• Confidence score is returned
-• Explainability layer describes why the plan was selected
+### Output:
+- Strategy cluster selection  
+- Diet plan generation  
+- Workout split recommendation  
+- Confidence score  
+- Explainability reasoning layer  
 
-This ensures transparency and data-driven personalization.
+This ensures transparent, data-driven personalization.
 
-⸻
+---
 
-🔬 Research & Future Development
-• 🎥 Pose-estimation module using WebCam for exercise form detection
-• 🔐 JWT-based secure authentication
-• 🗄️ Database integration (PostgreSQL / MongoDB)
-• ⚡ Model optimization for larger datasets
-• ☁️ Advanced scalable cloud infrastructure
+# 📊 Intelligence Layer
 
-⸻
+- Confidence score returned with every recommendation  
+- Explanation block describing decision reasoning  
+- Calorie-based macro distribution (4-4-9 principle)  
+- Estimated 1RM tracking for strength progression  
+- Goal validation safety layer (BMI-based warnings)
 
-👨‍💻 Author
+---
 
-Kaavya Shah
-Computer Science Engineering Student
+# 🔬 Research & Long-Term Vision
 
-Built as a full-stack AI fitness intelligence system.
+FitWise is designed as a foundation for an advanced AI-driven fitness platform.
+
+## 🎥 Computer Vision & Motion Intelligence (Primary Research Direction)
+
+- Real-time pose estimation using MediaPipe / OpenPose  
+- Exercise form detection and correction  
+- Joint-angle analysis for squat, deadlift, press validation  
+- Automatic rep counting using movement tracking  
+- Tempo detection and range-of-motion analysis  
+- Injury-risk prediction from movement patterns  
+
+This module aims to transform FitWise into a real-time AI coaching system.
+
+---
+
+## 🤖 Adaptive AI Evolution
+
+- Reinforcement learning layer to adapt plans based on user progress  
+- Metabolic adaptation modeling for long-term calorie adjustments  
+- Goal progression prediction using trend regression  
+- Hybrid ML architecture (clustering + regression + heuristics)
+
+---
+
+## 📈 Advanced Personalization
+
+- Explainable AI visualization (feature importance mapping)  
+- Multi-user cloud-scale model inference  
+- Wearable API integration (Apple Health / Fitbit)  
+
+---
+
+# 📂 Project Structure
+
+```
+FitWise/
+├── backend/         # Flask API + ML models
+├── frontend/        # React + TypeScript frontend
+├── README.md
+└── .gitignore
+```
+
+---
+
+# 🛠 How to Run Locally
+
+## 1️⃣ Backend
+
+```
+cd backend
+pip install -r requirements.txt
+python3 api.py
+```
+
+Backend runs on:  
+http://localhost:5000
+
+---
+
+## 2️⃣ Frontend
+
+```
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend runs on (default Vite):  
+http://localhost:5173
+
+---
+
+# 🌟 Author
+
+Kaavya Shah  
+Computer Science Engineering Student  
+
+Designed and implemented as a full-stack, explainable AI fitness intelligence system integrating modern frontend engineering with machine learning-driven backend logic.
