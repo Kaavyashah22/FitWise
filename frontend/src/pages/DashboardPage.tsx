@@ -12,6 +12,15 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Pie } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -50,6 +59,38 @@ const DashboardPage = () => {
   const bmr = profile ? calculateBMR(profile) : null;
   const tdee = profile ? calculateTDEE(profile) : null;
   const calorieTarget = tdee && profile ? getCalorieTarget(tdee, profile.goal) : null;
+  const macros = useMemo(() => {
+    if (!profile || !calorieTarget) return null;
+  
+    const weight = profile.weight;
+    let proteinGrams = 0;
+    let fatGrams = 0;
+  
+    if (profile.goal === "cut") {
+      proteinGrams = 2.2 * weight;
+      fatGrams = (0.25 * calorieTarget) / 9;
+    } 
+    else if (profile.goal === "bulk") {
+      proteinGrams = 1.8 * weight;
+      fatGrams = (0.25 * calorieTarget) / 9;
+    } 
+    else {
+      proteinGrams = 2 * weight;
+      fatGrams = (0.30 * calorieTarget) / 9;
+    }
+  
+    const proteinCalories = proteinGrams * 4;
+    const fatCalories = fatGrams * 9;
+    const remainingCalories = calorieTarget - (proteinCalories + fatCalories);
+    const carbGrams = remainingCalories / 4;
+  
+    return {
+      protein: Math.round(proteinGrams),
+      carbs: Math.round(carbGrams),
+      fats: Math.round(fatGrams),
+    };
+  
+  }, [profile, calorieTarget]);
 
   const goalValidation = bmi ? validateGoal(bmi, goal) : null;
 
@@ -64,6 +105,7 @@ const DashboardPage = () => {
       });
       return;
     }
+    saveProfile(profile);
     setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/predict`, {
@@ -283,6 +325,7 @@ const DashboardPage = () => {
                 </div>
               </div>
               {/* AI Meta Section */}
+
 <div className="mt-6 p-4 rounded-lg bg-muted/40 border border-border space-y-2">
   <h3 className="font-semibold text-sm">AI Decision Insights</h3>
   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -321,6 +364,49 @@ const DashboardPage = () => {
 {plan.confidence < 60 && (
   <div className="mt-2 text-xs text-red-400">
     ⚠️ Lower confidence detected. Consider reviewing input data for more accurate recommendations.
+  </div>
+)}
+{macros && (
+  <div className="mt-8">
+    <h3 className="font-semibold mb-4">
+      Macronutrient Distribution
+    </h3>
+
+    <div className="max-w-sm mx-auto">
+      <Pie
+        data={{
+          labels: ["Protein (g)", "Carbs (g)", "Fats (g)"],
+          datasets: [
+            {
+              data: [
+                macros.protein,
+                macros.carbs,
+                macros.fats
+              ],
+              backgroundColor: [
+                "#22c55e",
+                "#3b82f6",
+                "#f59e0b"
+              ],
+              borderWidth: 1,
+            },
+          ],
+        }}
+        options={{
+          plugins: {
+            legend: {
+              labels: {
+                color: "#e5e7eb",
+              },
+            },
+          },
+        }}
+      />
+    </div>
+
+    <p className="text-xs text-muted-foreground mt-2">
+      Personalized macro split based on goal and calorie target.
+    </p>
   </div>
 )}
             </CardContent>
