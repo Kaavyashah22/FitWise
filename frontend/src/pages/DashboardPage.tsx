@@ -83,11 +83,18 @@ const DashboardPage = () => {
     const fatCalories = fatGrams * 9;
     const remainingCalories = calorieTarget - (proteinCalories + fatCalories);
     const carbGrams = remainingCalories / 4;
+    const totalCalories = calorieTarget;
+    const proteinPercent = Math.round((proteinCalories / totalCalories) * 100);
+    const fatPercent = Math.round((fatCalories / totalCalories) * 100);
+    const carbPercent = 100 - proteinPercent - fatPercent;
   
     return {
       protein: Math.round(proteinGrams),
       carbs: Math.round(carbGrams),
       fats: Math.round(fatGrams),
+      proteinPercent,
+      carbPercent,
+      fatPercent,
     };
   
   }, [profile, calorieTarget]);
@@ -406,6 +413,11 @@ const DashboardPage = () => {
           },
         }}
       />
+    </div>
+    <div className="mt-4 space-y-1 text-sm">
+      <p>Protein: {macros.proteinPercent}%</p>
+      <p>Carbs: {macros.carbPercent}%</p>
+      <p>Fats: {macros.fatPercent}%</p>
     </div>
 
     <p className="text-xs text-muted-foreground mt-2">
