@@ -57,3 +57,31 @@ export function addWeightLog(userId: string, date: string, weight: number): Weig
   localStorage.setItem(WEIGHT_LOG_KEY, JSON.stringify(all));
   return entry;
 }
+export const EXERCISES = [
+  "Bench Press",
+  "Incline Bench Press",
+  "Machine Pec Fly",
+  "Push-Up",
+  "Deadlift",
+  "Barbell Row",
+  "Lat Pulldown",
+  "Pull-Up",
+  "Seated Cable Row",
+  "Face Pull",
+  "Squat",
+  "Leg Press",
+  "Romanian Deadlift",
+  "Leg Curl",
+  "Leg Extension",
+  "Calf Raises",
+  "Overhead Press",
+  "Dumbbell Shoulder Press",
+  "Dumbbell Lateral Raise",
+  "Front Raise",
+  "Rear Delt Fly",
+  "Barbell Curl",
+  "Dumbbell Curl",
+  "Hammer Curl",
+  "Tricep Pushdown",
+  "Close Grip Bench Press"
+];
