@@ -2,10 +2,11 @@ export interface WorkoutEntry {
   id: string;
   userId: string;
   date: string;
+  muscleGroup: string;
   exercise: string;
   sets: number;
   reps: number;
-  weight: number; // kg
+  weight: number;
 }
 
 const WORKOUTS_KEY = "fitwise_workouts";
@@ -34,28 +35,6 @@ export function deleteWorkout(id: string) {
   saveAllWorkouts(getAllWorkouts().filter((w) => w.id !== id));
 }
 
-export const EXERCISES = [
-  "Bench Press",
-  "Squat",
-  "Deadlift",
-  "Overhead Press",
-  "Barbell Row",
-  "Pull-Up",
-  "Lat Pulldown",
-  "Dumbbell Curl",
-  "Tricep Pushdown",
-  "Leg Press",
-  "Leg Curl",
-  "Leg Extension",
-  "Cable Fly",
-  "Dumbbell Lateral Raise",
-  "Face Pull",
-  "Romanian Deadlift",
-  "Hip Thrust",
-  "Plank",
-  "Crunch",
-  "Running",
-];
 
 export interface WeightLog {
   id: string;
