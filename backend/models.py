@@ -1,7 +1,7 @@
 import uuid
 from datetime import date, datetime
 
-from sqlalchemy import (
+from sqlalchemy import (  # pyright: ignore[reportMissingImports]
     Boolean,
     Column,
     Date,
@@ -13,11 +13,11 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID, ENUM as PgEnum
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
+from sqlalchemy.dialects.postgresql import UUID, ENUM as PgEnum  # pyright: ignore[reportMissingImports]
+from sqlalchemy.orm import relationship  # pyright: ignore[reportMissingImports]
+from sqlalchemy.sql import func  # pyright: ignore[reportMissingImports]
 
-from .db import Base
+from db import Base
 
 
 activity_level_enum = PgEnum(
