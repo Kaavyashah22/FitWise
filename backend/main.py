@@ -3,6 +3,8 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from db import engine
+from models import Base
 from routes.auth import router as auth_router
 from routes.workouts import router as workouts_router
 
@@ -12,6 +14,7 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+Base.metadata.create_all(bind=engine)
 
 
 frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
