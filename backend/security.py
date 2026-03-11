@@ -26,35 +26,40 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 # -------------------------
-# Password utilities
+# PASSWORD FUNCTIONS
 # -------------------------
 
 def hash_password(password: str) -> str:
-    # bcrypt supports max 72 bytes
-    password = password[:72]
-    return pwd_context.hash(password)
+    # bcrypt limit = 72 bytes
+    safe_password = password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    return pwd_context.hash(safe_password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password[:72], hashed_password)
+    safe_password = plain_password.encode("utf-8")[:72].decode("utf-8", errors="ignore")
+    return pwd_context.verify(safe_password, hashed_password)
 
 
 # -------------------------
-# JWT utilities
+# JWT FUNCTIONS
 # -------------------------
 
 def create_access_token(*, data: dict, expires_delta: Optional[timedelta] = None) -> str:
     to_encode = data.copy()
+
     expire = datetime.utcnow() + (
         expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
+
     to_encode.update({"exp": expire})
+
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
     return encoded_jwt
 
 
 # -------------------------
-# User helpers
+# USER HELPERS
 # -------------------------
 
 def get_user_by_id(db: Session, user_id: str) -> Optional[User]:
@@ -65,6 +70,7 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db),
 ) -> User:
+
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -73,6 +79,7 @@ async def get_current_user(
 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
         user_id: Optional[str] = payload.get("user_id")
 
         if user_id is None:
