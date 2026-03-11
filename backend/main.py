@@ -1,9 +1,9 @@
 import os
 
-from dotenv import load_dotenv
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import OperationalError
+from dotenv import load_dotenv  # pyright: ignore[reportMissingImports]
+from fastapi import FastAPI  # pyright: ignore[reportMissingImports]
+from fastapi.middleware.cors import CORSMiddleware  # pyright: ignore[reportMissingImports]
+from sqlalchemy.exc import OperationalError  # pyright: ignore[reportMissingImports]
 
 from db import engine
 from models import Base
