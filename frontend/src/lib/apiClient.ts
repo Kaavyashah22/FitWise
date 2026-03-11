@@ -1,4 +1,4 @@
-const BASE_URL = "https://fitwise-backend.onrender.com";
+const BASE_URL = "https://fitwise-backend-hkge.onrender.com";
 
 const TOKEN_KEY = "fitwise_access_token";
 const SESSION_KEY = "fitwise_session_user";
