@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { addWorkout, getUserWorkouts, deleteWorkout, WorkoutEntry } from "@/lib/workouts";
 import { EXERCISE_LIBRARY } from "@/lib/exercise-library";
@@ -19,9 +19,15 @@ const WorkoutsPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() =>
-    user ? getUserWorkouts(user.id) : []
-  );
+  const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const ws = await getUserWorkouts(user.id);
+      setWorkouts(ws);
+    })();
+  }, [user]);
 
   const muscleGroups = Object.keys(EXERCISE_LIBRARY);
 
@@ -40,10 +46,10 @@ const WorkoutsPage = () => {
     (ex) => ex.name === selectedExercise
   );
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!user || !weight || !selectedExercise) return;
 
-    const entry = addWorkout({
+    const entry = await addWorkout({
       userId: user.id,
       date,
       muscleGroup: selectedMuscle,
@@ -62,8 +68,8 @@ const WorkoutsPage = () => {
     });
   };
 
-  const handleDelete = (id: string) => {
-    deleteWorkout(id);
+  const handleDelete = async (id: string) => {
+    await deleteWorkout(id);
     setWorkouts((prev) => prev.filter((w) => w.id !== id));
   };
 

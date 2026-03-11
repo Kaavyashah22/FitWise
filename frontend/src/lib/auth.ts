@@ -15,59 +15,11 @@ export interface UserProfile {
   goal: "cut" | "bulk" | "maintain";
 }
 
-const USERS_KEY = "fitwise_users";
 const SESSION_KEY = "fitwise_session";
 const PROFILES_KEY = "fitwise_profiles";
 
-/* ---------------- USERS ---------------- */
-
-function getUsers(): Record<string, { user: User; password: string }> {
-  try {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || "{}");
-  } catch {
-    return {};
-  }
-}
-
-export function signup(email: string, password: string, name: string): User {
-  email = email.trim().toLowerCase();
-  password = password.trim();
-
-  const users = getUsers();
-
-  if (users[email]) {
-    throw new Error("User already exists");
-  }
-
-  const user: User = {
-    id: crypto.randomUUID(),
-    email,
-    name,
-    createdAt: new Date().toISOString(),
-  };
-
-  users[email] = { user, password };
-
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+export function setSession(user: User) {
   localStorage.setItem(SESSION_KEY, JSON.stringify(user));
-
-  return user;
-}
-
-export function login(email: string, password: string): User {
-  email = email.trim().toLowerCase();
-  password = password.trim();
-
-  const users = getUsers();
-  const entry = users[email];
-
-  if (!entry || entry.password !== password) {
-    throw new Error("Invalid credentials");
-  }
-
-  localStorage.setItem(SESSION_KEY, JSON.stringify(entry.user));
-
-  return entry.user;
 }
 
 export function logout() {

@@ -1,3 +1,10 @@
+import {
+  createWorkout,
+  getWorkouts as apiGetWorkouts,
+  createWeightLog,
+  getWeightLogs as apiGetWeightLogs,
+} from "@/lib/apiClient";
+
 export interface WorkoutEntry {
   id: string;
   userId: string;
@@ -9,32 +16,83 @@ export interface WorkoutEntry {
   weight: number;
 }
 
-const WORKOUTS_KEY = "fitwise_workouts";
+type WorkoutNotes = {
+  muscleGroup: string;
+  exercise: string;
+  sets: number;
+  reps: number;
+  weight: number;
+};
 
-function getAllWorkouts(): WorkoutEntry[] {
-  return JSON.parse(localStorage.getItem(WORKOUTS_KEY) || "[]");
+function encodeNotes(entry: Omit<WorkoutEntry, "id">): string {
+  const notes: WorkoutNotes = {
+    muscleGroup: entry.muscleGroup,
+    exercise: entry.exercise,
+    sets: entry.sets,
+    reps: entry.reps,
+    weight: entry.weight,
+  };
+  return JSON.stringify(notes);
 }
 
-function saveAllWorkouts(workouts: WorkoutEntry[]) {
-  localStorage.setItem(WORKOUTS_KEY, JSON.stringify(workouts));
+function decodeNotes(notes: string | null | undefined): WorkoutNotes | null {
+  if (!notes) return null;
+  try {
+    const parsed = JSON.parse(notes) as Partial<WorkoutNotes>;
+    if (
+      typeof parsed.muscleGroup === "string" &&
+      typeof parsed.exercise === "string" &&
+      typeof parsed.sets === "number" &&
+      typeof parsed.reps === "number" &&
+      typeof parsed.weight === "number"
+    ) {
+      return parsed as WorkoutNotes;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
-export function addWorkout(entry: Omit<WorkoutEntry, "id">): WorkoutEntry {
-  const workouts = getAllWorkouts();
-  const newEntry = { ...entry, id: crypto.randomUUID() };
-  workouts.push(newEntry);
-  saveAllWorkouts(workouts);
-  return newEntry;
+export async function addWorkout(entry: Omit<WorkoutEntry, "id">): Promise<WorkoutEntry> {
+  const data = await createWorkout({
+    date: entry.date,
+    name: entry.exercise,
+    notes: encodeNotes(entry),
+  });
+  return {
+    id: data.id,
+    userId: data.user_id,
+    date: data.date,
+    muscleGroup: entry.muscleGroup,
+    exercise: entry.exercise,
+    sets: entry.sets,
+    reps: entry.reps,
+    weight: entry.weight
+  };
 }
 
-export function getUserWorkouts(userId: string): WorkoutEntry[] {
-  return getAllWorkouts().filter((w) => w.userId === userId);
+export async function getUserWorkouts(_userId?: string): Promise<WorkoutEntry[]> {
+  const data = await apiGetWorkouts();
+
+  return data.map((w) => {
+    const decoded = decodeNotes(w.notes);
+    return {
+      id: w.id,
+      userId: w.user_id,
+      date: w.date,
+      muscleGroup: decoded?.muscleGroup || "Unknown",
+      exercise: decoded?.exercise || w.name || "Workout",
+      sets: decoded?.sets ?? 0,
+      reps: decoded?.reps ?? 0,
+      weight: decoded?.weight ?? 0,
+    };
+  });
 }
 
-export function deleteWorkout(id: string) {
-  saveAllWorkouts(getAllWorkouts().filter((w) => w.id !== id));
+export async function deleteWorkout(id: string) {
+  console.warn("Delete not implemented yet:", id);
 }
-
 
 export interface WeightLog {
   id: string;
@@ -43,20 +101,26 @@ export interface WeightLog {
   weight: number;
 }
 
-const WEIGHT_LOG_KEY = "fitwise_weight_log";
-
-export function getWeightLogs(userId: string): WeightLog[] {
-  const all: WeightLog[] = JSON.parse(localStorage.getItem(WEIGHT_LOG_KEY) || "[]");
-  return all.filter((w) => w.userId === userId).sort((a, b) => a.date.localeCompare(b.date));
+export async function getWeightLogs(_userId?: string): Promise<WeightLog[]> {
+  const data = await apiGetWeightLogs();
+  return data.map((w) => ({
+    id: w.id,
+    userId: w.user_id,
+    date: w.date,
+    weight: w.weight_kg,
+  }));
 }
 
-export function addWeightLog(userId: string, date: string, weight: number): WeightLog {
-  const all: WeightLog[] = JSON.parse(localStorage.getItem(WEIGHT_LOG_KEY) || "[]");
-  const entry: WeightLog = { id: crypto.randomUUID(), userId, date, weight };
-  all.push(entry);
-  localStorage.setItem(WEIGHT_LOG_KEY, JSON.stringify(all));
-  return entry;
+export async function addWeightLog(_userId: string, date: string, weight: number): Promise<WeightLog> {
+  const data = await createWeightLog(date, weight);
+  return {
+    id: data.id,
+    userId: data.user_id,
+    date: data.date,
+    weight: data.weight_kg
+  };
 }
+
 export const EXERCISES = [
   "Bench Press",
   "Incline Bench Press",

@@ -16,13 +16,13 @@ const AuthPage = () => {
   const { login, signup } = useAuth();
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (isLogin) {
-        login(email, password);
+        await login(email, password);
       } else {
-        signup(email, password, name);
+        await signup(email, password, name);
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
