@@ -1,9 +1,9 @@
 import os
 
-from dotenv import load_dotenv  # pyright: ignore[reportMissingImports]
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import OperationalError  # pyright: ignore[reportMissingImports]
+from sqlalchemy.exc import OperationalError
 
 from db import engine
 from models import Base
@@ -18,19 +18,26 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
+
 try:
     Base.metadata.create_all(bind=engine)
-except OperationalError as exc:  # pragma: no cover
+except OperationalError as exc:
     raise RuntimeError(
         "Database initialization failed. "
         "Check that DATABASE_URL is set correctly and the PostgreSQL server is reachable."
     ) from exc
 
 
+# ---- CORS FIX ----
+frontend_origin = os.getenv("FRONTEND_ORIGIN")
+
 allow_origins = [
     "http://localhost:5173",
-    "https://fit-wise-seven.vercel.app",
 ]
+
+if frontend_origin:
+    allow_origins.append(frontend_origin)
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -39,6 +46,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# ------------------
 
 
 @app.get("/")
