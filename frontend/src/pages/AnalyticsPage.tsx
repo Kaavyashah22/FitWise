@@ -28,11 +28,19 @@ const AnalyticsPage = () => {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [wl, ws] = await Promise.all([getWeightLogs(user.id), getUserWorkouts(user.id)]);
-      setWeightLogs(wl);
-      setWorkouts(ws);
+      try {
+        const [wl, ws] = await Promise.all([getWeightLogs(user.id), getUserWorkouts(user.id)]);
+        setWeightLogs(wl);
+        setWorkouts(ws);
+      } catch (err: any) {
+        toast({
+          title: "Error loading analytics data",
+          description: err.message ?? "Something went wrong",
+          variant: "destructive",
+        });
+      }
     })();
-  }, [user]);
+  }, [user, toast]);
 
   // Volume by date
   const volumeData = useMemo(() => {
@@ -91,12 +99,20 @@ const AnalyticsPage = () => {
   const handleAddWeight = async () => {
     if (!user || !weightVal) return;
 
-    const entry = await addWeightLog(user.id, weightDate, Number(weightVal));
-    setWeightLogs((prev) =>
-      [...prev, entry].sort((a, b) => a.date.localeCompare(b.date))
-    );
-    setWeightVal("");
-    toast({ title: "Weight logged!" });
+    try {
+      const entry = await addWeightLog(user.id, weightDate, Number(weightVal));
+      setWeightLogs((prev) =>
+        [...prev, entry].sort((a, b) => a.date.localeCompare(b.date))
+      );
+      setWeightVal("");
+      toast({ title: "Weight logged!" });
+    } catch (err: any) {
+      toast({
+        title: "Error logging weight",
+        description: err.message ?? "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   const chartColor = "hsl(152, 60%, 45%)";

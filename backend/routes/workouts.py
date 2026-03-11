@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -13,10 +13,12 @@ from security import get_current_user
 router = APIRouter()
 
 from typing import Optional
+
+
 class WorkoutCreate(BaseModel):
     date: date
     name: Optional[str] = None
-    nnotes: Optional[str] = None
+    notes: Optional[str] = None
 
 
 class WeightLogCreate(BaseModel):
@@ -30,15 +32,19 @@ def create_workout(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    workout = Workout(
-        user_id=current_user.id,
-        date=payload.date,
-        name=payload.name,
-        notes=payload.notes,
-    )
-    db.add(workout)
-    db.commit()
-    db.refresh(workout)
+    try:
+        workout = Workout(
+            user_id=current_user.id,
+            date=payload.date,
+            name=payload.name,
+            notes=payload.notes,
+        )
+        db.add(workout)
+        db.commit()
+        db.refresh(workout)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(exc))
 
     return {
         "id": str(workout.id),
@@ -83,24 +89,28 @@ def create_weight_log(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    weight_log = (
-        db.query(WeightLog)
-        .filter(WeightLog.user_id == current_user.id, WeightLog.date == payload.date)
-        .first()
-    )
-
-    if weight_log:
-        weight_log.weight_kg = payload.weight_kg
-    else:
-        weight_log = WeightLog(
-            user_id=current_user.id,
-            date=payload.date,
-            weight_kg=payload.weight_kg,
+    try:
+        weight_log = (
+            db.query(WeightLog)
+            .filter(WeightLog.user_id == current_user.id, WeightLog.date == payload.date)
+            .first()
         )
-        db.add(weight_log)
 
-    db.commit()
-    db.refresh(weight_log)
+        if weight_log:
+            weight_log.weight_kg = payload.weight_kg
+        else:
+            weight_log = WeightLog(
+                user_id=current_user.id,
+                date=payload.date,
+                weight_kg=payload.weight_kg,
+            )
+            db.add(weight_log)
+
+        db.commit()
+        db.refresh(weight_log)
+    except Exception as exc:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(exc))
 
     return {
         "id": str(weight_log.id),

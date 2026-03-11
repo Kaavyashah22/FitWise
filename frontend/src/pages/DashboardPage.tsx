@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { createPlan } from "@/lib/apiClient";
 import { Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -127,29 +128,16 @@ const DashboardPage = () => {
     });
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/predict`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          age: profile.age,
-          height: profile.height,
-          weight: profile.weight,
-          gender: profile.gender,
-          activity: profile.activityLevel,
-          goal: profile.goal,
-          food_type: foodType
-        })
+      const data = await createPlan({
+        age: profile.age,
+        height: profile.height,
+        weight: profile.weight,
+        gender: profile.gender,
+        activity: profile.activityLevel,
+        goal: profile.goal,
+        food_type: foodType,
       });
-  
-      const data = await response.json();
-      console.log("API RESPONSE:", data);
-  
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-  
+
       setPlan(data);
       setTimeout(() => {
         planRef.current?.scrollIntoView({ behavior: "smooth" });

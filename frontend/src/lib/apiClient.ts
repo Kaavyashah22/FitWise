@@ -144,3 +144,21 @@ export async function createWeightLog(date: string, weight: number) {
   });
 }
 
+
+export interface PredictPayload {
+  age: number;
+  height: number;
+  weight: number;
+  gender: string;
+  activity: string;
+  goal: string;
+  food_type?: string;
+}
+
+export async function createPlan(payload: PredictPayload) {
+  return request<any>("/predict", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+

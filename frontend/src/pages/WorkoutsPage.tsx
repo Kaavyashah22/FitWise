@@ -24,10 +24,18 @@ const WorkoutsPage = () => {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const ws = await getUserWorkouts(user.id);
-      setWorkouts(ws);
+      try {
+        const ws = await getUserWorkouts(user.id);
+        setWorkouts(ws);
+      } catch (err: any) {
+        toast({
+          title: "Error loading workouts",
+          description: err.message ?? "Something went wrong",
+          variant: "destructive",
+        });
+      }
     })();
-  }, [user]);
+  }, [user, toast]);
 
   const muscleGroups = Object.keys(EXERCISE_LIBRARY);
 
@@ -49,28 +57,44 @@ const WorkoutsPage = () => {
   const handleAdd = async () => {
     if (!user || !weight || !selectedExercise) return;
 
-    const entry = await addWorkout({
-      userId: user.id,
-      date,
-      muscleGroup: selectedMuscle,
-      exercise: selectedExercise,
-      sets: Number(sets),
-      reps: Number(reps),
-      weight: Number(weight),
-    });
+    try {
+      const entry = await addWorkout({
+        userId: user.id,
+        date,
+        muscleGroup: selectedMuscle,
+        exercise: selectedExercise,
+        sets: Number(sets),
+        reps: Number(reps),
+        weight: Number(weight),
+      });
 
-    setWorkouts((prev) => [...prev, entry]);
-    setWeight("");
+      setWorkouts((prev) => [...prev, entry]);
+      setWeight("");
 
-    toast({
-      title: "Workout logged!",
-      description: `${selectedExercise} added successfully.`,
-    });
+      toast({
+        title: "Workout logged!",
+        description: `${selectedExercise} added successfully.`,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error logging workout",
+        description: err.message ?? "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteWorkout(id);
-    setWorkouts((prev) => prev.filter((w) => w.id !== id));
+    try {
+      await deleteWorkout(id);
+      setWorkouts((prev) => prev.filter((w) => w.id !== id));
+    } catch (err: any) {
+      toast({
+        title: "Error deleting workout",
+        description: err.message ?? "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   const sorted = [...workouts].sort((a, b) =>
