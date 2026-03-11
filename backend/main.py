@@ -9,6 +9,7 @@ from db import engine
 from models import Base
 from routes.auth import router as auth_router
 from routes.workouts import router as workouts_router
+from routes.predict import router as predict_router
 
 load_dotenv()
 
@@ -56,3 +57,4 @@ def read_root():
 
 app.include_router(auth_router)
 app.include_router(workouts_router)
+app.include_router(predict_router)
