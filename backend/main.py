@@ -1,12 +1,16 @@
 import os
 
+from dotenv import load_dotenv  # pyright: ignore[reportMissingImports]
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import OperationalError  # pyright: ignore[reportMissingImports]
 
 from db import engine
 from models import Base
 from routes.auth import router as auth_router
 from routes.workouts import router as workouts_router
+
+load_dotenv()
 
 app = FastAPI(
     title="FitWise API",
@@ -14,7 +18,13 @@ app = FastAPI(
     redoc_url="/redoc",
     openapi_url="/openapi.json",
 )
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except OperationalError as exc:  # pragma: no cover
+    raise RuntimeError(
+        "Database initialization failed. "
+        "Check that DATABASE_URL is set correctly and the PostgreSQL server is reachable."
+    ) from exc
 
 
 allow_origins = [
