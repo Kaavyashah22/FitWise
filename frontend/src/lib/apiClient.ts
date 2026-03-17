@@ -69,6 +69,11 @@ async function request<T>(
   const data = (isJson ? await res.json() : await res.text()) as any;
 
   if (!res.ok) {
+    if (res.status === 401) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("auth:unauthorized"));
+      }
+    }
     const msg =
       (data && typeof data === "object" && "detail" in data && (data.detail as string)) ||
       (typeof data === "string" ? data : "Request failed");
