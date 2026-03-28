@@ -158,6 +158,7 @@ export interface PredictPayload {
   activity: string;
   goal: string;
   food_type?: string;
+  medical_history?: string;
 }
 
 export async function createPlan(payload: PredictPayload) {

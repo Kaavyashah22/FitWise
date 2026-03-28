@@ -1,7 +1,204 @@
 import random
 
+def apply_medical_adjustments(plan: dict, medical_history: str, activity: str = "Active") -> dict:
+    if not medical_history or medical_history.lower() == "none":
+        return plan
 
-def generate_plan(plan_key, age, bmi, activity, goal, confidence, food_type):
+    plan = plan.copy()
+    cond = medical_history.lower()
+    advice = []
+    
+    is_sedentary = activity.lower() == "sedentary"
+
+    if "diabetes" in cond:
+        diet_variants = [
+            " Focus on low glycemic index foods to maintain stable blood sugar levels.",
+            " Prioritize slow-digesting carbohydrates and avoid sugar spikes.",
+            " Emphasize complex carbs and fiber-rich foods to regulate glucose levels."
+        ]
+        plan["diet_strategy"] += random.choice(diet_variants)
+        
+        if isinstance(plan.get("example_meals"), list):
+            meal_options = [
+                 "Oats", "Quinoa", "Lentils", "Paneer", "Leafy vegetables",
+                 "Chickpeas", "Brown rice", "Vegetable soups"
+            ]
+            plan["example_meals"].extend(random.sample(meal_options, k=3))
+            
+        if is_sedentary:
+            workout_variants_sed = [
+                " Start gradually with light daily walks to improve insulin sensitivity.",
+                " Begin with gentle movement spread throughout the day to support glucose control.",
+                " Incorporate brief, light activity sessions to help manage blood sugar."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_sed)
+        else:
+            workout_variants_act = [
+                " Maintain consistent moderate exercise to improve insulin sensitivity.",
+                " Keep up moderate to high intensity workouts for glucose control.",
+                " Engage in regular cardiovascular and resistance training."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_act)
+            
+        advice.extend([
+            "Avoid high sugar foods and refined carbs",
+            "Monitor blood glucose regularly",
+            "Prefer smaller frequent meals"
+        ])
+
+    if "hypertension" in cond:
+        diet_variants = [
+            " Maintain a low sodium diet, avoid processed and packaged foods.",
+            " Focus on reducing salt intake and prioritizing fresh whole foods.",
+            " Incorporate DASH diet principles, emphasizing vegetables and low-fat dairy."
+        ]
+        plan["diet_strategy"] += random.choice(diet_variants)
+        
+        if isinstance(plan.get("example_meals"), list):
+            meal_options = [
+                "Fruits", "Vegetables", "Whole grains", "Low-fat dairy",
+                "Unsalted nuts", "Fish", "Beans"
+            ]
+            plan["example_meals"].extend(random.sample(meal_options, k=3))
+            
+        if is_sedentary:
+            workout_variants_sed = [
+                " Begin with light walking to safely increase heart rate.",
+                " Start gradually with gentle cardiovascular exercises.",
+                " Incorporate short, low-intensity walks daily."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_sed)
+        else:
+            workout_variants_act = [
+                " Maintain moderate cardio like walking or cycling.",
+                " Keep up consistent aerobic exercise for heart health.",
+                " Engage in moderate to high intensity cardiovascular training."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_act)
+            
+        advice.extend([
+            "Limit salt intake",
+            "Avoid high-stress training",
+            "Stay hydrated"
+        ])
+
+    if "joint" in cond:
+        if is_sedentary:
+            workout_variants_sed = [
+                " Start gradually with gentle low-impact movements (stretching, light resistance).",
+                " Begin with restorative mobility work and very low-impact exercises.",
+                " Incorporate daily stretching and light pool exercises if possible."
+            ]
+            plan["workout_strategy"] = random.choice(workout_variants_sed).strip() + " " + plan["workout_strategy"]
+        else:
+            workout_variants_act = [
+                " Prioritize low-impact training (cycling, swimming, machine workouts) to protect joints.",
+                " Swap high-impact exercises for joint-friendly alternatives.",
+                " Maintain moderate to high intensity using low-impact modalities."
+            ]
+            plan["workout_strategy"] = random.choice(workout_variants_act).strip() + " " + plan["workout_strategy"]
+            
+        diet_variants = [
+            " Incorporate anti-inflammatory foods like nuts, seeds, and leafy greens.",
+            " Focus on foods rich in Omega-3 to support joint health.",
+            " Emphasize an anti-inflammatory diet strategy."
+        ]
+        plan["diet_strategy"] += random.choice(diet_variants)
+        
+        advice.extend([
+            "Avoid heavy squats/deadlifts if painful",
+            "Warm up properly",
+            "Focus on mobility and flexibility"
+        ])
+
+    if "asthma" in cond:
+        if is_sedentary:
+            workout_variants_sed = [
+                " Start gradually with very light pace workouts, focusing on breathing control.",
+                " Begin with gentle exercises in controlled environments.",
+                " Incorporate light steady-state activities with focused breathing."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_sed)
+        else:
+            workout_variants_act = [
+                " Maintain moderate pace workouts, avoiding sudden high-intensity bursts.",
+                " Steady-state cardiovascular exercise is preferred over extreme HIIT.",
+                " Keep up moderate intensity but manage rest periods carefully."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_act)
+            
+        diet_variants = [
+            " Incorporate foods rich in antioxidants to support respiratory health.",
+            " Emphasize antioxidant-rich fruits and vegetables.",
+            " Maintain a balanced diet rich in vitamins to support immune function."
+        ]
+        plan["diet_strategy"] += random.choice(diet_variants)
+        
+        advice.extend([
+            "Always carry inhaler if prescribed",
+            "Avoid cold/dry air workouts",
+            "Include proper warm-up"
+        ])
+
+    if "thyroid" in cond:
+        diet_variants = [
+            " Focus on a balanced diet supporting overall metabolism.",
+            " Ensure adequate caloric intake to prevent metabolic slowdown.",
+            " Emphasize whole foods that support thyroid function and energy levels."
+        ]
+        plan["diet_strategy"] += random.choice(diet_variants)
+        
+        if isinstance(plan.get("example_meals"), list):
+            meal_options = [
+                "Whole grains", "Nuts", "Seeds", "Vegetables",
+                "Lean proteins", "Eggs", "Yogurt"
+            ]
+            plan["example_meals"].extend(random.sample(meal_options, k=3))
+            
+        if is_sedentary:
+            workout_variants_sed = [
+                " Start gradually with consistent light activity to boost metabolism.",
+                " Begin with daily moderate movement to improve energy levels.",
+                " Incorporate frequent light walks to support metabolic health."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_sed)
+        else:
+            workout_variants_act = [
+                " Maintain consistent strength + cardio training to support metabolism.",
+                " Keep up regular varied workouts focusing on muscle maintenance.",
+                " Engage in moderate to high intensity workouts to stimulate energy balance."
+            ]
+            plan["workout_strategy"] += random.choice(workout_variants_act)
+            
+        advice.extend([
+            "Maintain regular eating schedule",
+            "Avoid extreme calorie restriction",
+            "Monitor energy levels"
+        ])
+
+    if advice:
+        unique_advice = []
+        for a in advice:
+            if a not in unique_advice:
+                unique_advice.append(a)
+        plan["medical_advice"] = unique_advice
+        
+        explanation_variants = [
+            f" Plan adjusted considering {medical_history} to ensure safety and effectiveness.",
+            f" Recommendations adapted based on {medical_history} for better health outcomes.",
+            f" This plan includes adjustments for {medical_history} to improve safety and performance."
+        ]
+        plan["explanation"] += random.choice(explanation_variants)
+
+    if isinstance(plan.get("example_meals"), list):
+        # Remove duplicates while preserving order and limit to 6
+        unique_meals = list(dict.fromkeys(plan["example_meals"]))
+        plan["example_meals"] = unique_meals[:6]
+
+    return plan
+
+
+def generate_plan(plan_key, age, bmi, activity, goal, confidence, food_type, medical_history="None"):
 
     # ------------------------
     # Age Group Logic
@@ -219,7 +416,7 @@ def generate_plan(plan_key, age, bmi, activity, goal, confidence, food_type):
     # ------------------------
     # Final Response Object
     # ------------------------
-    return {
+    plan = {
         "title": f"{base_title} (AI Personalized)",
         "diet_strategy": f"{intensity_note} Maintain high protein intake. Adjust calories according to {goal}.",
         "example_meals": random.sample(meal_pool, 4),
@@ -229,3 +426,5 @@ def generate_plan(plan_key, age, bmi, activity, goal, confidence, food_type):
         "confidence": round(confidence * 100, 2),
         "model_type": "KNN Classification"
     }
+    
+    return apply_medical_adjustments(plan, medical_history, activity)

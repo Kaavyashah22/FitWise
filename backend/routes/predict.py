@@ -39,6 +39,7 @@ class PredictRequest(BaseModel):
     activity: str  # "sedentary" / anything else -> "Active"
     goal: Literal["cut", "bulk", "maintain"]
     food_type: Optional[str] = "nonveg"
+    medical_history: Optional[str] = "None"
 
 
 @router.post("/predict")
@@ -97,6 +98,7 @@ def predict_plan(payload: PredictRequest):
             goal=goal,
             confidence=confidence,
             food_type=food_type,
+            medical_history=payload.medical_history,
         )
 
         return full_plan

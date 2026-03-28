@@ -37,6 +37,7 @@ const DashboardPage = () => {
   const [gender, setGender] = useState<"male" | "female">(existing?.gender || "male");
   const [activity, setActivity] = useState(existing?.activityLevel || "moderate");
   const [goal, setGoal] = useState(existing?.goal || "maintain");
+  const [medicalHistory, setMedicalHistory] = useState(existing?.medical_history || "None");
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
   const [loading, setLoading] = useState(false);
   const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan">("nonveg");
@@ -52,8 +53,9 @@ const DashboardPage = () => {
       gender,
       activityLevel: activity as UserProfile["activityLevel"],
       goal: goal as UserProfile["goal"],
+      medical_history: medicalHistory,
     };
-  }, [user, age, height, weight, gender, activity, goal]);
+  }, [user, age, height, weight, gender, activity, goal, medicalHistory]);
 
   const bmi = profile ? calculateBMI(profile.weight, profile.height) : null;
   const bmiCat = bmi ? getBMICategory(bmi) : null;
@@ -136,6 +138,7 @@ const DashboardPage = () => {
         activity: profile.activityLevel,
         goal: profile.goal,
         food_type: foodType,
+        medical_history: profile.medical_history,
       });
 
       setPlan(data);
@@ -233,6 +236,22 @@ const DashboardPage = () => {
       <SelectItem value="veg">Vegetarian</SelectItem>
       <SelectItem value="nonveg">Non-Vegetarian</SelectItem>
       <SelectItem value="vegan">Vegan</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+<div className="space-y-2">
+  <Label>Medical History</Label>
+  <Select value={medicalHistory} onValueChange={(v) => setMedicalHistory(v)}>
+    <SelectTrigger>
+      <SelectValue />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="None">None</SelectItem>
+      <SelectItem value="Diabetes">Diabetes</SelectItem>
+      <SelectItem value="Hypertension">Hypertension</SelectItem>
+      <SelectItem value="Thyroid Disorder">Thyroid Disorder</SelectItem>
+      <SelectItem value="Joint Issues">Joint Issues</SelectItem>
+      <SelectItem value="Asthma">Asthma</SelectItem>
     </SelectContent>
   </Select>
 </div>

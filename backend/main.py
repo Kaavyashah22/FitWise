@@ -22,11 +22,10 @@ app = FastAPI(
 
 try:
     Base.metadata.create_all(bind=engine)
-except OperationalError as exc:
-    raise RuntimeError(
-        "Database initialization failed. "
-        "Check that DATABASE_URL is set correctly and the PostgreSQL server is reachable."
-    ) from exc
+    print("✅ Database connected successfully")
+except Exception as exc:
+    print("⚠️ Database initialization failed. Running without DB.")
+    print(str(exc))
 
 
 # ---- CORS FIX ----

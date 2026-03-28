@@ -13,6 +13,7 @@ export interface UserProfile {
   gender: "male" | "female";
   activityLevel: "sedentary" | "light" | "moderate" | "active" | "very_active";
   goal: "cut" | "bulk" | "maintain";
+  medical_history?: string;
 }
 
 const SESSION_KEY = "fitwise_session";
