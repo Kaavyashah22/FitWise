@@ -110,6 +110,14 @@ def apply_medical_adjustments(plan: dict, medical_history: str, activity: str = 
             "Warm up properly",
             "Focus on mobility and flexibility"
         ])
+        
+        plan["workout_split"] = [
+            "Day 1: Machine Upper Body",
+            "Day 2: Cycling",
+            "Day 3: Resistance Bands",
+            "Day 4: Swimming / Low Impact Cardio",
+            "Day 5: Mobility + Stretching"
+        ]
 
     if "asthma" in cond:
         if is_sedentary:
@@ -139,6 +147,14 @@ def apply_medical_adjustments(plan: dict, medical_history: str, activity: str = 
             "Avoid cold/dry air workouts",
             "Include proper warm-up"
         ])
+        
+        plan["workout_split"] = [
+            "Day 1: Light Cardio + Breathing Exercises",
+            "Day 2: Yoga / Mobility",
+            "Day 3: Upper Body (Moderate Intensity)",
+            "Day 4: Walking / Cycling",
+            "Day 5: Rest or Stretching"
+        ]
 
     if "thyroid" in cond:
         diet_variants = [

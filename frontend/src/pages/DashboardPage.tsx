@@ -226,35 +226,37 @@ const DashboardPage = () => {
                   </Select>
                 </div>
               </div>
-              <div className="space-y-2">
-  <Label>Food Preference</Label>
-  <Select value={foodType} onValueChange={(v) => setFoodType(v as "veg" | "nonveg" | "vegan")}>
-    <SelectTrigger>
-      <SelectValue />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="veg">Vegetarian</SelectItem>
-      <SelectItem value="nonveg">Non-Vegetarian</SelectItem>
-      <SelectItem value="vegan">Vegan</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
-<div className="space-y-2">
-  <Label>Medical History</Label>
-  <Select value={medicalHistory} onValueChange={(v) => setMedicalHistory(v)}>
-    <SelectTrigger>
-      <SelectValue />
-    </SelectTrigger>
-    <SelectContent>
-      <SelectItem value="None">None</SelectItem>
-      <SelectItem value="Diabetes">Diabetes</SelectItem>
-      <SelectItem value="Hypertension">Hypertension</SelectItem>
-      <SelectItem value="Thyroid Disorder">Thyroid Disorder</SelectItem>
-      <SelectItem value="Joint Issues">Joint Issues</SelectItem>
-      <SelectItem value="Asthma">Asthma</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
+              <div className="grid gap-4 sm:grid-cols-2 mt-4">
+                <div className="space-y-2">
+                  <Label>Food Preference</Label>
+                  <Select value={foodType} onValueChange={(v) => setFoodType(v as "veg" | "nonveg" | "vegan")}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="veg">Vegetarian</SelectItem>
+                      <SelectItem value="nonveg">Non-Vegetarian</SelectItem>
+                      <SelectItem value="vegan">Vegan</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Medical History</Label>
+                  <Select value={medicalHistory} onValueChange={(v) => setMedicalHistory(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="None">None</SelectItem>
+                      <SelectItem value="Diabetes">Diabetes</SelectItem>
+                      <SelectItem value="Hypertension">Hypertension</SelectItem>
+                      <SelectItem value="Thyroid Disorder">Thyroid Disorder</SelectItem>
+                      <SelectItem value="Joint Issues">Joint Issues</SelectItem>
+                      <SelectItem value="Asthma">Asthma</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
               {goalValidation && !goalValidation.valid && (
                 <div className="mt-4 flex items-center gap-2 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
                   <AlertTriangle className="h-4 w-4 shrink-0" />
