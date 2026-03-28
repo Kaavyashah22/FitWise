@@ -27,24 +27,32 @@ def apply_medical_adjustments(plan: dict, medical_history: str, activity: str = 
             
         if is_sedentary:
             workout_variants_sed = [
-                " Start gradually with light daily walks to improve insulin sensitivity.",
-                " Begin with gentle movement spread throughout the day to support glucose control.",
-                " Incorporate brief, light activity sessions to help manage blood sugar."
+                "Start gradually with light daily walks to improve insulin sensitivity.",
+                "Begin with gentle movement spread throughout the day to support glucose control.",
+                "Incorporate brief, light activity sessions to help manage blood sugar."
             ]
-            plan["workout_strategy"] += random.choice(workout_variants_sed)
+            plan["workout_strategy"] = random.choice(workout_variants_sed) + " Focus on consistency and moderate effort. Avoid high intensity."
         else:
             workout_variants_act = [
-                " Maintain consistent moderate exercise to improve insulin sensitivity.",
-                " Keep up moderate to high intensity workouts for glucose control.",
-                " Engage in regular cardiovascular and resistance training."
+                "Maintain consistent moderate exercise to improve insulin sensitivity.",
+                "Keep up steady, moderate-intensity workouts for glucose control.",
+                "Engage in regular cardiovascular and moderate resistance training."
             ]
-            plan["workout_strategy"] += random.choice(workout_variants_act)
+            plan["workout_strategy"] = random.choice(workout_variants_act) + " Focus on consistency and moderate effort. Avoid high intensity."
             
         advice.extend([
             "Avoid high sugar foods and refined carbs",
             "Monitor blood glucose regularly",
             "Prefer smaller frequent meals"
         ])
+        
+        plan["workout_split"] = [
+            "Day 1: Full Body (Moderate Intensity) + Walking",
+            "Day 2: Light Cardio (Cycling/Walking)",
+            "Day 3: Upper Body Strength (Controlled)",
+            "Day 4: Rest / Mobility",
+            "Day 5: Lower Body + Core (Moderate)"
+        ]
 
     if "hypertension" in cond:
         diet_variants = [
