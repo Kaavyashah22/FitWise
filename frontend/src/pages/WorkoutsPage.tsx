@@ -180,6 +180,12 @@ const WorkoutsPage = () => {
                 <Input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="60" />
               </div>
 
+              <div className="space-y-2 flex items-end">
+                <Button className="w-full" onClick={handleAdd} disabled={!weight || !selectedExercise}>
+                  <Plus className="h-4 w-4 mr-1" /> Add Entry
+                </Button>
+              </div>
+
             </div>
 
             {/* Exercise Preview */}
@@ -197,10 +203,6 @@ const WorkoutsPage = () => {
                 </ul>
               </div>
             )}
-
-            <Button className="mt-4" onClick={handleAdd} disabled={!weight || !selectedExercise}>
-              <Plus className="h-4 w-4 mr-1" /> Add Entry
-            </Button>
 
           </CardContent>
         </Card>
