@@ -101,6 +101,15 @@ export async function login(email: string, password: string) {
   return token;
 }
 
+export async function loginWithGoogleAPI(token: string) {
+  const tokenResp = await request<TokenResponse>("/auth/google", {
+    method: "POST",
+    body: JSON.stringify({ token }),
+  });
+  setAccessToken(tokenResp.access_token);
+  return tokenResp;
+}
+
 export async function getCurrentUser() {
   const user = await request<ApiUser>("/auth/me", { auth: true });
   setStoredUser(user);

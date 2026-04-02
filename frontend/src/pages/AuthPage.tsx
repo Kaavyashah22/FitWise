@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const AuthPage = () => {
@@ -13,7 +14,7 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
-  const { login, signup } = useAuth();
+  const { login, signup, loginWithGoogle, isLoggingIn } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,6 +27,16 @@ const AuthPage = () => {
       }
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleGoogleSuccess = async (response: any) => {
+    if (response.credential) {
+      try {
+        await loginWithGoogle(response.credential);
+      } catch (err: any) {
+        toast({ title: "Google Login Failed", description: err.message, variant: "destructive" });
+      }
     }
   };
 
@@ -44,7 +55,12 @@ const AuthPage = () => {
           <h1 className="text-3xl font-bold tracking-tight">Fitwise</h1>
         </div>
 
-        <Card className="glass-card">
+        <Card className="glass-card relative overflow-hidden">
+          {isLoggingIn && (
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          )}
           <CardHeader className="text-center">
             <CardTitle className="text-xl">{isLogin ? "Welcome back" : "Create account"}</CardTitle>
             <CardDescription>
@@ -67,7 +83,16 @@ const AuthPage = () => {
                 <Label htmlFor="password">Password</Label>
                 <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required />
               </div>
-              <Button type="submit" className="w-full">{isLogin ? "Sign In" : "Sign Up"}</Button>
+              <Button type="submit" className="w-full" disabled={isLoggingIn}>
+                {isLoggingIn ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isLogin ? "Signing in..." : "Signing up..."}
+                  </>
+                ) : (
+                  isLogin ? "Sign In" : "Sign Up"
+                )}
+              </Button>
             </form>
             <p className="text-center text-sm text-muted-foreground mt-4">
               {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
@@ -75,6 +100,23 @@ const AuthPage = () => {
                 {isLogin ? "Sign up" : "Sign in"}
               </button>
             </p>
+            
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+            <div className="flex justify-center flex-col items-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast({ title: "Google Login Error", description: "Failed to initialize Google Login.", variant: "destructive" })}
+                useOneTap
+              />
+            </div>
+
           </CardContent>
         </Card>
       </motion.div>

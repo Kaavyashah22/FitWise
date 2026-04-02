@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, getSession, logout as doLogout, setSession } from "@/lib/auth";
-import { clearAccessToken, clearStoredUser, getCurrentUser, getStoredUser, login, register } from "@/lib/apiClient";
+import { clearAccessToken, clearStoredUser, getCurrentUser, getStoredUser, login, register, loginWithGoogleAPI } from "@/lib/apiClient";
 
 interface AuthCtx {
   user: User | null;
   loading: boolean;
+  isLoggingIn: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
+  loginWithGoogle: (token: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -15,6 +17,7 @@ const AuthContext = createContext<AuthCtx>({} as AuthCtx);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -70,29 +73,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const doLogin = async (email: string, password: string) => {
-    await login(email, password);
-    const me = await getCurrentUser();
-    const u: User = {
-      id: me.id,
-      email: me.email || "",
-      name: me.display_name,
-      createdAt: me.created_at,
-    };
-    setSession(u);
-    setUser(u);
+    setIsLoggingIn(true);
+    try {
+      await login(email, password);
+      const me = await getCurrentUser();
+      const u: User = {
+        id: me.id,
+        email: me.email || "",
+        name: me.display_name,
+        createdAt: me.created_at,
+      };
+      setSession(u);
+      setUser(u);
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const signup = async (email: string, password: string, name: string) => {
-    await register(email, password, name);
-    const me = await getCurrentUser();
-    const u: User = {
-      id: me.id,
-      email: me.email || "",
-      name: me.display_name,
-      createdAt: me.created_at,
-    };
-    setSession(u);
-    setUser(u);
+    setIsLoggingIn(true);
+    try {
+      await register(email, password, name);
+      const me = await getCurrentUser();
+      const u: User = {
+        id: me.id,
+        email: me.email || "",
+        name: me.display_name,
+        createdAt: me.created_at,
+      };
+      setSession(u);
+      setUser(u);
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  const doLoginWithGoogle = async (token: string) => {
+    setIsLoggingIn(true);
+    try {
+      await loginWithGoogleAPI(token);
+      const me = await getCurrentUser();
+      const u: User = {
+        id: me.id,
+        email: me.email || "",
+        name: me.display_name,
+        createdAt: me.created_at,
+      };
+      setSession(u);
+      setUser(u);
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const logout = () => {
@@ -103,7 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login: doLogin, signup, logout }}>
+    <AuthContext.Provider value={{ user, loading, isLoggingIn, login: doLogin, signup, logout, loginWithGoogle: doLoginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

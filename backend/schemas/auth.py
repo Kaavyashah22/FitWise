@@ -31,6 +31,10 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class GoogleLoginRequest(BaseModel):
+    token: str
+
+
 class MeResponse(UserBase):
     pass
 
