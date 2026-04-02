@@ -20,8 +20,7 @@ from security import (
     verify_password,
 )
 import os
-from google.oauth2 import id_token
-from google.auth.transport import requests as google_requests
+import requests
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -70,20 +69,28 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)) -> Token:
 
 @router.post("/google", response_model=Token)
 def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)) -> Token:
-    client_id = os.getenv("GOOGLE_CLIENT_ID", "mock-client-id")
-    try:
-        if payload.token == "MOCK_TOKEN":
-            email = "tester@google.com"
-            name = "Test User"
-        else:
-            idinfo = id_token.verify_oauth2_token(payload.token, google_requests.Request(), client_id)
-            email = idinfo.get('email')
-            name = idinfo.get('name', 'Google User')
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Google token",
+    if payload.token == "MOCK_TOKEN":
+        email = "tester@google.com"
+        name = "Test User"
+    else:
+        resp = requests.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            headers={"Authorization": f"Bearer {payload.token}"}
         )
+        if resp.status_code != 200:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid Google token",
+            )
+        user_info = resp.json()
+        email = user_info.get("email")
+        name = user_info.get("name", "Google User")
+        
+        if not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email not provided by Google",
+            )
         
     user = db.query(User).filter(User.email == email).first()
     if not user:
