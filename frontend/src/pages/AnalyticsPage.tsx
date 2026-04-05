@@ -194,60 +194,74 @@ const AnalyticsPage = () => {
       <div className="grid gap-6 md:grid-cols-2">
 
         {/* Volume */}
-        <motion.div variants={item}>
-          <Card className="glass-card">
+        <motion.div variants={item} className="flex h-full w-full">
+          <Card className="glass-card flex flex-col w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <BarChart3 className="h-5 w-5 text-primary" />
                 Volume Progression
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col">
               {volumeData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={volumeData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="volume" fill={chartColor} radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <>
+                  <div className="mb-3 flex items-center gap-4 text-sm min-h-[20px] invisible">
+                    <span>Placeholder</span>
+                  </div>
+
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={volumeData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" />
+                      <XAxis dataKey="date" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="volume" fill={chartColor} radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+
+                  <p className="text-xs text-muted-foreground mt-2 min-h-[16px] invisible">
+                    Placeholder
+                  </p>
+                </>
               ) : (
-                <p className="text-muted-foreground text-sm text-center py-8">
-                  No data for {selectedExercise}.
-                </p>
+                <div className="flex-1 flex items-center justify-center py-8">
+                  <p className="text-muted-foreground text-sm text-center">
+                    No data for {selectedExercise}.
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
         </motion.div>
 
         {/* Strength Trend */}
-        <motion.div variants={item}>
-          <Card className="glass-card">
+        <motion.div variants={item} className="flex h-full w-full">
+          <Card className="glass-card flex flex-col w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
                 <TrendingUp className="h-5 w-5 text-primary" />
                 Strength Trend
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col">
               {strengthData.length > 0 ? (
                 <>
-                  {strengthStats && (
-                    <div className="mb-3 flex items-center gap-4 text-sm">
-                      <span className={Number(strengthStats.percent) >= 0 ? "text-green-400" : "text-red-400"}>
-                        {Number(strengthStats.percent) >= 0 ? "🔼" : "🔽"} 
-                        {Math.abs(Number(strengthStats.percent))}% Strength Change
-                      </span>
-
-                      {strengthStats.isPR && (
-                        <span className="text-yellow-400">
-                          🏆 New PR
+                  <div className="mb-3 flex items-center gap-4 text-sm min-h-[20px]">
+                    {strengthStats && (
+                      <>
+                        <span className={Number(strengthStats.percent) >= 0 ? "text-green-400" : "text-red-400"}>
+                          {Number(strengthStats.percent) >= 0 ? "🔼" : "🔽"} 
+                          {Math.abs(Number(strengthStats.percent))}% Strength Change
                         </span>
-                      )}
-                    </div>
-                  )}
+
+                        {strengthStats.isPR && (
+                          <span className="text-yellow-400">
+                            🏆 New PR
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </div>
 
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={strengthData}>
@@ -266,14 +280,16 @@ const AnalyticsPage = () => {
                     </LineChart>
                   </ResponsiveContainer>
 
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground mt-2 min-h-[16px]">
                     1RM calculated using Epley Formula: weight × (1 + reps / 30)
                   </p>
                 </>
               ) : (
-                <p className="text-muted-foreground text-sm text-center py-8">
-                  No data for {selectedExercise}.
-                </p>
+                <div className="flex-1 flex items-center justify-center py-8">
+                  <p className="text-muted-foreground text-sm text-center">
+                    No data for {selectedExercise}.
+                  </p>
+                </div>
               )}
             </CardContent>
           </Card>
