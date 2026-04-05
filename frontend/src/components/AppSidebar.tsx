@@ -41,12 +41,14 @@ const AppSidebar = () => {
         open ? "translate-x-0" : "-translate-x-full"
       )}>
         <div className="flex items-center gap-3 p-6 border-b border-sidebar-border">
-          <div className="p-2 rounded-lg bg-primary/10">
+          <div className="hidden md:flex p-2 rounded-lg bg-primary/10">
             <Dumbbell className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h2 className="font-bold text-lg leading-tight">FitWise</h2>
-            <p className="text-xs text-muted-foreground truncate">{user?.name}</p>
+            <h2 className="hidden md:block font-bold text-lg leading-tight">FitWise</h2>
+            <p className="text-sm md:text-xs font-medium md:font-normal text-foreground md:text-muted-foreground truncate">
+              {user?.name}
+            </p>
           </div>
         </div>
 
