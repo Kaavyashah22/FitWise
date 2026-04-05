@@ -59,10 +59,10 @@ const AppSidebar = () => {
               to={link.to}
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors border-l-4",
                 location.pathname === link.to
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-sidebar-foreground hover:bg-sidebar-accent/50"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground border-primary"
+                  : "text-sidebar-foreground hover:bg-sidebar-accent/50 border-transparent"
               )}
             >
               <link.icon className="h-4 w-4" />

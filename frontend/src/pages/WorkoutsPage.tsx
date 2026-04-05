@@ -223,9 +223,10 @@ const WorkoutsPage = () => {
           </CardHeader>
           <CardContent>
             {sorted.length === 0 ? (
-              <p className="text-muted-foreground text-sm text-center py-8">
-                No workouts logged yet.
-              </p>
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Dumbbell className="h-16 w-16 mb-4 opacity-20" />
+                <p className="text-sm">No workouts logged yet.</p>
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
@@ -244,14 +245,16 @@ const WorkoutsPage = () => {
                   <TableBody>
                     {sorted.map((w) => (
                       <TableRow key={w.id}>
-                        <TableCell className="text-xs">{w.date}</TableCell>
+                        <TableCell className="text-xs whitespace-nowrap">
+                          {new Date(w.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </TableCell>
                         <TableCell>{w.muscleGroup}</TableCell>
                         <TableCell>{w.exercise}</TableCell>
                         <TableCell>{w.sets}</TableCell>
                         <TableCell>{w.reps}</TableCell>
                         <TableCell>{w.weight}</TableCell>
                         <TableCell className="text-primary font-medium">
-                          {w.sets * w.reps * w.weight}
+                          {(w.sets * w.reps * w.weight).toLocaleString()}
                         </TableCell>
                         <TableCell>
                           <Button variant="ghost" size="icon" onClick={() => handleDelete(w.id)}>

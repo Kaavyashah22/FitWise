@@ -164,9 +164,10 @@ const AnalyticsPage = () => {
                 </LineChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-muted-foreground text-sm text-center py-8">
-                No weight logs yet.
-              </p>
+              <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <Weight className="h-16 w-16 mb-4 opacity-20" />
+                <p className="text-sm">No weight logs yet.</p>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -224,8 +225,9 @@ const AnalyticsPage = () => {
                   </p>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center py-8">
-                  <p className="text-muted-foreground text-sm text-center">
+                <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <BarChart3 className="h-16 w-16 mb-4 opacity-20" />
+                  <p className="text-sm text-center">
                     No data for {selectedExercise}.
                   </p>
                 </div>
@@ -285,8 +287,9 @@ const AnalyticsPage = () => {
                   </p>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center py-8">
-                  <p className="text-muted-foreground text-sm text-center">
+                <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted-foreground">
+                  <TrendingUp className="h-16 w-16 mb-4 opacity-20" />
+                  <p className="text-sm text-center">
                     No data for {selectedExercise}.
                   </p>
                 </div>
