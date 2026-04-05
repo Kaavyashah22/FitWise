@@ -36,7 +36,7 @@ const AppSidebar = () => {
 
       {/* Sidebar */}
       <aside className={cn(
-        "fixed top-0 left-0 z-40 h-full w-64 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-200",
+        "fixed top-14 md:top-0 left-0 z-40 h-[calc(100vh-3.5rem)] md:h-full w-64 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-200",
         "md:translate-x-0",
         open ? "translate-x-0" : "-translate-x-full"
       )}>

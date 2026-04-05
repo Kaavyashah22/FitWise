@@ -123,7 +123,12 @@ const WorkoutsPage = () => {
               {/* Date */}
               <div className="space-y-2">
                 <Label>Date</Label>
-                <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                <Input 
+                  type="date" 
+                  value={date} 
+                  onChange={(e) => setDate(e.target.value)} 
+                  className="block w-full appearance-none min-h-[40px] text-left [&::-webkit-date-and-time-value]:text-left" 
+                />
               </div>
 
               {/* Muscle Group */}
