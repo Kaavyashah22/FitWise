@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { motion } from "framer-motion";
-import { Plus, Trash2, Dumbbell } from "lucide-react";
+import { Plus, Trash2, Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
@@ -47,6 +47,7 @@ const WorkoutsPage = () => {
   const [sets, setSets] = useState("3");
   const [reps, setReps] = useState("10");
   const [weight, setWeight] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
   const exercisesForMuscle = EXERCISE_LIBRARY[selectedMuscle] || [];
 
@@ -57,6 +58,7 @@ const WorkoutsPage = () => {
   const handleAdd = async () => {
     if (!user || !weight || !selectedExercise) return;
 
+    setIsAdding(true);
     try {
       const entry = await addWorkout({
         userId: user.id,
@@ -81,6 +83,8 @@ const WorkoutsPage = () => {
         description: err.message ?? "Something went wrong",
         variant: "destructive",
       });
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -186,8 +190,12 @@ const WorkoutsPage = () => {
               </div>
 
               <div className="space-y-2 flex items-end">
-                <Button className="w-full" onClick={handleAdd} disabled={!weight || !selectedExercise}>
-                  <Plus className="h-4 w-4 mr-1" /> Add Entry
+                <Button className="w-full" onClick={handleAdd} disabled={!weight || !selectedExercise || isAdding}>
+                  {isAdding ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Adding...</>
+                  ) : (
+                    <><Plus className="h-4 w-4 mr-1" /> Add Entry</>
+                  )}
                 </Button>
               </div>
 
