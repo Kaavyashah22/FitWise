@@ -13,5 +13,6 @@ pandas
 numpy
 gunicorn
 google-auth
-requestsalembic
+requests
+alembic
 pydantic-settings
