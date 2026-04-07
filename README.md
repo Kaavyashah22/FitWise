@@ -1,8 +1,8 @@
-# 🏋️‍♂️ FitWise — AI Fitness Intelligence System
+# 🏋️‍♂️ FitWise — ML-Powered Fitness Intelligence System
 
-FitWise is a full-stack, explainable AI fitness intelligence system that generates personalized diet and workout strategies using machine learning, adaptive health metrics, and goal-specific modeling.
+FitWise is a full-stack, ML-powered fitness intelligence system with explainable clustering and rule-based personalization. It generates personalized diet and workout strategies using machine learning, adaptive health metrics, and goal-specific modeling.
 
-It integrates modern frontend engineering with a high-performance, ML-driven backend to deliver intelligent, transparent, and dynamic fitness recommendations.
+It integrates modern frontend engineering with a high-performance backend to deliver intelligent, transparent, and dynamic fitness recommendations.
 
 ---
 
@@ -17,7 +17,7 @@ It integrates modern frontend engineering with a high-performance, ML-driven bac
 
 - 📊 **BMI, BMR & TDEE Engine:** Adaptive calculation module for core physiological metrics.
 - 🧠 **KNN-Based Goal Classification:** Actionable strategic clustering (Cut / Bulk / Maintain).
-- 🧬 **Medical Safety Layer *(New!)*:** Secure workout generation with dynamic overrides for pre-existing medical conditions (e.g., Asthma, Diabetes, Joint Issues).
+- 🧬 **Medical Safety Layer *(New!)*:** Rule-based medical safety layer that adjusts workout and diet plans based on user conditions (e.g., Asthma, Diabetes, Joint Issues).
 - 🥗 **Goal-Specific Diet Planning:** Calorie-based macronutrient distribution visualization (4-4-9 principle).
 - 🏋️ **Dynamic Workout Split Recommendation:** Intelligent strength analytics & 1RM estimation.
 - 🔐 **Secure Authentication *(New!)*:** JWT-based security flow coupled with seamless **Google OAuth** integration.
@@ -46,7 +46,7 @@ It integrates modern frontend engineering with a high-performance, ML-driven bac
 
 # 🧠 AI Model Overview
 
-FitWise utilizes a robust K-Nearest Neighbors (KNN) classification model to identify the optimal fitness strategy cluster for a user's unique physiological profile.
+FitWise utilizes a lightweight K-Nearest Neighbors (KNN) model for initial fitness strategy classification to identify the optimal fitness path for a user's unique physiological profile.
 
 ### Input Features:
 - Age  
@@ -64,6 +64,29 @@ FitWise utilizes a robust K-Nearest Neighbors (KNN) classification model to iden
 - Explainability reasoning layer  
 
 *This design ensures transparent, empirical, and highly personalized coaching.*
+
+---
+
+### 🧩 Plan Generation Pipeline
+
+FitWise combines multiple layers to generate personalized plans:
+
+1. **ML Classification (KNN):** Assigns user to a fitness strategy cluster.
+2. **Plan Engine:** Maps cluster to structured workout and diet templates.
+3. **Medical Rule Engine:** Applies safety constraints based on user medical history.
+4. **Dynamic Personalization:** Adjusts intensity and recommendations based on activity level and metrics.
+
+This hybrid approach ensures both accuracy and safety.
+
+---
+
+# ⚠️ Limitations
+
+- **Medical Adjustments:** Current system uses rule-based medical adjustments (not clinical-grade).
+- **ML Complexity:** ML model is based on structured features (not deep learning).
+- **Generative Capability:** Plans are static templates with dynamic modifications (not fully generative).
+
+*Future versions aim to address these using LLMs and adaptive learning.*
 
 ---
 
@@ -133,4 +156,4 @@ npm run dev
 **Kaavya Shah**  
 *Computer Science Engineering Student*  
 
-*Designed and implemented as a full-stack, explainable AI fitness intelligence system blending modern frontend engineering, robust backend architecture, and transparent ML logic.*
+*Designed and implemented as a full-stack, ML-powered fitness intelligence system blending modern frontend engineering, robust backend architecture, and transparent hybrid ML logic.*
