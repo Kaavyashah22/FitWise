@@ -1,7 +1,5 @@
 from fastapi import FastAPI  # pyright: ignore[reportMissingImports]
 from fastapi.middleware.cors import CORSMiddleware  # pyright: ignore[reportMissingImports]
-from sqlalchemy.exc import OperationalError  # pyright: ignore[reportMissingImports]
-
 from db import engine
 from models import Base
 from routes.auth import router as auth_router
