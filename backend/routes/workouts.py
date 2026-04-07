@@ -44,7 +44,9 @@ def create_workout(
         db.refresh(workout)
     except Exception as exc:
         db.rollback()
-        raise HTTPException(status_code=500, detail=str(exc))
+        import logging
+        logging.error(f"Error creating workout: {exc}")
+        raise HTTPException(status_code=500, detail="An internal server error occurred while creating workout.")
 
     return {
         "id": str(workout.id),
@@ -110,7 +112,9 @@ def create_weight_log(
         db.refresh(weight_log)
     except Exception as exc:
         db.rollback()
-        raise HTTPException(status_code=500, detail=str(exc))
+        import logging
+        logging.error(f"Error creating weight log: {exc}")
+        raise HTTPException(status_code=500, detail="An internal server error occurred while creating weight log.")
 
     return {
         "id": str(weight_log.id),

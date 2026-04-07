@@ -1,6 +1,3 @@
-import os
-
-from dotenv import load_dotenv  # pyright: ignore[reportMissingImports]
 from fastapi import FastAPI  # pyright: ignore[reportMissingImports]
 from fastapi.middleware.cors import CORSMiddleware  # pyright: ignore[reportMissingImports]
 from sqlalchemy.exc import OperationalError  # pyright: ignore[reportMissingImports]
@@ -10,8 +7,7 @@ from models import Base
 from routes.auth import router as auth_router
 from routes.workouts import router as workouts_router
 from routes.predict import router as predict_router
-
-load_dotenv()
+from config import settings
 
 app = FastAPI(
     title="FitWise API",
@@ -20,16 +16,10 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-try:
-    Base.metadata.create_all(bind=engine)
-    print("✅ Database connected successfully")
-except Exception as exc:
-    print("⚠️ Database initialization failed. Running without DB.")
-    print(str(exc))
-
+print("✅ Application starting up. Database managed via Alembic.")
 
 # ---- CORS FIX ----
-frontend_origin = os.getenv("FRONTEND_ORIGIN")
+frontend_origin = settings.frontend_origin
 
 allow_origins = [
     "http://localhost:5173",

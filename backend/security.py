@@ -1,4 +1,3 @@
-import os
 from datetime import datetime, timedelta
 from typing import Optional
 
@@ -10,14 +9,11 @@ from sqlalchemy.orm import Session  # pyright: ignore[reportMissingImports]
 
 from db import get_db
 from models import User
+from config import settings
 
-
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "60"))
-
-if not SECRET_KEY:
-    raise RuntimeError("JWT_SECRET_KEY environment variable is not set.")
+SECRET_KEY = settings.jwt_secret_key
+ALGORITHM = settings.jwt_algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.jwt_access_token_expire_minutes
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

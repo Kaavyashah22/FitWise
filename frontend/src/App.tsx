@@ -11,28 +11,35 @@ import DashboardPage from "./pages/DashboardPage";
 import WorkoutsPage from "./pages/WorkoutsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import AppSidebar from "./components/AppSidebar";
+import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function AppRoutes() {
-  const { user, loading } = useAuth();
-
-  if (loading) return null;
-  if (!user) return <AuthPage />;
-
+function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex">
       <AppSidebar />
       <main className="flex-1 md:ml-64 mt-14 md:mt-0 p-6 lg:p-8 overflow-auto">
-        <Routes>
-          <Route path="/" element={<DashboardPage />} />
-          <Route path="/workouts" element={<WorkoutsPage />} />
-          <Route path="/analytics" element={<AnalyticsPage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {children}
       </main>
     </div>
+  );
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/auth" element={<AuthPage />} />
+      
+      <Route element={<ProtectedRoute />}>
+        <Route path="/" element={<MainLayout><DashboardPage /></MainLayout>} />
+        <Route path="/workouts" element={<MainLayout><WorkoutsPage /></MainLayout>} />
+        <Route path="/analytics" element={<MainLayout><AnalyticsPage /></MainLayout>} />
+      </Route>
+      
+      <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
+    </Routes>
   );
 }
 
