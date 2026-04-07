@@ -2,7 +2,7 @@
 
 FitWise is a full-stack, explainable AI fitness intelligence system that generates personalized diet and workout strategies using machine learning, adaptive health metrics, and goal-specific modeling.
 
-It integrates modern frontend engineering with an ML-driven backend to deliver intelligent, transparent, and dynamic fitness recommendations.
+It integrates modern frontend engineering with a high-performance, ML-driven backend to deliver intelligent, transparent, and dynamic fitness recommendations.
 
 ---
 
@@ -15,110 +15,87 @@ It integrates modern frontend engineering with an ML-driven backend to deliver i
 
 # 🚀 Key Features
 
-- 📊 BMI, BMR & TDEE calculation engine  
-- 🧠 KNN-based goal classification (Cut / Bulk / Maintain)  
-- 🥗 Goal-specific diet strategy generation  
-- 🏋️ Dynamic workout split recommendation  
-- 📈 Strength analytics & 1RM estimation  
-- 🧮 Calorie-based macronutrient distribution visualization  
-- 🧠 Model confidence scoring  
-- 🔍 AI explanation layer (why this plan was selected)  
-- 🌙 Dark mode support  
-- 🔐 Local profile persistence  
-- ☁️ Cloud deployment (Vercel + Render)
+- 📊 **BMI, BMR & TDEE Engine:** Adaptive calculation module for core physiological metrics.
+- 🧠 **KNN-Based Goal Classification:** Actionable strategic clustering (Cut / Bulk / Maintain).
+- 🧬 **Medical Safety Layer *(New!)*:** Secure workout generation with dynamic overrides for pre-existing medical conditions (e.g., Asthma, Diabetes, Joint Issues).
+- 🥗 **Goal-Specific Diet Planning:** Calorie-based macronutrient distribution visualization (4-4-9 principle).
+- 🏋️ **Dynamic Workout Split Recommendation:** Intelligent strength analytics & 1RM estimation.
+- 🔐 **Secure Authentication *(New!)*:** JWT-based security flow coupled with seamless **Google OAuth** integration.
+- 🔍 **Explainable AI Pipeline:** Model confidence scoring and reasoning explanations—so users understand *why* a plan was selected.
+- 🌙 **Modern UX:** Highly responsive, beautifully crafted interface using Tailwind CSS and shadcn/ui, featuring dark mode and localized persistence.
 
 ---
 
 # 🏗 System Architecture
 
 ## 🖥 Frontend
-- React + TypeScript  
-- Vite  
-- Tailwind CSS  
-- shadcn/ui  
-- Recharts & Chart.js  
-- Hosted on Vercel  
+- **React + TypeScript**
+- **Vite**
+- **Tailwind CSS + shadcn/ui**
+- **Recharts & Chart.js**
+- Hosted securely on **Vercel**
 
 ## 🧠 Backend
-- Python  
-- Flask API  
-- scikit-learn (KNN model)  
-- Joblib (model serialization)  
-- Hosted on Render  
+- **Python + FastAPI** *(Migrated from Flask for high performance and typing safety)*
+- **SQLAlchemy + Alembic** *(Robust Database Management)*
+- **scikit-learn** *(KNN model implementation)*
+- **Joblib** *(Model serialization)*
+- Hosted on **Render**
 
 ---
 
 # 🧠 AI Model Overview
 
-FitWise uses a K-Nearest Neighbors (KNN) classification model to determine the optimal fitness strategy cluster.
+FitWise utilizes a robust K-Nearest Neighbors (KNN) classification model to identify the optimal fitness strategy cluster for a user's unique physiological profile.
 
 ### Input Features:
 - Age  
 - BMI  
+- Gender
 - Activity Level  
 - Fitness Goal  
+- Medical Constraints 
 
 ### Output:
 - Strategy cluster selection  
-- Diet plan generation  
-- Workout split recommendation  
+- Tailored diet plan structure  
+- Periodized workout split recommendation  
 - Confidence score  
 - Explainability reasoning layer  
 
-This ensures transparent, data-driven personalization.
-
----
-
-# 📊 Intelligence Layer
-
-- Confidence score returned with every recommendation  
-- Explanation block describing decision reasoning  
-- Calorie-based macro distribution (4-4-9 principle)  
-- Estimated 1RM tracking for strength progression  
-- Goal validation safety layer (BMI-based warnings)
+*This design ensures transparent, empirical, and highly personalized coaching.*
 
 ---
 
 # 🔬 Research & Long-Term Vision
 
-FitWise is designed as a foundation for an advanced AI-driven fitness platform.
+FitWise is being developed as the foundational platform for a hyper-personalized, multimodal AI fitness companion. 
 
-## 🎥 Computer Vision & Motion Intelligence (Primary Research Direction)
-
-- Real-time pose estimation using MediaPipe / OpenPose  
-- Exercise form detection and correction  
-- Joint-angle analysis for squat, deadlift, press validation  
-- Automatic rep counting using movement tracking  
-- Tempo detection and range-of-motion analysis  
-- Injury-risk prediction from movement patterns  
-
-This module aims to transform FitWise into a real-time AI coaching system.
-
----
+## 🎥 Computer Vision & Motion Intelligence (Next Frontier)
+*Transforming FitWise into a real-time responsive digital coach.*
+- **Real-Time Pose Estimation:** Using OpenPose/MediaPipe via mobile camera for live exercise form detection.
+- **Biomechanical Validation:** Joint-angle analysis for complex compound movements (Squats, Deadlifts, Overhead Press).
+- **Injury-Risk Prognostics:** Predictive models analyzing movement patterns and repetition tempos.
 
 ## 🤖 Adaptive AI Evolution
+*From static generation to dynamic journey management.*
+- **Reinforcement Learning Layer:** Continuous plan adaptation based on week-over-week user progress tracking.
+- **Metabolic Adaptation Modeling:** Recognizing physical plateaus and triggering dynamic, micro-adjusted calorie constraints and macros.
+- **Hybrid Architecture:** Combining Clustering (initial assignment), Regression (progress prediction), and LLM Heuristics (dietary modifications).
 
-- Reinforcement learning layer to adapt plans based on user progress  
-- Metabolic adaptation modeling for long-term calorie adjustments  
-- Goal progression prediction using trend regression  
-- Hybrid ML architecture (clustering + regression + heuristics)
-
----
-
-## 📈 Advanced Personalization
-
-- Explainable AI visualization (feature importance mapping)  
-- Multi-user cloud-scale model inference  
-- Wearable API integration (Apple Health / Fitbit)  
+## 📈 Holistic Medical & Wearable Integration
+*Meeting the user exactly where they are.*
+- **Wearable API Aggregation:** Bringing resting heart rates, recovery metrics, and sleep scores from Apple Health, Garmin, and Fitbit directly into the ML pipeline.
+- **Deep Feature Importance Mapping:** Allowing users to visually see what lifestyle factors (e.g., sleep vs. diet) are driving or stalling their progress.
 
 ---
 
 # 📂 Project Structure
 
-```
+```text
 FitWise/
-├── backend/         # Flask API + ML models
-├── frontend/        # React + TypeScript frontend
+├── backend/         # FastAPI API, ML models, Alembic migrations
+├── frontend/        # React + TypeScript UI
 ├── README.md
 └── .gitignore
 ```
@@ -129,33 +106,31 @@ FitWise/
 
 ## 1️⃣ Backend
 
-```
+```bash
 cd backend
+python -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-python3 api.py
+
+# Run the FastAPI server natively via uvicorn
+uvicorn main:app --reload
 ```
-
-Backend runs on:  
-http://localhost:5000
-
----
+> The API will be available at: `http://localhost:8000`
 
 ## 2️⃣ Frontend
 
-```
+```bash
 cd frontend
 npm install
 npm run dev
 ```
-
-Frontend runs on (default Vite):  
-http://localhost:5173
+> The frontend will be available at: `http://localhost:5173`
 
 ---
 
 # 🌟 Author
 
-Kaavya Shah  
-Computer Science Engineering Student  
+**Kaavya Shah**  
+*Computer Science Engineering Student*  
 
-Designed and implemented as a full-stack, explainable AI fitness intelligence system integrating modern frontend engineering with machine learning-driven backend logic.
+*Designed and implemented as a full-stack, explainable AI fitness intelligence system blending modern frontend engineering, robust backend architecture, and transparent ML logic.*
