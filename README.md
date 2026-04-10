@@ -1,4 +1,4 @@
-# 🏋️‍♂️ FitWise — ML-Powered Fitness Intelligence System
+# 🏋️‍♂️ FitWise - ML-Powered Fitness Intelligence System
 
 FitWise is a full-stack, ML-powered fitness intelligence system with explainable clustering and rule-based personalization. It generates personalized diet and workout strategies using machine learning, adaptive health metrics, and goal-specific modeling.
 
