@@ -100,7 +100,7 @@ export default function CoachPage() {
         session_id: currentSessionId
       }]);
 
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8001";
+      const API_BASE_URL = import.meta.env.VITE_AI_COACH_URL || "http://localhost:8001";
       const response = await fetch(`${API_BASE_URL}/api/v1/coach/generate`, {
         method: "POST",
         headers: {
