@@ -19,9 +19,9 @@ const queryClient = new QueryClient();
 
 function MainLayout({ children, noPadding = false }: { children: React.ReactNode, noPadding?: boolean }) {
   return (
-    <div className="min-h-screen flex bg-zinc-950">
+    <div className="min-h-[100dvh] flex bg-zinc-950">
       <AppSidebar />
-      <main className={`flex-1 md:ml-64 mt-14 md:mt-0 ${noPadding ? 'h-[calc(100vh-3.5rem)] md:h-screen overflow-hidden' : 'p-6 lg:p-8 overflow-auto'}`}>
+      <main className={`flex-1 md:ml-64 mt-14 md:mt-0 ${noPadding ? 'h-[calc(100dvh-3.5rem)] md:h-[100dvh] overflow-hidden' : 'p-6 lg:p-8 overflow-auto'}`}>
         {children}
       </main>
     </div>
