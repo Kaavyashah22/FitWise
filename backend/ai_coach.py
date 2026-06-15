@@ -119,6 +119,16 @@ async def generate_response(req: GenerateRequest):
     {chat_history_data if chat_history_data else 'No prior conversation context.'}
     """
 
+    FORMATTING_GUIDELINE = """
+    MANDATORY FORMATTING RULES:
+    1. You MUST format all responses using rich Markdown.
+    2. Use ## Headings for main sections (e.g., ## Your Next Workout, ## Nutrition Focus).
+    3. Use **bold** text to highlight key exercises, metrics, or important concepts.
+    4. Use bullet points (-) or numbered lists for all workout plans and step-by-step advice.
+    5. Be energetic! Generously sprinkle highly relevant emojis (e.g., 💪, 🏃‍♂️, 🥗, 🔥, 🏋️‍♀️) throughout your response to make it visually engaging and highly motivating.
+    6. Keep paragraphs very short and punchy for easy reading.
+    """
+
     full_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
     You are FitWise Coach, an elite personal fitness and nutrition intelligence assistant. 
     You must thoroughly evaluate the user's specific metrics, medical realities, and training logs before responding.
@@ -129,6 +139,8 @@ async def generate_response(req: GenerateRequest):
     
     MANDATORY TRAINING LINKAGE:
     Acknowledge or reference their recent exercise history (e.g., if they did leg days, squats, or volume work) when framing recovery, targets, or nutritional guidance. Keep advice highly personalized.
+    
+    {FORMATTING_GUIDELINE}
     
     CONVERSATIONAL MEMORY: Review the [RECENT CONVERSATION HISTORY] to maintain context. If the user refers to previous advice or recipes, use this history to provide a coherent continuation.
     
