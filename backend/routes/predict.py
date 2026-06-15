@@ -14,21 +14,40 @@ router = APIRouter(tags=["predict"])
 # Resolve backend root (where model_*.pkl live)
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-try:
-    model_cut = joblib.load(os.path.join(BACKEND_DIR, "model_cut.pkl"))
-    scaler_cut = joblib.load(os.path.join(BACKEND_DIR, "scaler_cut.pkl"))
+# Global variables for lazy loading
+_models_loaded = False
+model_cut = None
+scaler_cut = None
+model_bulk = None
+scaler_bulk = None
+model_maintain = None
+scaler_maintain = None
+le_plan = None
+le_gender = None
+le_activity = None
 
-    model_bulk = joblib.load(os.path.join(BACKEND_DIR, "model_bulk.pkl"))
-    scaler_bulk = joblib.load(os.path.join(BACKEND_DIR, "scaler_bulk.pkl"))
+def load_models():
+    global _models_loaded, model_cut, scaler_cut, model_bulk, scaler_bulk, model_maintain, scaler_maintain, le_plan, le_gender, le_activity
+    if _models_loaded:
+        return
+        
+    try:
+        model_cut = joblib.load(os.path.join(BACKEND_DIR, "model_cut.pkl"))
+        scaler_cut = joblib.load(os.path.join(BACKEND_DIR, "scaler_cut.pkl"))
 
-    model_maintain = joblib.load(os.path.join(BACKEND_DIR, "model_maintain.pkl"))
-    scaler_maintain = joblib.load(os.path.join(BACKEND_DIR, "scaler_maintain.pkl"))
+        model_bulk = joblib.load(os.path.join(BACKEND_DIR, "model_bulk.pkl"))
+        scaler_bulk = joblib.load(os.path.join(BACKEND_DIR, "scaler_bulk.pkl"))
 
-    le_plan = joblib.load(os.path.join(BACKEND_DIR, "le_plan.pkl"))
-    le_gender = joblib.load(os.path.join(BACKEND_DIR, "le_gender.pkl"))
-    le_activity = joblib.load(os.path.join(BACKEND_DIR, "le_activity.pkl"))
-except FileNotFoundError as exc:  # pragma: no cover
-    raise RuntimeError("AI model or encoder files are missing in backend directory.") from exc
+        model_maintain = joblib.load(os.path.join(BACKEND_DIR, "model_maintain.pkl"))
+        scaler_maintain = joblib.load(os.path.join(BACKEND_DIR, "scaler_maintain.pkl"))
+
+        le_plan = joblib.load(os.path.join(BACKEND_DIR, "le_plan.pkl"))
+        le_gender = joblib.load(os.path.join(BACKEND_DIR, "le_gender.pkl"))
+        le_activity = joblib.load(os.path.join(BACKEND_DIR, "le_activity.pkl"))
+        
+        _models_loaded = True
+    except FileNotFoundError as exc:  # pragma: no cover
+        raise RuntimeError("AI model or encoder files are missing in backend directory.") from exc
 
 
 class PredictRequest(BaseModel):
@@ -47,6 +66,7 @@ def predict_plan(payload: PredictRequest):
     """
     Mirror the existing Flask /predict endpoint, returning the same plan structure.
     """
+    load_models()
     try:
         age = int(payload.age)
         weight = float(payload.weight)

@@ -19,7 +19,7 @@ from security import (
     hash_password,
     verify_password,
 )
-import os
+
 import requests
 
 router = APIRouter(prefix="/auth", tags=["auth"])
