@@ -125,3 +125,15 @@ CREATE INDEX idx_weight_logs_user_id ON weight_logs(user_id);
 -- Index for efficient weight history queries by user and date
 CREATE INDEX idx_weight_logs_date ON weight_logs(user_id, date);
 
+-- AI Coach chat history
+CREATE TABLE chat_messages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  session_id UUID NOT NULL,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Index for fetching chat messages by user and session
+CREATE INDEX idx_chat_messages_user_session ON chat_messages(user_id, session_id);
