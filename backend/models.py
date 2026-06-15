@@ -70,10 +70,15 @@ class UserProfile(Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         primary_key=True,
     )
+    age = Column(SmallInteger, nullable=True)
+    height_cm = Column(Numeric(5, 2), nullable=True)
+    weight_kg = Column(Numeric(5, 2), nullable=True)
+    gender = Column(String, nullable=True)
     activity_level = Column(activity_level_enum, nullable=True)
     goal = Column(goal_enum, nullable=True)
+    food_preference = Column(String, nullable=True)
+    medical_history = Column(String, nullable=True)
     date_of_birth = Column(Date, nullable=True)
-    height_cm = Column(Numeric(5, 2), nullable=True)
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -220,4 +225,42 @@ class WeightLog(Base):
     )
 
     user = relationship("User", back_populates="weight_logs")
+
+
+class ChatSession(Base):
+    __tablename__ = "chat_sessions"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    user = relationship("User")
+
+
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    session_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("chat_sessions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    role = Column(String, nullable=False)  # 'user' or 'assistant'
+    content = Column(Text, nullable=False)
+    timestamp = Column(DateTime, server_default=func.now(), nullable=False)
+
+    session = relationship("ChatSession")
 

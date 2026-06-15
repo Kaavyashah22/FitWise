@@ -28,4 +28,5 @@ venv/
 # OS files
 # --------------------
 .DS_Store
-Thumbs.db
+Thumbs.dbbackend/fitwise_mac_ready_model/
+ml_training/

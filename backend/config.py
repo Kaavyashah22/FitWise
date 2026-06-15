@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -8,6 +9,8 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_access_token_expire_minutes: int = 60
     frontend_origin: str = "http://localhost:5173"
+    gemini_api_key: Optional[str] = None
+
 
     class Config:
         env_file = ".env"

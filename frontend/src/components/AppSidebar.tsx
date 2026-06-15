@@ -2,7 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Dumbbell, BarChart3, LogOut, Moon, Sun, Menu, X } from "lucide-react";
+import { LayoutDashboard, Dumbbell, BarChart3, LogOut, Moon, Sun, Menu, X, Bot } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +10,7 @@ const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/workouts", label: "Workouts", icon: Dumbbell },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/coach", label: "Coach", icon: Bot },
 ];
 
 const AppSidebar = () => {

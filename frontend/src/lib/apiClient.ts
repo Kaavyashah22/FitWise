@@ -1,4 +1,4 @@
-const BASE_URL = "https://fitwise-api-xohl.onrender.com";
+const BASE_URL = "http://localhost:8000";
 
 const TOKEN_KEY = "fitwise_access_token";
 const SESSION_KEY = "fitwise_session_user";
@@ -60,6 +60,7 @@ async function request<T>(
   }
 
   const res = await fetch(`${BASE_URL}${path}`, {
+    credentials: "include",
     ...rest,
     headers: finalHeaders,
   });
@@ -174,6 +175,55 @@ export async function createPlan(payload: PredictPayload) {
   return request<any>("/predict", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export type ApiProfile = {
+  age?: number;
+  height_cm?: number;
+  weight_kg?: number;
+  gender?: string;
+  activity_level?: string;
+  goal?: string;
+  food_preference?: string;
+  medical_history?: string;
+};
+
+export async function getProfileAPI() {
+  return request<ApiProfile>("/api/v1/profile", { auth: true });
+}
+
+export async function saveProfileAPI(profile: ApiProfile) {
+  return request<ApiProfile>("/api/v1/profile", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(profile),
+  });
+}
+
+export type ChatMessage = {
+  id?: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp?: string;
+};
+
+export async function getCoachHistory() {
+  return request<ChatMessage[]>("/api/v1/coach/history", { auth: true });
+}
+
+export async function clearChatAPI() {
+  return request<{ status: string; message: string }>("/api/v1/coach/history", {
+    method: "DELETE",
+    auth: true,
+  });
+}
+
+export async function chatWithCoach(message: string) {
+  return request<{ reply: string }>("/api/v1/coach/chat", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify({ message }),
   });
 }
 

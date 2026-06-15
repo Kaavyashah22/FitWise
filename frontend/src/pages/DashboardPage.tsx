@@ -12,8 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createPlan } from "@/lib/apiClient";
+import { createPlan, getProfileAPI, saveProfileAPI } from "@/lib/apiClient";
 import { Pie } from "react-chartjs-2";
+import { useEffect } from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -40,8 +41,27 @@ const DashboardPage = () => {
   const [medicalHistory, setMedicalHistory] = useState(existing?.medical_history || "None");
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
   const [loading, setLoading] = useState(false);
-  const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan">("nonveg");
+  const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan">(existing?.food_preference || "nonveg");
   const planRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      getProfileAPI().then((apiProfile) => {
+        if (apiProfile && Object.keys(apiProfile).length > 0) {
+          if (apiProfile.age) setAge(apiProfile.age.toString());
+          if (apiProfile.height_cm) setHeight(apiProfile.height_cm.toString());
+          if (apiProfile.weight_kg) setWeight(apiProfile.weight_kg.toString());
+          if (apiProfile.gender) setGender(apiProfile.gender as "male" | "female");
+          if (apiProfile.activity_level) setActivity(apiProfile.activity_level as any);
+          if (apiProfile.goal) setGoal(apiProfile.goal as any);
+          if (apiProfile.food_preference) setFoodType(apiProfile.food_preference as any);
+          if (apiProfile.medical_history) setMedicalHistory(apiProfile.medical_history);
+        }
+      }).catch(err => {
+        console.warn("Could not fetch profile from API, using local form state.", err);
+      });
+    }
+  }, [user]);
 
   const profile: UserProfile | null = useMemo(() => {
     if (!user || !age || !height || !weight) return null;
@@ -123,12 +143,31 @@ const DashboardPage = () => {
       });
       return;
     }
-    saveProfile(profile);
-    toast({
-      title: "Profile Saved",
-      description: "Your profile has been stored locally."
-    });
+    
     setLoading(true);
+
+    try {
+      await saveProfileAPI({
+        age: profile.age,
+        height_cm: profile.height,
+        weight_kg: profile.weight,
+        gender: profile.gender,
+        activity_level: profile.activityLevel,
+        goal: profile.goal,
+        food_preference: foodType,
+        medical_history: profile.medical_history,
+      });
+      // also save to localStorage for fallback
+      saveProfile(profile);
+      toast({
+        title: "Profile Saved",
+        description: "Your profile has been synced to your account."
+      });
+    } catch (err) {
+      console.warn("API profile save failed, falling back to local storage.", err);
+      saveProfile(profile);
+    }
+
     try {
       const data = await createPlan({
         age: profile.age,

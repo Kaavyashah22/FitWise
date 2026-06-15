@@ -10,6 +10,7 @@ import AuthPage from "./pages/AuthPage";
 import DashboardPage from "./pages/DashboardPage";
 import WorkoutsPage from "./pages/WorkoutsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
+import CoachPage from "./pages/CoachPage";
 import AppSidebar from "./components/AppSidebar";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
@@ -36,6 +37,7 @@ function AppRoutes() {
         <Route path="/" element={<MainLayout><DashboardPage /></MainLayout>} />
         <Route path="/workouts" element={<MainLayout><WorkoutsPage /></MainLayout>} />
         <Route path="/analytics" element={<MainLayout><AnalyticsPage /></MainLayout>} />
+        <Route path="/coach" element={<MainLayout><CoachPage /></MainLayout>} />
       </Route>
       
       <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
@@ -44,9 +46,9 @@ function AppRoutes() {
 }
 
 function App() {
-  // Wake up Render backend when frontend loads
+  // Wake up backend when frontend loads
   useEffect(() => {
-    fetch("https://fitwise-api-xohl.onrender.com");
+    fetch("http://localhost:8000/");
   }, []);
 
   return (
