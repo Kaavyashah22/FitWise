@@ -1,7 +1,7 @@
 import modal
 
 image = (
-    modal.Image.debian_slim(python_version="3.11")
+    modal.Image.from_registry("nvidia/cuda:12.1.1-devel-ubuntu22.04", add_python="3.11")
     .pip_install(
         "fastapi",
         "uvicorn",
@@ -11,7 +11,7 @@ image = (
         "python-dotenv"
     )
     .run_commands("pip install llama-cpp-python --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cu121")
-    .add_local_dir("backend", remote_path="/root/backend", ignore=["venv/**", ".venv/**", "__pycache__/**"])
+    .add_local_dir("backend", remote_path="/root/backend", ignore=["venv/**", ".venv/**", "__pycache__/**", "fitwise_mac_ready_model/**"])
 )
 
 app = modal.App("fitwise-ai-backend")
