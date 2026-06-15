@@ -26,7 +26,7 @@ export default function CoachPage() {
   const [isFetchingHistory, setIsFetchingHistory] = useState(true);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -251,9 +251,9 @@ export default function CoachPage() {
         {isSidebarOpen && (
           <motion.div 
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
+            animate={{ width: typeof window !== 'undefined' && window.innerWidth < 768 ? "100%" : 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="border-r border-white/5 bg-zinc-950/50 flex flex-col overflow-hidden whitespace-nowrap"
+            className="border-r border-white/5 bg-zinc-950 flex flex-col overflow-hidden whitespace-nowrap"
           >
             <div className="p-4 border-b border-white/5 flex gap-2">
               <button 
@@ -315,7 +315,7 @@ export default function CoachPage() {
       </AnimatePresence>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex-1 flex-col min-w-0 ${isSidebarOpen ? 'hidden md:flex' : 'flex'}`}>
         {/* Header */}
         <div className="p-4 border-b border-white/5 bg-zinc-900/50 flex justify-between items-center">
           <div className="flex items-center gap-3">
