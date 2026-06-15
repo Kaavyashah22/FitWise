@@ -101,6 +101,30 @@ export default function CoachPage() {
     if (window.innerWidth < 768) setIsSidebarOpen(false);
   };
 
+  const handleDeleteSession = async (sessionIdToDelete: string) => {
+    if (!window.confirm("Are you sure you want to delete this chat history?")) return;
+
+    try {
+      const { error } = await supabase.from("chat_messages").delete().eq("session_id", sessionIdToDelete);
+      if (error) throw error;
+      
+      const updatedSessions = sessions.filter(s => s.id !== sessionIdToDelete);
+      setSessions(updatedSessions);
+
+      // If the deleted session was the currently active one, switch to the newest available, or create a new one.
+      if (currentSessionId === sessionIdToDelete) {
+        if (updatedSessions.length > 0) {
+          setCurrentSessionId(updatedSessions[0].id);
+        } else {
+          handleNewChat();
+        }
+      }
+    } catch (err) {
+      console.error("Error deleting session:", err);
+      alert("Failed to delete chat session.");
+    }
+  };
+
   useEffect(() => {
     const fetchHistory = async () => {
       if (!currentSessionId) return;
@@ -249,24 +273,36 @@ export default function CoachPage() {
             <div className="flex-1 overflow-y-auto p-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10">
               <div className="text-xs font-medium text-zinc-500 mb-3 px-2 mt-2">Chat History</div>
               {sessions.map((s) => (
-                <button
+                <div
                   key={s.id}
-                  onClick={() => {
-                    setCurrentSessionId(s.id);
-                    if (window.innerWidth < 768) setIsSidebarOpen(false);
-                  }}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${
+                  className={`group w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
                     currentSessionId === s.id 
                       ? "bg-primary/20 text-white border border-primary/30" 
                       : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200 border border-transparent"
                   }`}
+                  onClick={() => {
+                    setCurrentSessionId(s.id);
+                    if (window.innerWidth < 768) setIsSidebarOpen(false);
+                  }}
                 >
-                  <MessageSquare className={`w-4 h-4 flex-shrink-0 ${currentSessionId === s.id ? "text-primary" : "text-zinc-500"}`} />
-                  <div className="flex flex-col overflow-hidden">
-                    <span className="text-sm font-medium truncate">{s.title}</span>
-                    <span className="text-[10px] text-zinc-500">{format(s.updatedAt, "MMM d, h:mm a")}</span>
+                  <div className="flex items-center gap-3 overflow-hidden flex-1">
+                    <MessageSquare className={`w-4 h-4 flex-shrink-0 ${currentSessionId === s.id ? "text-primary" : "text-zinc-500"}`} />
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-sm font-medium truncate">{s.title}</span>
+                      <span className="text-[10px] text-zinc-500">{format(s.updatedAt, "MMM d, h:mm a")}</span>
+                    </div>
                   </div>
-                </button>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteSession(s.id);
+                    }}
+                    className="p-1.5 opacity-0 group-hover:opacity-100 hover:bg-white/10 rounded-md text-zinc-400 hover:text-red-400 transition-all flex-shrink-0"
+                    title="Delete Chat"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               ))}
               {sessions.length === 0 && (
                 <div className="text-sm text-zinc-500 text-center px-4 py-8">
