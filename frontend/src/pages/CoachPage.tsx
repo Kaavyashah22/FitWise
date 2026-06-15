@@ -13,6 +13,7 @@ interface LocalMessage {
 }
 
 export default function CoachPage() {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,7 +42,7 @@ export default function CoachPage() {
         const { data, error } = await supabase
           .from("chat_messages")
           .select("*")
-          .eq("user_id", "ecf7cc2d-8e91-4fde-aee1-68552cfe8621")
+          .eq("user_id", user?.id)
           .eq("session_id", currentSessionId)
           .order("created_at", { ascending: true });
 
@@ -94,7 +95,7 @@ export default function CoachPage() {
     try {
       // Insert user message into Supabase
       await supabase.from("chat_messages").insert([{ 
-        user_id: "ecf7cc2d-8e91-4fde-aee1-68552cfe8621", 
+        user_id: user?.id, 
         role: "user", 
         content: userMsg.content,
         session_id: currentSessionId
@@ -107,7 +108,7 @@ export default function CoachPage() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          user_id: "ecf7cc2d-8e91-4fde-aee1-68552cfe8621",
+          user_id: user?.id,
           session_id: currentSessionId,
           prompt: userMsg.content
         })
@@ -149,7 +150,7 @@ export default function CoachPage() {
 
       // Insert the final assistant reply into Supabase
       await supabase.from("chat_messages").insert([{ 
-        user_id: "ecf7cc2d-8e91-4fde-aee1-68552cfe8621", 
+        user_id: user?.id, 
         role: "assistant", 
         content: assistantReply,
         session_id: currentSessionId
