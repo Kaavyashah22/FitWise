@@ -244,7 +244,7 @@ export default function CoachPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] max-w-6xl mx-auto rounded-2xl overflow-hidden bg-zinc-900/40 backdrop-blur-xl border border-white/5 shadow-2xl">
+    <div className="flex h-full w-full bg-zinc-950 overflow-hidden">
       
       {/* Sidebar */}
       <AnimatePresence initial={false}>

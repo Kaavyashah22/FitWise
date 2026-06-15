@@ -17,11 +17,11 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-function MainLayout({ children }: { children: React.ReactNode }) {
+function MainLayout({ children, noPadding = false }: { children: React.ReactNode, noPadding?: boolean }) {
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-zinc-950">
       <AppSidebar />
-      <main className="flex-1 md:ml-64 mt-14 md:mt-0 p-6 lg:p-8 overflow-auto">
+      <main className={`flex-1 md:ml-64 mt-14 md:mt-0 ${noPadding ? 'h-[calc(100vh-3.5rem)] md:h-screen overflow-hidden' : 'p-6 lg:p-8 overflow-auto'}`}>
         {children}
       </main>
     </div>
@@ -37,7 +37,7 @@ function AppRoutes() {
         <Route path="/" element={<MainLayout><DashboardPage /></MainLayout>} />
         <Route path="/workouts" element={<MainLayout><WorkoutsPage /></MainLayout>} />
         <Route path="/analytics" element={<MainLayout><AnalyticsPage /></MainLayout>} />
-        <Route path="/coach" element={<MainLayout><CoachPage /></MainLayout>} />
+        <Route path="/coach" element={<MainLayout noPadding><CoachPage /></MainLayout>} />
       </Route>
       
       <Route path="*" element={<MainLayout><NotFound /></MainLayout>} />
