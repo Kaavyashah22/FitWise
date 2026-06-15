@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, User as UserIcon, Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeft, Plus } from "lucide-react";
+import { Send, User as UserIcon, Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeft, Plus, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/lib/supabaseClient";
