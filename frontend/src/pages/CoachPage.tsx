@@ -215,7 +215,7 @@ export default function CoachPage() {
                 : "bg-zinc-800/80 border border-white/10 text-zinc-200 shadow-md"
             }`}>
               {msg.role === "assistant" ? (
-                <div className="prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-black/50">
+                <div className="prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 whitespace-pre-wrap">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
                 </div>
               ) : (
