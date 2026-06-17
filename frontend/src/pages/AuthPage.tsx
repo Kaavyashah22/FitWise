@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Dumbbell, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,9 +15,22 @@ const AuthPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [showColdStartAlert, setShowColdStartAlert] = useState(false);
   const { login, signup, loginWithGoogle, isLoggingIn, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isLoggingIn) {
+      timer = setTimeout(() => {
+        setShowColdStartAlert(true);
+      }, 3000);
+    } else {
+      setShowColdStartAlert(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isLoggingIn]);
 
   useEffect(() => {
     if (user) {
@@ -66,8 +79,21 @@ const AuthPage = () => {
 
         <Card className="glass-card relative overflow-hidden">
           {isLoggingIn && (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/50 backdrop-blur-sm">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm p-6 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <AnimatePresence>
+                {showColdStartAlert && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-sm font-medium text-muted-foreground"
+                  >
+                    <p className="text-primary font-bold mb-1">Waking up secure backend servers...</p>
+                    <p>This is a cold start and may take up to 45 seconds on the first load.</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           )}
           <CardHeader className="text-center">

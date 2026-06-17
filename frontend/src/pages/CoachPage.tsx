@@ -18,6 +18,14 @@ interface ChatSession {
   updatedAt: Date;
 }
 
+const LOADING_STRINGS = [
+  "Waking up Serverless GPU...",
+  "Loading Llama 3 into memory...",
+  "Extracting live medical context...",
+  "Analyzing your recent workouts...",
+  "Generating personalized strategy..."
+];
+
 export default function CoachPage() {
   const { user } = useAuth();
   const [messages, setMessages] = useState<LocalMessage[]>([]);
@@ -27,7 +35,19 @@ export default function CoachPage() {
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
+  const [loadingIndex, setLoadingIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isLoading) {
+      setLoadingIndex(0);
+      interval = setInterval(() => {
+        setLoadingIndex((prev) => (prev + 1) % LOADING_STRINGS.length);
+      }, 3500);
+    }
+    return () => clearInterval(interval);
+  }, [isLoading]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -391,7 +411,18 @@ export default function CoachPage() {
                   <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
                   <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce"></span>
                 </span>
-                <span className="ml-2 text-sm bg-gradient-to-r from-zinc-200 to-zinc-400 bg-clip-text text-transparent animate-pulse">Coach is typing...</span>
+                <AnimatePresence mode="wait">
+                  <motion.span 
+                    key={loadingIndex}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.3 }}
+                    className="ml-2 text-sm bg-gradient-to-r from-zinc-200 to-zinc-400 bg-clip-text text-transparent font-medium"
+                  >
+                    {LOADING_STRINGS[loadingIndex]}
+                  </motion.span>
+                </AnimatePresence>
               </div>
             </motion.div>
           )}
