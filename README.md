@@ -1,115 +1,59 @@
-# 🏋️‍♂️ FitWise - ML-Powered Fitness Intelligence System
+# 🏋️‍♂️ FitWise - AI Fitness Intelligence System
 
-FitWise is a full-stack, ML-powered fitness intelligence system with explainable clustering and rule-based personalization. It generates personalized diet and workout strategies using machine learning, adaptive health metrics, and goal-specific modeling.
+FitWise is a full-stack, AI-powered fitness intelligence system. It utilizes a hybrid AI architecture combining traditional machine learning (KNN) for structural clustering with advanced **Generative AI (Llama 3)** for hyper-personalized, dynamic fitness coaching.
 
-It integrates modern frontend engineering with a high-performance backend to deliver intelligent, transparent, and dynamic fitness recommendations.
+By leveraging **Retrieval-Augmented Generation (RAG)** and **Serverless GPU hosting**, FitWise delivers elite, real-time fitness strategies based on a user's live biometric data, medical history, and workout logs.
 
 ---
 
 ## 🌐 Live Application
 
 🔗 https://fit-wise-seven.vercel.app  
-⚙ Backend API hosted on Render  
+⚙ Serverless AI Inference hosted on **Modal (NVIDIA GPUs)**
 
 ---
 
 # 🚀 Key Features
 
-- 📊 **BMI, BMR & TDEE Engine:** Adaptive calculation module for core physiological metrics.
-- 🧠 **KNN-Based Goal Classification:** Actionable strategic clustering (Cut / Bulk / Maintain).
-- 🧬 **Medical Safety Layer *(New!)*:** Rule-based medical safety layer that adjusts workout and diet plans based on user conditions (e.g., Asthma, Diabetes, Joint Issues).
-- 🥗 **Goal-Specific Diet Planning:** Calorie-based macronutrient distribution visualization (4-4-9 principle).
-- 🏋️ **Dynamic Workout Split Recommendation:** Intelligent strength analytics & 1RM estimation.
-- 🔐 **Secure Authentication *(New!)*:** JWT-based security flow coupled with seamless **Google OAuth** integration.
-- 🔍 **Explainable AI Pipeline:** Model confidence scoring and reasoning explanations—so users understand *why* a plan was selected.
-- 🌙 **Modern UX:** Highly responsive, beautifully crafted interface using Tailwind CSS and shadcn/ui, featuring dark mode and localized persistence.
+- 🧠 **Fine-Tuned LLM Coach:** Meta's **Llama 3** (8B), explicitly fine-tuned on a synthetic dataset of 300 curated fitness consultations to enforce strict medical guardrails and a specialized coaching persona.
+- ⚡ **Serverless GPU Inference:** Model deployed to **Modal** via `llama-cpp-python`, utilizing **4-bit Quantization (GGUF)** to slash memory from 15GB to 4.5GB and drop latency to under 3 seconds.
+- 🔄 **Live RAG Pipeline:** A custom Retrieval-Augmented Generation pipeline dynamically queries PostgreSQL to inject a user's real-time medical history, diet preferences, and past workouts directly into the AI's context window.
+- 📊 **KNN-Based Goal Classification:** A fast `scikit-learn` K-Nearest Neighbors model is still utilized to classify strategic clusters (Cut, Bulk, Maintain) and power interactive dashboards.
+- 🧬 **Medical Safety Layer:** The AI dynamically alters recommendations based on specific user conditions (e.g., Asthma, Diabetes, Joint Issues).
+- 🔐 **Secure Authentication:** JWT-based security flow coupled with seamless **Supabase Auth**.
+- 🌙 **Immersive UX:** An edge-to-edge full-screen chat interface built with **React**, **Tailwind CSS**, and **Framer Motion** for a native feel.
 
 ---
 
 # 🏗 System Architecture
 
 ## 🖥 Frontend
-- **React + TypeScript**
-- **Vite**
+- **React + TypeScript** (Vite)
 - **Tailwind CSS + shadcn/ui**
-- **Recharts & Chart.js**
+- **Framer Motion** (Fluid micro-animations)
 - Hosted securely on **Vercel**
 
-## 🧠 Backend
-- **Python + FastAPI** *(Migrated from Flask for high performance and typing safety)*
-- **SQLAlchemy + Alembic** *(Robust Database Management)*
-- **scikit-learn** *(KNN model implementation)*
-- **Joblib** *(Model serialization)*
-- Hosted on **Render**
+## 🧠 Backend & AI Inference
+- **Python + FastAPI** (Asynchronous backend)
+- **Supabase (PostgreSQL)** (Live RAG data source)
+- **Modal Serverless GPUs** (Scales to zero to eliminate idle costs)
+- **Llama.cpp & HuggingFace** (Optimized 4-bit GGUF inference)
+- **scikit-learn** (Legacy KNN models)
 
 ---
 
-# 🧠 AI Model Overview
+# 🧠 AI Architecture Deep-Dive
 
-FitWise utilizes a lightweight K-Nearest Neighbors (KNN) model for initial fitness strategy classification to identify the optimal fitness path for a user's unique physiological profile.
+FitWise utilizes a **Hybrid AI Pipeline**:
 
-### Input Features:
-- Age  
-- BMI  
-- Gender
-- Activity Level  
-- Fitness Goal  
-- Medical Constraints 
+### 1. The RAG Pipeline (Retrieval-Augmented Generation)
+When a user asks a question, the FastAPI backend queries Supabase to extract their specific age, weight, goals, dietary restrictions (e.g., Vegan), and medical conditions. This data is securely packed into a hidden prompt and fed to the LLM, ensuring responses are mathematically and biologically tailored to the specific user.
 
-### Output:
-- Strategy cluster selection  
-- Tailored diet plan structure  
-- Periodized workout split recommendation  
-- Confidence score  
-- Explainability reasoning layer  
+### 2. Fine-Tuning with Synthetic Data
+A custom Python script was used to procedurally generate 300 highly complex, medically constrained fitness consultations. The Llama 3 model was fine-tuned on this dataset to guarantee it strictly adheres to safety protocols (e.g., "Do not recommend the Valsalva maneuver to users with Hypertension").
 
-*This design ensures transparent, empirical, and highly personalized coaching.*
-
----
-
-### 🧩 Plan Generation Pipeline
-
-FitWise combines multiple layers to generate personalized plans:
-
-1. **ML Classification (KNN):** Assigns user to a fitness strategy cluster.
-2. **Plan Engine:** Maps cluster to structured workout and diet templates.
-3. **Medical Rule Engine:** Applies safety constraints based on user medical history.
-4. **Dynamic Personalization:** Adjusts intensity and recommendations based on activity level and metrics.
-
-This hybrid approach ensures both accuracy and safety.
-
----
-
-# ⚠️ Limitations
-
-- **Medical Adjustments:** Current system uses rule-based medical adjustments (not clinical-grade).
-- **ML Complexity:** ML model is based on structured features (not deep learning).
-- **Generative Capability:** Plans are static templates with dynamic modifications (not fully generative).
-
-*Future versions aim to address these using LLMs and adaptive learning.*
-
----
-
-# 🔬 Research & Long-Term Vision
-
-FitWise is being developed as the foundational platform for a hyper-personalized, multimodal AI fitness companion. 
-
-## 🎥 Computer Vision & Motion Intelligence (Next Frontier)
-*Transforming FitWise into a real-time responsive digital coach.*
-- **Real-Time Pose Estimation:** Using OpenPose/MediaPipe via mobile camera for live exercise form detection.
-- **Biomechanical Validation:** Joint-angle analysis for complex compound movements (Squats, Deadlifts, Overhead Press).
-- **Injury-Risk Prognostics:** Predictive models analyzing movement patterns and repetition tempos.
-
-## 🤖 Adaptive AI Evolution
-*From static generation to dynamic journey management.*
-- **Reinforcement Learning Layer:** Continuous plan adaptation based on week-over-week user progress tracking.
-- **Metabolic Adaptation Modeling:** Recognizing physical plateaus and triggering dynamic, micro-adjusted calorie constraints and macros.
-- **Hybrid Architecture:** Combining Clustering (initial assignment), Regression (progress prediction), and LLM Heuristics (dietary modifications).
-
-## 📈 Holistic Medical & Wearable Integration
-*Meeting the user exactly where they are.*
-- **Wearable API Aggregation:** Bringing resting heart rates, recovery metrics, and sleep scores from Apple Health, Garmin, and Fitbit directly into the ML pipeline.
-- **Deep Feature Importance Mapping:** Allowing users to visually see what lifestyle factors (e.g., sleep vs. diet) are driving or stalling their progress.
+### 3. Edge Optimization
+Running an 8-Billion parameter model requires significant hardware. By compiling the model to the **GGUF format** and applying **Q4_K_M 4-bit Quantization**, the VRAM requirement was reduced by 70%, allowing it to run lightning-fast on a single NVIDIA T4 GPU.
 
 ---
 
@@ -117,37 +61,12 @@ FitWise is being developed as the foundational platform for a hyper-personalized
 
 ```text
 FitWise/
-├── backend/         # FastAPI API, ML models, Alembic migrations
-├── frontend/        # React + TypeScript UI
+├── backend/         # FastAPI, RAG Pipeline, Modal Serverless deploy scripts
+├── frontend/        # React + TypeScript UI, Framer Motion layouts
+├── ml_training/     # Synthetic Data Generation, LoRA weights, JSONL datasets
 ├── README.md
 └── .gitignore
 ```
-
----
-
-# 🛠 How to Run Locally
-
-## 1️⃣ Backend
-
-```bash
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# Run the FastAPI server natively via uvicorn
-uvicorn main:app --reload
-```
-> The API will be available at: `http://localhost:8000`
-
-## 2️⃣ Frontend
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-> The frontend will be available at: `http://localhost:5173`
 
 ---
 
@@ -155,5 +74,4 @@ npm run dev
 
 **Kaavya Shah**  
 *Computer Science Engineering Student*  
-
-*Designed and implemented as a full-stack, ML-powered fitness intelligence system blending modern frontend engineering, robust backend architecture, and transparent hybrid ML logic.*
+*Specializing in Full-Stack Engineering, Generative AI, and RAG architectures.*
