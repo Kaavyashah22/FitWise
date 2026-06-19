@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
@@ -50,6 +51,11 @@ export default function AppNavigation() {
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [isSavingName, setIsSavingName] = useState(false);
+
+  // Scroll animations for Mobile Nav
+  const { scrollY } = useScroll();
+  const scale = useTransform(scrollY, [0, 100], [1, 0.95]);
+  const y = useTransform(scrollY, [0, 100], [0, 8]);
 
   useEffect(() => {
     if (user?.name) setNewName(user.name);
@@ -140,7 +146,10 @@ export default function AppNavigation() {
       </nav>
 
       {/* MOBILE BOTTOM NAV (Floating Pill) */}
-      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] flex items-center justify-between px-2 py-2 rounded-2xl bg-background/90 backdrop-blur-xl border border-white/10 shadow-2xl">
+      <motion.nav 
+        style={{ scale, y, x: "-50%" }} // Framer motion replaces -translate-x-1/2 with x: "-50%" when both are applied via style/class
+        className="md:hidden fixed bottom-4 left-1/2 z-50 w-[95%] flex items-center justify-between px-2 py-2 rounded-full bg-background/90 backdrop-blur-xl border border-border/50 shadow-2xl"
+      >
         {links.map((link) => {
           const isActive = location.pathname === link.to;
           return (
@@ -192,7 +201,7 @@ export default function AppNavigation() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      </nav>
+      </motion.nav>
 
       {/* EDIT PROFILE DIALOG */}
       <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
