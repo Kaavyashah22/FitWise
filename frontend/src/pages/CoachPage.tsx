@@ -373,14 +373,14 @@ export default function CoachPage() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
               >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-secondary shadow-inner border border-border/50">
-                {msg.role === "user" ? <UserIcon className="w-5 h-5 text-foreground" /> : <Bot className="w-5 h-5 text-primary" />}
+              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 border border-primary/20">
+                {msg.role === "user" ? <UserIcon className="w-4 h-4 text-primary" /> : <Bot className="w-4 h-4 text-primary" />}
               </div>
               
-              <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl px-5 py-3 ${
+              <div className={`max-w-[85%] md:max-w-[75%] px-5 py-3 shadow-sm ${
                 msg.role === "user" 
-                  ? "bg-gradient-to-br from-green-500 to-green-700 shadow-md text-white" 
-                  : "bg-secondary border border-border text-foreground shadow-md"
+                  ? "rounded-2xl rounded-tr-sm bg-gradient-to-br from-primary to-primary/80 text-primary-foreground" 
+                  : "rounded-2xl rounded-tl-sm bg-card border border-border text-card-foreground"
               }`}>
                 {msg.role === "assistant" ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed whitespace-pre-wrap md:text-base">
@@ -402,10 +402,10 @@ export default function CoachPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="flex gap-4"
               >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-secondary shadow-inner border border-border/50">
-                <Bot className="w-5 h-5 text-primary" />
+              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 border border-primary/20">
+                <Bot className="w-4 h-4 text-primary" />
               </div>
-              <div className="bg-secondary border border-border rounded-2xl px-5 py-4 flex items-center gap-2 text-muted-foreground shadow-md">
+              <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-5 py-4 flex items-center gap-2 text-muted-foreground shadow-sm">
                 <span className="flex gap-1 items-center">
                   <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
                   <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
