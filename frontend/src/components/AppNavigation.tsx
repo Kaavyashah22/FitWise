@@ -54,8 +54,8 @@ export default function AppNavigation() {
 
   // Scroll animations for Mobile Nav
   const { scrollY } = useScroll();
-  const scale = useTransform(scrollY, [0, 100], [1, 0.95]);
-  const y = useTransform(scrollY, [0, 100], [0, 8]);
+  const scale = useTransform(scrollY, [0, 100], [1, 0.90]);
+  const y = useTransform(scrollY, [0, 100], [0, 12]);
 
   useEffect(() => {
     if (user?.name) setNewName(user.name);
