@@ -275,30 +275,30 @@ export default function CoachPage() {
             exit={{ width: 0, opacity: 0 }}
             className="border-r border-white/5 bg-background flex flex-col overflow-hidden whitespace-nowrap"
           >
-            <div className="p-4 border-b border-white/5 flex gap-2">
+            <div className="p-4 border-b border-border/50 flex gap-2">
               <button 
                 onClick={handleNewChat}
-                className="flex-1 flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white rounded-xl py-2.5 transition-colors font-medium text-sm"
+                className="flex-1 flex items-center justify-center gap-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-xl py-2.5 transition-colors font-medium text-sm"
               >
                 <Plus className="w-4 h-4" /> New Chat
               </button>
               <button 
                 onClick={() => setIsSidebarOpen(false)}
-                className="p-2.5 hover:bg-white/5 rounded-xl text-zinc-400 transition-colors"
+                className="p-2.5 hover:bg-secondary rounded-xl text-muted-foreground transition-colors"
               >
                 <PanelLeftClose className="w-4 h-4" />
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10">
-              <div className="text-xs font-medium text-zinc-500 mb-3 px-2 mt-2">Chat History</div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-1 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border">
+              <div className="text-xs font-medium text-muted-foreground mb-3 px-2 mt-2">Chat History</div>
               {sessions.map((s) => (
                 <div
                   key={s.id}
                   className={`group w-full text-left px-3 py-2.5 rounded-lg flex items-center justify-between transition-colors cursor-pointer ${
                     currentSessionId === s.id 
-                      ? "bg-primary/20 text-white border border-primary/30" 
-                      : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200 border border-transparent"
+                      ? "bg-primary/20 text-foreground border border-primary/30" 
+                      : "text-muted-foreground hover:bg-secondary hover:text-foreground border border-transparent"
                   }`}
                   onClick={() => {
                     setCurrentSessionId(s.id);
@@ -306,10 +306,10 @@ export default function CoachPage() {
                   }}
                 >
                   <div className="flex items-center gap-3 overflow-hidden flex-1">
-                    <MessageSquare className={`w-4 h-4 flex-shrink-0 ${currentSessionId === s.id ? "text-primary" : "text-zinc-500"}`} />
+                    <MessageSquare className={`w-4 h-4 flex-shrink-0 ${currentSessionId === s.id ? "text-primary" : "text-muted-foreground"}`} />
                     <div className="flex flex-col overflow-hidden">
                       <span className="text-sm font-medium truncate">{s.title}</span>
-                      <span className="text-[10px] text-zinc-500">{format(s.updatedAt, "MMM d, h:mm a")}</span>
+                      <span className="text-[10px] text-muted-foreground">{format(s.updatedAt, "MMM d, h:mm a")}</span>
                     </div>
                   </div>
                   <button 
@@ -317,7 +317,7 @@ export default function CoachPage() {
                       e.stopPropagation();
                       handleDeleteSession(s.id);
                     }}
-                    className="p-1.5 opacity-0 group-hover:opacity-100 hover:bg-white/10 rounded-md text-zinc-400 hover:text-red-400 transition-all flex-shrink-0"
+                    className="p-1.5 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 rounded-md text-muted-foreground hover:text-destructive transition-all flex-shrink-0"
                     title="Delete Chat"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -325,7 +325,7 @@ export default function CoachPage() {
                 </div>
               ))}
               {sessions.length === 0 && (
-                <div className="text-sm text-zinc-500 text-center px-4 py-8">
+                <div className="text-sm text-muted-foreground text-center px-4 py-8">
                   No previous chats
                 </div>
               )}
@@ -337,28 +337,28 @@ export default function CoachPage() {
       {/* Main Chat Area */}
       <div className={`flex-1 flex-col min-w-0 ${isSidebarOpen ? 'hidden md:flex' : 'flex'}`}>
         {/* Header */}
-        <div className="p-4 border-b border-white/5 bg-background/50 backdrop-blur-md flex justify-between items-center">
+        <div className="p-4 border-b border-border/50 bg-background/50 backdrop-blur-md flex justify-between items-center">
           <div className="flex items-center gap-3">
             {!isSidebarOpen && (
               <button 
                 onClick={() => setIsSidebarOpen(true)}
-                className="p-2 hover:bg-white/10 rounded-lg text-zinc-400 transition-colors"
+                className="p-2 hover:bg-secondary rounded-lg text-muted-foreground transition-colors"
               >
                 <PanelLeft className="w-5 h-5" />
               </button>
             )}
             <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2 tracking-wide">
+              <h1 className="text-xl font-bold text-foreground flex items-center gap-2 tracking-wide">
                 <Bot className="w-6 h-6 text-primary" />
                 FitWise Coach
               </h1>
-              <p className="text-sm text-zinc-400 mt-0.5">Personalized AI fitness guidance</p>
+              <p className="text-sm text-muted-foreground mt-0.5">Personalized AI fitness guidance</p>
             </div>
           </div>
         </div>
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border/50 [&::-webkit-scrollbar-track]:bg-transparent">
           {isFetchingHistory ? (
             <div className="flex justify-center items-center h-full">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -373,17 +373,17 @@ export default function CoachPage() {
                 transition={{ duration: 0.3, ease: "easeOut" }}
                 className={`flex gap-4 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
               >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-zinc-800 to-zinc-700 shadow-inner border border-white/10">
-                {msg.role === "user" ? <UserIcon className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-primary" />}
+              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-secondary shadow-inner border border-border/50">
+                {msg.role === "user" ? <UserIcon className="w-5 h-5 text-foreground" /> : <Bot className="w-5 h-5 text-primary" />}
               </div>
               
               <div className={`max-w-[85%] md:max-w-[75%] rounded-2xl px-5 py-3 ${
                 msg.role === "user" 
                   ? "bg-gradient-to-br from-green-500 to-green-700 shadow-md text-white" 
-                  : "bg-zinc-800/80 border border-white/10 text-zinc-200 shadow-md"
+                  : "bg-secondary border border-border text-foreground shadow-md"
               }`}>
                 {msg.role === "assistant" ? (
-                  <div className="prose prose-invert max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 whitespace-pre-wrap text-sm md:text-base">
+                  <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed whitespace-pre-wrap md:text-base">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
                   </div>
                 ) : (
@@ -402,14 +402,14 @@ export default function CoachPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="flex gap-4"
               >
-              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-zinc-800 to-zinc-700 shadow-inner border border-white/10">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-secondary shadow-inner border border-border/50">
                 <Bot className="w-5 h-5 text-primary" />
               </div>
-              <div className="bg-zinc-800/80 border border-white/10 rounded-2xl px-5 py-4 flex items-center gap-2 text-zinc-400 shadow-md">
+              <div className="bg-secondary border border-border rounded-2xl px-5 py-4 flex items-center gap-2 text-muted-foreground shadow-md">
                 <span className="flex gap-1 items-center">
-                  <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                  <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                  <span className="w-1.5 h-1.5 bg-zinc-400 rounded-full animate-bounce"></span>
+                  <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                  <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                  <span className="w-1.5 h-1.5 bg-muted-foreground rounded-full animate-bounce"></span>
                 </span>
                 <AnimatePresence mode="wait">
                   <motion.span 
@@ -418,7 +418,7 @@ export default function CoachPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                     transition={{ duration: 0.3 }}
-                    className="ml-2 text-sm bg-gradient-to-r from-zinc-200 to-zinc-400 bg-clip-text text-transparent font-medium"
+                    className="ml-2 text-sm font-medium text-foreground"
                   >
                     {LOADING_STRINGS[loadingIndex]}
                   </motion.span>
@@ -431,14 +431,14 @@ export default function CoachPage() {
         </div>
 
         {/* Input Form */}
-        <div className="p-4 border-t border-white/5 bg-background/50 backdrop-blur-md">
+        <div className="p-4 border-t border-border/50 bg-background/50 backdrop-blur-md">
           <form onSubmit={handleSend} className="flex gap-2 relative max-w-4xl mx-auto">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask your coach anything..."
-              className="flex-1 bg-background/80 border border-white/10 rounded-xl px-4 py-3.5 text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12 shadow-inner"
+              className="flex-1 bg-secondary/80 border border-border/50 rounded-xl px-4 py-3.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12 shadow-inner"
               disabled={isLoading || !currentSessionId}
             />
             <button

@@ -80,11 +80,11 @@ export default function AppNavigation() {
           <div className="p-1.5 rounded-full bg-primary/20">
             <Dumbbell className="h-5 w-5 text-primary" />
           </div>
-          <span className="font-bold text-lg text-white tracking-tight">FitWise</span>
+          <span className="font-bold text-lg text-foreground tracking-tight">FitWise</span>
         </Link>
 
         {/* Center Links */}
-        <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
+        <div className="flex items-center gap-1 bg-secondary/50 p-1 rounded-full border border-border/50">
           {links.map((link) => {
             const isActive = location.pathname === link.to;
             return (
@@ -95,7 +95,7 @@ export default function AppNavigation() {
                   "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300",
                   isActive
                     ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-zinc-400 hover:text-white hover:bg-white/10"
+                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                 )}
               >
                 {link.label}
@@ -106,31 +106,31 @@ export default function AppNavigation() {
 
         {/* Right Actions */}
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={toggle} className="rounded-full text-zinc-400 hover:text-white hover:bg-white/10">
+          <Button variant="ghost" size="icon" onClick={toggle} className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5">
             {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="rounded-full gap-2 pl-2 pr-4 bg-white/10 text-white hover:bg-white/20 border border-white/10">
+              <Button variant="secondary" className="rounded-full gap-2 pl-2 pr-4 border border-border/50">
                 <div className="bg-primary/20 p-1 rounded-full">
                   <User className="h-4 w-4 text-primary" />
                 </div>
                 <span className="text-sm truncate max-w-[100px]">{user?.name?.split(' ')[0]}</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 glass-card border-white/10">
+            <DropdownMenuContent align="end" className="w-56 glass-card">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/10" />
-              <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="text-zinc-300 focus:bg-white/10 focus:text-white cursor-pointer">
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="cursor-pointer">
                 <Edit2 className="mr-2 h-4 w-4" />
                 <span>Edit Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-zinc-300 focus:bg-white/10 focus:text-white">
+              <DropdownMenuItem>
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile Settings</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={logout} className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer">
+              <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Sign out</span>
               </DropdownMenuItem>
@@ -151,7 +151,7 @@ export default function AppNavigation() {
                 "flex flex-col items-center justify-center w-[4.5rem] h-14 rounded-xl transition-all duration-300",
                 isActive
                   ? "text-primary"
-                  : "text-zinc-500 hover:text-zinc-300"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
               <div className={cn(
@@ -168,25 +168,25 @@ export default function AppNavigation() {
         {/* Settings/Profile Drawer Trigger for Mobile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex flex-col items-center justify-center w-[4.5rem] h-14 rounded-xl text-zinc-500 hover:text-zinc-300 hover:bg-transparent">
+            <Button variant="ghost" className="flex flex-col items-center justify-center w-[4.5rem] h-14 rounded-xl text-muted-foreground hover:text-foreground hover:bg-transparent">
               <div className="p-1.5 rounded-lg mb-1">
                 <User className="h-5 w-5" />
               </div>
               <span className="text-[10px] font-medium">Menu</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" sideOffset={20} className="w-56 glass-card border-white/10 mb-2">
+          <DropdownMenuContent align="end" sideOffset={20} className="w-56 glass-card mb-2">
             <DropdownMenuLabel className="truncate">{user?.name}</DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-white/10" />
-            <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="text-zinc-300 focus:bg-white/10 focus:text-white cursor-pointer">
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="cursor-pointer">
               <Edit2 className="mr-2 h-4 w-4" />
               <span>Edit Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={toggle} className="text-zinc-300 focus:bg-white/10 focus:text-white">
+            <DropdownMenuItem onClick={toggle}>
               {theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
               <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={logout} className="text-red-400 focus:bg-red-500/10 focus:text-red-400 cursor-pointer">
+            <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Sign out</span>
             </DropdownMenuItem>
