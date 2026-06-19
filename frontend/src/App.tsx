@@ -11,17 +11,23 @@ import DashboardPage from "./pages/DashboardPage";
 import WorkoutsPage from "./pages/WorkoutsPage";
 import AnalyticsPage from "./pages/AnalyticsPage";
 import CoachPage from "./pages/CoachPage";
-import AppSidebar from "./components/AppSidebar";
+import AppNavigation from "./components/AppNavigation";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import { cn } from "@/lib/utils";
 
 const queryClient = new QueryClient();
 
 function MainLayout({ children, noPadding = false }: { children: React.ReactNode, noPadding?: boolean }) {
   return (
-    <div className="min-h-[100dvh] flex bg-zinc-950">
-      <AppSidebar />
-      <main className={`flex-1 md:ml-64 mt-14 md:mt-0 ${noPadding ? 'h-[calc(100dvh-3.5rem)] md:h-[100dvh] overflow-hidden' : 'p-6 lg:p-8 overflow-auto'}`}>
+    <div className="min-h-[100dvh] flex flex-col bg-zinc-950 relative">
+      <AppNavigation />
+      <main className={cn(
+        "flex-1 w-full max-w-7xl mx-auto flex flex-col transition-all duration-300",
+        // Desktop: top padding for TopNav. Mobile: bottom padding for BottomTabBar
+        "pt-4 md:pt-28 pb-28 md:pb-6", 
+        noPadding ? "h-[100dvh] overflow-hidden !max-w-none !px-0" : "px-4 md:px-8 overflow-auto"
+      )}>
         {children}
       </main>
     </div>
