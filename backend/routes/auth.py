@@ -10,7 +10,8 @@ from schemas.auth import (
     MeResponse,
     RegisterRequest,
     Token,
-    GoogleLoginRequest
+    GoogleLoginRequest,
+    UpdateProfileRequest
 )
 from security import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
@@ -112,3 +113,10 @@ def google_login(payload: GoogleLoginRequest, db: Session = Depends(get_db)) -> 
 async def read_me(current_user: User = Depends(get_current_user)) -> MeResponse:
     return current_user
 
+
+@router.put("/me", response_model=MeResponse)
+def update_me(payload: UpdateProfileRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)) -> MeResponse:
+    current_user.display_name = payload.display_name
+    db.commit()
+    db.refresh(current_user)
+    return current_user

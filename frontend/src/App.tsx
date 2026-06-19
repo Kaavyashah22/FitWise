@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 
 function MainLayout({ children, noPadding = false }: { children: React.ReactNode, noPadding?: boolean }) {
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-zinc-950 relative">
+    <div className="min-h-[100dvh] flex flex-col bg-background relative">
       <AppNavigation />
       <main className={cn(
         "flex-1 w-full max-w-7xl mx-auto flex flex-col transition-all duration-300",

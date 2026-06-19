@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, getSession, logout as doLogout, setSession } from "@/lib/auth";
-import { clearAccessToken, clearStoredUser, getCurrentUser, getStoredUser, login, register, loginWithGoogleAPI } from "@/lib/apiClient";
+import { clearAccessToken, clearStoredUser, getCurrentUser, getStoredUser, login, register, loginWithGoogleAPI, updateUserNameAPI } from "@/lib/apiClient";
 
 interface AuthCtx {
   user: User | null;
@@ -9,6 +9,7 @@ interface AuthCtx {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string) => Promise<void>;
   loginWithGoogle: (token: string) => Promise<void>;
+  updateName: (name: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -126,6 +127,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateName = async (name: string) => {
+    const updatedApiUser = await updateUserNameAPI(name);
+    const u: User = {
+      id: updatedApiUser.id,
+      email: updatedApiUser.email || "",
+      name: updatedApiUser.display_name,
+      createdAt: updatedApiUser.created_at,
+    };
+    setSession(u);
+    setUser(u);
+  };
+
   const logout = () => {
     doLogout();
     clearAccessToken();
@@ -134,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, isLoggingIn, login: doLogin, signup, logout, loginWithGoogle: doLoginWithGoogle }}>
+    <AuthContext.Provider value={{ user, loading, isLoggingIn, login: doLogin, signup, logout, loginWithGoogle: doLoginWithGoogle, updateName }}>
       {children}
     </AuthContext.Provider>
   );

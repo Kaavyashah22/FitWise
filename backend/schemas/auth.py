@@ -38,3 +38,6 @@ class GoogleLoginRequest(BaseModel):
 class MeResponse(UserBase):
     pass
 
+
+class UpdateProfileRequest(BaseModel):
+    display_name: str

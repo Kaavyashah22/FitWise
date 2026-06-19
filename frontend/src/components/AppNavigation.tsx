@@ -1,4 +1,5 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,9 @@ import {
   LogOut, 
   Sun, 
   Moon,
-  User
+  User,
+  Edit2,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -21,6 +24,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const links = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -30,21 +43,45 @@ const links = [
 ];
 
 export default function AppNavigation() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateName } = useAuth();
   const { theme, toggle } = useTheme();
   const location = useLocation();
+
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [isSavingName, setIsSavingName] = useState(false);
+
+  useEffect(() => {
+    if (user?.name) setNewName(user.name);
+  }, [user]);
+
+  const handleSaveName = async () => {
+    if (!newName.trim() || newName.trim() === user?.name) {
+      setIsEditProfileOpen(false);
+      return;
+    }
+    setIsSavingName(true);
+    try {
+      await updateName(newName.trim());
+      setIsEditProfileOpen(false);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSavingName(false);
+    }
+  };
 
   return (
     <>
       {/* DESKTOP TOP NAV (Floating Pill) */}
-      <nav className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl items-center justify-between px-6 py-3 rounded-full bg-zinc-950/60 backdrop-blur-xl border border-white/10 shadow-2xl">
+      <nav className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl items-center justify-between px-6 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-2xl">
         {/* Logo */}
-        <div className="flex items-center gap-2">
+        <Link to="/" className="flex items-center gap-2 transition-transform hover:scale-105">
           <div className="p-1.5 rounded-full bg-primary/20">
             <Dumbbell className="h-5 w-5 text-primary" />
           </div>
           <span className="font-bold text-lg text-white tracking-tight">FitWise</span>
-        </div>
+        </Link>
 
         {/* Center Links */}
         <div className="flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
@@ -85,6 +122,10 @@ export default function AppNavigation() {
             <DropdownMenuContent align="end" className="w-56 glass-card border-white/10">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-white/10" />
+              <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="text-zinc-300 focus:bg-white/10 focus:text-white cursor-pointer">
+                <Edit2 className="mr-2 h-4 w-4" />
+                <span>Edit Profile</span>
+              </DropdownMenuItem>
               <DropdownMenuItem className="text-zinc-300 focus:bg-white/10 focus:text-white">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile Settings</span>
@@ -99,7 +140,7 @@ export default function AppNavigation() {
       </nav>
 
       {/* MOBILE BOTTOM NAV (Floating Pill) */}
-      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] flex items-center justify-between px-2 py-2 rounded-2xl bg-zinc-950/80 backdrop-blur-xl border border-white/10 shadow-2xl">
+      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[95%] flex items-center justify-between px-2 py-2 rounded-2xl bg-background/90 backdrop-blur-xl border border-white/10 shadow-2xl">
         {links.map((link) => {
           const isActive = location.pathname === link.to;
           return (
@@ -137,6 +178,10 @@ export default function AppNavigation() {
           <DropdownMenuContent align="end" sideOffset={20} className="w-56 glass-card border-white/10 mb-2">
             <DropdownMenuLabel className="truncate">{user?.name}</DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-white/10" />
+            <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="text-zinc-300 focus:bg-white/10 focus:text-white cursor-pointer">
+              <Edit2 className="mr-2 h-4 w-4" />
+              <span>Edit Profile</span>
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={toggle} className="text-zinc-300 focus:bg-white/10 focus:text-white">
               {theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}
               <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
@@ -148,6 +193,37 @@ export default function AppNavigation() {
           </DropdownMenuContent>
         </DropdownMenu>
       </nav>
+
+      {/* EDIT PROFILE DIALOG */}
+      <Dialog open={isEditProfileOpen} onOpenChange={setIsEditProfileOpen}>
+        <DialogContent className="sm:max-w-[425px] glass-card border-white/10 bg-background/95">
+          <DialogHeader>
+            <DialogTitle className="text-foreground">Edit Profile</DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Update your display name. Changes will take effect immediately.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right text-foreground">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="col-span-3 bg-background border-border text-foreground focus-visible:ring-primary"
+                disabled={isSavingName}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleSaveName} disabled={isSavingName || !newName.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              {isSavingName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

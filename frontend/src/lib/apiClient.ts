@@ -117,6 +117,16 @@ export async function getCurrentUser() {
   return user;
 }
 
+export async function updateUserNameAPI(displayName: string) {
+  const user = await request<ApiUser>("/auth/me", {
+    method: "PUT",
+    auth: true,
+    body: JSON.stringify({ display_name: displayName }),
+  });
+  setStoredUser(user);
+  return user;
+}
+
 export type ApiWorkout = {
   id: string;
   user_id: string;

@@ -264,7 +264,7 @@ export default function CoachPage() {
   };
 
   return (
-    <div className="flex h-full w-full bg-zinc-950 overflow-hidden">
+    <div className="flex h-full w-full bg-background overflow-hidden">
       
       {/* Sidebar */}
       <AnimatePresence initial={false}>
@@ -273,7 +273,7 @@ export default function CoachPage() {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: typeof window !== 'undefined' && window.innerWidth < 768 ? "100%" : 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            className="border-r border-white/5 bg-zinc-950 flex flex-col overflow-hidden whitespace-nowrap"
+            className="border-r border-white/5 bg-background flex flex-col overflow-hidden whitespace-nowrap"
           >
             <div className="p-4 border-b border-white/5 flex gap-2">
               <button 
@@ -337,7 +337,7 @@ export default function CoachPage() {
       {/* Main Chat Area */}
       <div className={`flex-1 flex-col min-w-0 ${isSidebarOpen ? 'hidden md:flex' : 'flex'}`}>
         {/* Header */}
-        <div className="p-4 border-b border-white/5 bg-zinc-900/50 flex justify-between items-center">
+        <div className="p-4 border-b border-white/5 bg-background/50 backdrop-blur-md flex justify-between items-center">
           <div className="flex items-center gap-3">
             {!isSidebarOpen && (
               <button 
@@ -431,14 +431,14 @@ export default function CoachPage() {
         </div>
 
         {/* Input Form */}
-        <div className="p-4 border-t border-white/5 bg-zinc-900/50">
+        <div className="p-4 border-t border-white/5 bg-background/50 backdrop-blur-md">
           <form onSubmit={handleSend} className="flex gap-2 relative max-w-4xl mx-auto">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Ask your coach anything..."
-              className="flex-1 bg-zinc-950/80 border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12 shadow-inner"
+              className="flex-1 bg-background/80 border border-white/10 rounded-xl px-4 py-3.5 text-foreground placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all pr-12 shadow-inner"
               disabled={isLoading || !currentSessionId}
             />
             <button
