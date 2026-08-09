@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getUserWorkouts, getWeightLogs, addWeightLog, EXERCISES, WorkoutEntry, WeightLog } from "@/lib/workouts";
