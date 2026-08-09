@@ -447,7 +447,7 @@ export default function CoachPage() {
         {/* Suggested Prompts & Input Form */}
         <div className="p-4 border-t border-border/50 bg-background/50 backdrop-blur-md flex flex-col items-center">
           
-          {messages.length <= 1 && (
+          {!isFetchingHistory && messages.length <= 1 && (
             <div className="flex flex-wrap justify-center gap-2 mb-4 w-full max-w-4xl">
               {["Why did my bench press stall?", "Suggest a new 15-min HIIT routine", "How do I optimize my protein intake?"].map((prompt, i) => (
                 <button
