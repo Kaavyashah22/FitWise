@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { BarChart3, TrendingUp, Weight, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
@@ -115,8 +115,9 @@ const AnalyticsPage = () => {
     }
   };
 
-  const chartColor = "hsl(152, 60%, 45%)";
-  const chartColor2 = "hsl(200, 55%, 55%)";
+  const chartColor = "hsl(152, 76%, 40%)"; // Vibrant primary
+  const chartColor2 = "hsl(200, 100%, 50%)"; // Vibrant cyan
+  const chartColor3 = "hsl(330, 80%, 55%)"; // Vibrant pink
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
@@ -155,13 +156,19 @@ const AnalyticsPage = () => {
 
             {weightChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
-                <LineChart data={weightChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" />
-                  <XAxis dataKey="date" />
-                  <YAxis domain={["dataMin - 2", "dataMax + 2"]} />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="weight" stroke={chartColor} strokeWidth={2} dot={{ fill: chartColor, r: 4 }} />
-                </LineChart>
+                <AreaChart data={weightChartData}>
+                  <defs>
+                    <linearGradient id="colorWeight" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={chartColor3} stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor={chartColor3} stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
+                  <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
+                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px' }} />
+                  <Area type="monotone" dataKey="weight" stroke={chartColor3} strokeWidth={3} fillOpacity={1} fill="url(#colorWeight)" />
+                </AreaChart>
               </ResponsiveContainer>
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -212,11 +219,17 @@ const AnalyticsPage = () => {
 
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={volumeData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="volume" fill={chartColor} radius={[4, 4, 0, 0]} />
+                      <defs>
+                        <linearGradient id="colorVolume" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={chartColor} stopOpacity={1}/>
+                          <stop offset="100%" stopColor={chartColor} stopOpacity={0.4}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" vertical={false} />
+                      <XAxis dataKey="date" tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px' }} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                      <Bar dataKey="volume" fill="url(#colorVolume)" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
 
@@ -266,20 +279,27 @@ const AnalyticsPage = () => {
                   </div>
 
                   <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={strengthData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line
+                    <AreaChart data={strengthData}>
+                      <defs>
+                        <linearGradient id="colorStrength" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor={chartColor2} stopOpacity={0.8}/>
+                          <stop offset="95%" stopColor={chartColor2} stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" vertical={false} />
+                      <XAxis dataKey="date" tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px' }} />
+                      <Area
                         type="monotone"
                         dataKey="oneRM"
                         stroke={chartColor2}
-                        strokeWidth={2}
-                        dot={{ fill: chartColor2, r: 4 }}
+                        strokeWidth={3}
+                        fillOpacity={1}
+                        fill="url(#colorStrength)"
                         name="Estimated 1RM (kg)"
                       />
-                    </LineChart>
+                    </AreaChart>
                   </ResponsiveContainer>
 
                   <p className="text-xs text-muted-foreground mt-2 min-h-[16px]">
