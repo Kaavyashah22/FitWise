@@ -44,7 +44,7 @@ const DashboardPage = () => {
   const [medicalHistory, setMedicalHistory] = useState(existing?.medical_history || "None");
   const [plan, setPlan] = useState<FitnessPlan | null>(null);
   const [loading, setLoading] = useState(false);
-  const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan">(existing?.food_preference || "nonveg");
+  const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan" | "none">(existing?.food_preference || "none");
   const planRef = useRef<HTMLDivElement | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -280,9 +280,10 @@ const DashboardPage = () => {
               </div>
               <div className="space-y-2">
                 <Label>Food Preference</Label>
-                <Select value={foodType} onValueChange={(v) => setFoodType(v as "veg" | "nonveg" | "vegan")}>
+                <Select value={foodType} onValueChange={(v) => setFoodType(v as "veg" | "nonveg" | "vegan" | "none")}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">No Preference</SelectItem>
                     <SelectItem value="veg">Vegetarian</SelectItem>
                     <SelectItem value="nonveg">Non-Vegetarian</SelectItem>
                     <SelectItem value="vegan">Vegan</SelectItem>
