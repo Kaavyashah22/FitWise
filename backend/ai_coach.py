@@ -93,7 +93,7 @@ async def generate_response(req: GenerateRequest):
     # DYNAMIC GUARDRAILS
     if food_pref == "VEGAN":
         diet_guardrail = "MANDATORY DIET CONSTRAINT: The user is strictly VEGAN. You are completely forbidden from suggesting meat, poultry, fish, eggs, dairy, or any animal-derived products. ONLY suggest 100% plant-based foods."
-    elif food_pref == "VEGETARIAN":
+    elif food_pref == "VEGETARIAN" or food_pref == "VEG":
         diet_guardrail = "MANDATORY DIET CONSTRAINT: The user is VEGETARIAN. Do not suggest meat, poultry, or fish. You may suggest dairy and eggs."
     else:
         diet_guardrail = "DIET NOTE: The user is Non-Vegetarian. You may recommend a balanced diet including lean meats, poultry, fish, eggs, dairy, as well as plant-based options."
