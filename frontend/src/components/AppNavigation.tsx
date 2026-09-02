@@ -37,7 +37,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 const links = [
-  { to: "/", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/workouts", label: "Workouts", icon: Dumbbell },
   { to: "/analytics", label: "Analytics", icon: BarChart3 },
   { to: "/coach", label: "Coach", icon: Bot },
@@ -82,7 +82,7 @@ export default function AppNavigation() {
       {/* DESKTOP TOP NAV (Floating Pill) */}
       <nav className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl items-center justify-between px-6 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-2xl">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+        <Link to="/dashboard" className="flex items-center gap-2 transition-transform hover:scale-105">
           <div className="p-1.5 rounded-full bg-primary/20">
             <Dumbbell className="h-5 w-5 text-primary" />
           </div>
@@ -119,10 +119,10 @@ export default function AppNavigation() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" className="rounded-full gap-2 pl-2 pr-4 border border-border/50">
-                <div className="bg-primary/20 p-1 rounded-full">
-                  <User className="h-4 w-4 text-primary" />
+                <div className="h-7 w-7 rounded-full overflow-hidden flex items-center justify-center shadow-inner">
+                  <img src="/assets/kaavya_avatar.jpg" alt="Avatar" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-sm truncate max-w-[100px]">{user?.name?.split(' ')[0]}</span>
+                <span className="text-sm truncate max-w-[100px] font-medium">{user?.name?.split(' ')[0]}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 glass-card">
@@ -178,8 +178,8 @@ export default function AppNavigation() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex flex-col items-center justify-center w-[4.5rem] h-14 rounded-xl text-muted-foreground hover:text-foreground hover:bg-transparent">
-              <div className="p-1.5 rounded-lg mb-1">
-                <User className="h-5 w-5" />
+              <div className="h-7 w-7 rounded-full overflow-hidden mb-1 shadow-sm">
+                <img src="/assets/kaavya_avatar.jpg" alt="Avatar" className="w-full h-full object-cover" />
               </div>
               <span className="text-[10px] font-medium">Menu</span>
             </Button>

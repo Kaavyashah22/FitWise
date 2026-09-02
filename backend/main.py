@@ -7,6 +7,7 @@ from routes.workouts import router as workouts_router
 from routes.predict import router as predict_router
 from routes.coach import router as coach_router
 from routes.profile import router as profile_router
+from routes.metrics import router as metrics_router
 from routes.coach import limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
@@ -56,3 +57,4 @@ app.include_router(workouts_router)
 app.include_router(predict_router)
 app.include_router(profile_router, prefix="/api/v1/profile")
 app.include_router(coach_router, prefix="/api/v1/coach")
+app.include_router(metrics_router, prefix="/api/v1")

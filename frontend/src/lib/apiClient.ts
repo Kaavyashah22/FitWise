@@ -239,3 +239,39 @@ export async function chatWithCoach(message: string) {
   });
 }
 
+export async function clearChatHistory(session_id: string): Promise<any> {
+  return request(`/api/v1/coach/clear`, {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify({ session_id }),
+  });
+}
+
+// =======================
+// METRICS ENDPOINTS
+// =======================
+
+export type DailyMetric = {
+  id?: string;
+  user_id?: string;
+  date: string;
+  sleep_hours?: number;
+  soreness_score?: number;
+  caloric_adherence?: number;
+  volume_load?: number;
+};
+
+export async function logDailyMetric(metric: DailyMetric): Promise<DailyMetric> {
+  return request<DailyMetric>("/api/v1/metrics/daily", {
+    method: "POST",
+    auth: true,
+    body: JSON.stringify(metric),
+  });
+}
+
+export async function getDailyMetrics(limit: number = 14): Promise<DailyMetric[]> {
+  return request<DailyMetric[]>(`/api/v1/metrics/daily?limit=${limit}`, {
+    method: "GET",
+    auth: true,
+  });
+}

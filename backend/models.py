@@ -60,6 +60,7 @@ class User(Base):
     )
     workouts = relationship("Workout", back_populates="user", cascade="all, delete-orphan")
     weight_logs = relationship("WeightLog", back_populates="user", cascade="all, delete-orphan")
+    daily_metrics = relationship("DailyMetric", back_populates="user", cascade="all, delete-orphan")
 
 
 class UserProfile(Base):
@@ -263,4 +264,32 @@ class ChatMessage(Base):
     timestamp = Column(DateTime, server_default=func.now(), nullable=False)
 
     session = relationship("ChatSession")
+
+
+class DailyMetric(Base):
+    __tablename__ = "daily_metrics"
+
+    id = Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    date = Column(Date, nullable=False)
+    sleep_hours = Column(Numeric(4, 2), nullable=True)
+    soreness_score = Column(SmallInteger, nullable=True)
+    caloric_adherence = Column(SmallInteger, nullable=True)
+    volume_load = Column(Numeric(10, 2), nullable=True)
+    created_at = Column(DateTime, server_default=func.now(), nullable=False)
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "date", name="uq_daily_metrics_user_date"),
+    )
+
+    user = relationship("User", back_populates="daily_metrics")
 

@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles } from "lucide-react";
+import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createPlan, getProfileAPI, saveProfileAPI } from "@/lib/apiClient";
+import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics } from "@/lib/apiClient";
 import { Pie } from "react-chartjs-2";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -47,6 +47,13 @@ const DashboardPage = () => {
   const [foodType, setFoodType] = useState<"veg" | "nonveg" | "vegan" | "none">(existing?.food_preference || "none");
   const planRef = useRef<HTMLDivElement | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Daily Metrics Check-in State
+  const [sleepHours, setSleepHours] = useState("");
+  const [sorenessScore, setSorenessScore] = useState("");
+  const [isCheckInDone, setIsCheckInDone] = useState(false);
+  const [submittingMetrics, setSubmittingMetrics] = useState(false);
+  const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -64,6 +71,16 @@ const DashboardPage = () => {
       }).catch(err => {
         console.warn("Could not fetch profile from API, using local form state.", err);
       });
+
+      // Check if user already logged metrics today
+      getDailyMetrics(1).then((metrics) => {
+        if (metrics && metrics.length > 0) {
+          const today = new Date().toISOString().split('T')[0];
+          if (metrics[0].date === today) {
+            setIsCheckInDone(true);
+          }
+        }
+      }).catch(err => console.warn("Failed to fetch daily metrics.", err));
     }
   }, [user]);
 
@@ -206,24 +223,101 @@ const DashboardPage = () => {
     }
   };
 
+  const handleDailyCheckIn = async () => {
+    if (!sleepHours || !sorenessScore) return;
+    setSubmittingMetrics(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await logDailyMetric({
+        date: today,
+        sleep_hours: parseFloat(sleepHours),
+        soreness_score: parseInt(sorenessScore),
+        caloric_adherence: 100 // Defaulting for now
+      });
+      setIsCheckInDone(true);
+      setIsCheckInModalOpen(false);
+      toast({
+        title: "Metrics Logged",
+        description: "Your daily recovery data has been saved!"
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error logging metrics",
+        description: err.message,
+        variant: "destructive"
+      });
+    } finally {
+      setSubmittingMetrics(false);
+    }
+  };
+
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
       {/* Hero Header */}
       <motion.div variants={item} className="mb-2 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div>
-          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-emerald-400 to-cyan-500 bg-clip-text text-transparent pb-1">
-            Health Dashboard
-          </h1>
-          <p className="text-muted-foreground mt-1 text-lg">Your personalized fitness journey starts here.</p>
+        <div className="flex items-center gap-6">
+          <div className="hidden sm:block h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-2xl bg-black border border-white/5">
+            <img 
+              src="/assets/hero_illustration.jpg" 
+              alt="Fitness AI Graphic" 
+              className="w-full h-full object-cover mix-blend-screen opacity-90 scale-110 hover:scale-125 transition-transform duration-700" 
+            />
+          </div>
+          <div>
+            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-emerald-400 to-cyan-500 bg-clip-text text-transparent pb-1">
+              Health Dashboard
+            </h1>
+            <p className="text-muted-foreground mt-1 text-lg">Your personalized fitness journey starts here.</p>
+          </div>
         </div>
         
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogTrigger asChild>
-            <Button variant="outline" className="glass-card hover:bg-primary/10 transition-colors">
-              <Edit3 className="w-4 h-4 mr-2 text-primary" />
-              Edit Profile
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-3">
+          {/* Log Recovery Button & Modal */}
+          {!isCheckInDone && (
+            <Dialog open={isCheckInModalOpen} onOpenChange={setIsCheckInModalOpen}>
+              <DialogTrigger asChild>
+                <Button className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg shadow-cyan-500/30 animate-pulse border border-cyan-400">
+                  <Moon className="w-4 h-4 mr-2" /> Log Recovery
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[400px] glass-card border-t-4 border-t-cyan-500">
+                <DialogHeader>
+                  <DialogTitle className="text-xl flex items-center gap-2 text-cyan-500">
+                    <Moon className="h-5 w-5" /> Recovery Check-in
+                  </DialogTitle>
+                  <DialogDescription>
+                    Log your sleep and soreness for our AI to predict your injury risk.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex flex-col gap-4 mt-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm">Sleep (hours)</Label>
+                    <Input type="number" min="0" max="24" step="0.5" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder="e.g. 7.5" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm">Muscle Soreness (1-10)</Label>
+                    <Input type="number" min="1" max="10" value={sorenessScore} onChange={(e) => setSorenessScore(e.target.value)} placeholder="e.g. 4" />
+                  </div>
+                  <Button 
+                    onClick={handleDailyCheckIn} 
+                    disabled={submittingMetrics || !sleepHours || !sorenessScore}
+                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-md mt-2"
+                  >
+                    {submittingMetrics ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />} Save Metrics
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {/* Edit Profile Button & Modal */}
+          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="glass-card hover:bg-primary/10 transition-colors">
+                <Edit3 className="w-4 h-4 mr-2 text-primary" />
+                Edit Profile
+              </Button>
+            </DialogTrigger>
           <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto glass-card">
             <DialogHeader>
               <DialogTitle className="text-2xl text-primary">Your Profile details</DialogTitle>
@@ -329,24 +423,25 @@ const DashboardPage = () => {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left Column: Quick Stats (Bento Box side panel) */}
         <motion.div variants={item} className="lg:col-span-4 space-y-4">
           <Card className="glass-card hover:-translate-y-1 hover:shadow-2xl hover:border-pink-500/30 transition-all duration-300">
-            <CardContent className="pt-6">
+            <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                   <Activity className="h-4 w-4 text-pink-500" /> BMI
                 </div>
-                {bmiCat && <Badge style={{ backgroundColor: bmiCat.color, color: "#fff" }} className="shadow-sm">{bmiCat.label}</Badge>}
+                {bmiCat && <Badge variant="outline" className={bmiCat.className}>{bmiCat.label}</Badge>}
               </div>
               <p className="text-4xl font-bold mt-2">{bmi ? bmi.toFixed(1) : "—"}</p>
             </CardContent>
           </Card>
           <Card className="glass-card hover:-translate-y-1 hover:shadow-2xl hover:border-orange-500/30 transition-all duration-300">
-            <CardContent className="pt-6">
+            <CardContent className="p-5">
               <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                 <Flame className="h-4 w-4 text-orange-500" /> BMR
               </div>
@@ -354,7 +449,7 @@ const DashboardPage = () => {
             </CardContent>
           </Card>
           <Card className="glass-card hover:-translate-y-1 hover:shadow-2xl hover:border-blue-500/30 transition-all duration-300">
-            <CardContent className="pt-6">
+            <CardContent className="p-5">
               <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                 <Target className="h-4 w-4 text-blue-500" /> TDEE
               </div>
@@ -363,7 +458,7 @@ const DashboardPage = () => {
           </Card>
           <Card className="glass-card hover:-translate-y-1 hover:shadow-2xl hover:border-primary/50 relative overflow-hidden transition-all duration-300">
             <div className="absolute top-0 right-0 p-8 bg-primary/10 rounded-bl-full blur-2xl -z-10" />
-            <CardContent className="pt-6">
+            <CardContent className="p-5">
               <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
                 <Utensils className="h-4 w-4 text-primary" /> Daily Target
               </div>

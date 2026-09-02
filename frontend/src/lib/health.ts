@@ -5,11 +5,11 @@ export function calculateBMI(weight: number, heightCm: number): number {
   return weight / (heightM * heightM);
 }
 
-export function getBMICategory(bmi: number): { label: string; color: string } {
-  if (bmi < 18.5) return { label: "Underweight", color: "hsl(45, 80%, 55%)" };
-  if (bmi < 25) return { label: "Normal", color: "hsl(152, 60%, 45%)" };
-  if (bmi < 30) return { label: "Overweight", color: "hsl(30, 80%, 55%)" };
-  return { label: "Obese", color: "hsl(0, 72%, 51%)" };
+export function getBMICategory(bmi: number): { label: string; className: string } {
+  if (bmi < 18.5) return { label: "Underweight", className: "text-amber-500 bg-amber-500/10 border-amber-500/20" };
+  if (bmi < 25) return { label: "Normal", className: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" };
+  if (bmi < 30) return { label: "Overweight", className: "text-orange-500 bg-orange-500/10 border-orange-500/20" };
+  return { label: "Obese", className: "text-red-500 bg-red-500/10 border-red-500/20" };
 }
 
 export function calculateBMR(profile: UserProfile): number {
