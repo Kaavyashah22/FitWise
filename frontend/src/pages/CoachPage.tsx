@@ -280,6 +280,11 @@ export default function CoachPage() {
         });
       }
 
+      if (assistantReply.includes("Inference Error:")) {
+        // Strip the internal engine error so it doesn't pollute the chat history database
+        throw new Error("The AI Coach encountered a temporary memory limit. Please try asking your question again.");
+      }
+
       await supabase.from("chat_messages").insert([{ 
         user_id: user?.id, 
         role: "assistant", 

@@ -1,4 +1,5 @@
 import os
+import json
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
@@ -44,10 +45,10 @@ if not MOCK_AI:
         llm = Llama(
             model_path=dynamic_model_path,
             n_gpu_layers=-1, 
-            n_ctx=2048,      
+            n_ctx=4096,      
             verbose=False    
         )
-        print(f"🚀 Success: Llama.cpp engine loaded seamlessly on Apple Metal GPU!")
+        print(f"🚀 Success: Llama.cpp engine loaded seamlessly with 4096 token context window!")
     except Exception as e:
         import traceback
         print(f"❌ Failed to load GGUF model.")
@@ -72,7 +73,7 @@ async def generate_response(req: GenerateRequest):
         workout_data = workout_response.data if workout_response.data else []
         
         # Fetch the top 3 most recent chat messages for conversational memory
-        chat_response = supabase.table("chat_messages").select("*").eq("user_id", req.user_id).eq("session_id", req.session_id).order("created_at", desc=True).limit(3).execute()
+        chat_response = supabase.table("chat_messages").select("*").eq("user_id", req.user_id).eq("session_id", req.session_id).order("created_at", desc=True).limit(4).execute()
         # Reverse the list so the AI reads them in chronological order
         chat_history_data = chat_response.data[::-1] if chat_response.data else []
         
@@ -105,6 +106,42 @@ async def generate_response(req: GenerateRequest):
     else:
         medical_guardrail = "MEDICAL NOTE: No specific medical conditions reported."
 
+    # Format recent workouts cleanly into human-readable compact text (saves ~300 tokens)
+    if workout_data:
+        formatted_workouts = []
+        for w in workout_data:
+            d = w.get("date", "")
+            notes = w.get("notes", "")
+            name = w.get("name", "Workout")
+            detail = name
+            if notes:
+                try:
+                    p = json.loads(notes)
+                    detail = f"{p.get('exercise', name)} ({p.get('sets', 0)} sets x {p.get('reps', 0)} reps @ {p.get('weight', 0)}kg)"
+                except Exception:
+                    detail = f"{name} ({notes})"
+            formatted_workouts.append(f"- {d}: {detail}")
+        workout_str = "\n".join(formatted_workouts)
+    else:
+        workout_str = "No recent exercises logged yet."
+
+    # Format chat history cleanly and truncate lengthy past turns to conserve tokens
+    if chat_history_data:
+        formatted_history = []
+        for msg in chat_history_data:
+            role = "User" if msg.get("role") == "user" else "Coach"
+            text = str(msg.get("content", "")).strip()
+            # Omit internal engine error messages if previously saved
+            if "Inference Error:" in text:
+                continue
+            # Trim lengthy past messages so they don't blow out the prompt
+            if len(text) > 300:
+                text = text[:300] + "..."
+            formatted_history.append(f"{role}: {text}")
+        history_str = "\n".join(formatted_history) if formatted_history else "No prior conversation context."
+    else:
+        history_str = "No prior conversation context."
+
     context = f"""
     [FITWISE CRITICAL PROFILE]
     - Age: {age}
@@ -115,10 +152,10 @@ async def generate_response(req: GenerateRequest):
     - DIETARY PREFERENCE: {food_pref}
     
     [RECENT EXERCISE WORKOUT LOGS]
-    {workout_data if workout_data else 'No recent exercises logged yet.'}
+    {workout_str}
 
     [RECENT CONVERSATION HISTORY]
-    {chat_history_data if chat_history_data else 'No prior conversation context.'}
+    {history_str}
     """
 
     FORMATTING_GUIDELINE = """
@@ -155,14 +192,24 @@ async def generate_response(req: GenerateRequest):
     if MOCK_AI:
         return {"response": "[MOCK MODE] Context packed successfully."}
 
+    # Dynamically clamp max_tokens so prompt_tokens + safe_max_tokens never exceeds n_ctx (4096)
+    N_CTX = 4096
+    try:
+        prompt_tokens = len(llm.tokenize(full_prompt.encode("utf-8")))
+    except Exception:
+        prompt_tokens = len(full_prompt) // 3  # safe heuristic fallback
+    
+    # Guarantee max_tokens never overflows the context window
+    safe_max_tokens = max(128, min(768, N_CTX - prompt_tokens - 32))
+
     # Generator function for SSE streaming
     async def token_generator():
         try:
             streamer = llm(
                 full_prompt,
-                max_tokens=1024,
+                max_tokens=safe_max_tokens,
                 temperature=0.4,
-                stop=["<|eot_id|>"],
+                stop=["<|eot_id|>", "<|start_header_id|>", "<|end_header_id|>"],
                 echo=False,
                 stream=True  # Enables token-by-token generation
             )
