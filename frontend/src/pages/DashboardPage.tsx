@@ -12,9 +12,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2 } from "lucide-react";
+import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics } from "@/lib/apiClient";
+import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics, getInjuryRiskAPI, InjuryRiskPrediction } from "@/lib/apiClient";
 import { Pie } from "react-chartjs-2";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -54,6 +54,16 @@ const DashboardPage = () => {
   const [isCheckInDone, setIsCheckInDone] = useState(false);
   const [submittingMetrics, setSubmittingMetrics] = useState(false);
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
+  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(null);
+
+  const fetchInjuryRisk = () => {
+    getInjuryRiskAPI()
+      .then((data) => {
+        if (data && data.success) setInjuryRisk(data);
+      })
+      .catch((err) => console.warn("Could not fetch injury risk.", err));
+  };
+
 
   useEffect(() => {
     if (user) {
@@ -81,6 +91,8 @@ const DashboardPage = () => {
           }
         }
       }).catch(err => console.warn("Failed to fetch daily metrics.", err));
+
+      fetchInjuryRisk();
     }
   }, [user]);
 
@@ -95,8 +107,9 @@ const DashboardPage = () => {
       activityLevel: activity as UserProfile["activityLevel"],
       goal: goal as UserProfile["goal"],
       medical_history: medicalHistory,
+      food_preference: foodType,
     };
-  }, [user, age, height, weight, gender, activity, goal, medicalHistory]);
+  }, [user, age, height, weight, gender, activity, goal, medicalHistory, foodType]);
 
   const bmi = profile ? calculateBMI(profile.weight, profile.height) : null;
   const bmiCat = bmi ? getBMICategory(bmi) : null;
@@ -236,6 +249,7 @@ const DashboardPage = () => {
       });
       setIsCheckInDone(true);
       setIsCheckInModalOpen(false);
+      fetchInjuryRisk();
       toast({
         title: "Metrics Logged",
         description: "Your daily recovery data has been saved!"
@@ -473,9 +487,25 @@ const DashboardPage = () => {
           {/* Profile Summary Snapshot */}
           <Card className="glass-card border-l-4 border-l-primary">
             <CardContent className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <UserCircle className="h-5 w-5 text-primary" />
-                <h3 className="font-semibold text-lg">Profile Snapshot</h3>
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <UserCircle className="h-5 w-5 text-primary" />
+                  <h3 className="font-semibold text-lg">Profile Snapshot</h3>
+                </div>
+                {injuryRisk && (
+                  <div 
+                    className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border backdrop-blur-md transition-all shadow-sm"
+                    style={{ 
+                      backgroundColor: `${injuryRisk.color}15`, 
+                      borderColor: `${injuryRisk.color}40`, 
+                      color: injuryRisk.color 
+                    }}
+                    title={injuryRisk.recommendation}
+                  >
+                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <span>AI Injury Risk: {injuryRisk.risk_score}% ({injuryRisk.risk_level})</span>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
@@ -495,6 +525,21 @@ const DashboardPage = () => {
                   <p className="font-medium">{medicalHistory}</p>
                 </div>
               </div>
+              {injuryRisk && (
+                <div className="mt-4 pt-3 border-t border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <span className="font-medium text-foreground">AI Recovery Insight:</span>
+                    <span>{injuryRisk.recommendation}</span>
+                  </div>
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {injuryRisk.drivers.slice(0, 2).map((d, i) => (
+                      <span key={i} className="px-2 py-0.5 rounded-md bg-secondary text-[11px] text-muted-foreground">
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

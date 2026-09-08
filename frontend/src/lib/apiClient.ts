@@ -275,3 +275,28 @@ export async function getDailyMetrics(limit: number = 14): Promise<DailyMetric[]
     auth: true,
   });
 }
+
+export type InjuryRiskPrediction = {
+  success: boolean;
+  has_logged_today: boolean;
+  risk_score: number;
+  risk_level: "Low" | "Moderate" | "High";
+  color: string;
+  recommendation: string;
+  drivers: string[];
+  metrics_evaluated: {
+    sleep_hours: number;
+    soreness_score: number;
+    caloric_adherence: number;
+    estimated_workload: number;
+    recovery_index: number;
+  };
+};
+
+export async function getInjuryRiskAPI(): Promise<InjuryRiskPrediction> {
+  return request<InjuryRiskPrediction>("/api/v1/metrics/injury-risk", {
+    method: "GET",
+    auth: true,
+  });
+}
+

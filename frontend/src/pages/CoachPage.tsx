@@ -4,7 +4,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Send, User as UserIcon, Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeft, Plus, Trash2, Sparkles, Zap } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/hooks/useAuth";
-import { getProfile } from "@/lib/auth";
+import { getProfile, UserProfile } from "@/lib/auth";
+import { getProfileAPI } from "@/lib/apiClient";
 import { supabase } from "@/lib/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
@@ -31,7 +32,7 @@ const LOADING_STRINGS = [
 
 export default function CoachPage() {
   const { user } = useAuth();
-  const profile = user ? getProfile(user.id) : null;
+  const [profile, setProfile] = useState<UserProfile | null>(user ? getProfile(user.id) : null);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,8 @@ export default function CoachPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 768 : true);
   const [loadingIndex, setLoadingIndex] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const isUserScrolledUp = useRef(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -53,8 +56,38 @@ export default function CoachPage() {
     return () => clearInterval(interval);
   }, [isLoading]);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => {
+    if (user) {
+      getProfileAPI().then((apiProfile) => {
+        if (apiProfile && Object.keys(apiProfile).length > 0) {
+          setProfile((prev) => ({
+            userId: user.id,
+            age: apiProfile.age || prev?.age || 25,
+            height: apiProfile.height_cm || prev?.height || 175,
+            weight: apiProfile.weight_kg || prev?.weight || 70,
+            gender: (apiProfile.gender as any) || prev?.gender || "male",
+            activityLevel: (apiProfile.activity_level as any) || prev?.activityLevel || "moderate",
+            goal: (apiProfile.goal as any) || prev?.goal || "cut",
+            medical_history: apiProfile.medical_history || prev?.medical_history,
+            food_preference: (apiProfile.food_preference as any) || prev?.food_preference,
+          }));
+        }
+      }).catch(err => console.warn("Failed to refresh profile in coach", err));
+    }
+  }, [user]);
+
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    // If the user scrolls more than 150px up from the bottom, pause auto-scrolling
+    const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+    isUserScrolledUp.current = distanceFromBottom > 150;
+  };
+
+  const scrollToBottom = (force = false) => {
+    if (force || !isUserScrolledUp.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   // Fetch all sessions for the sidebar
@@ -198,9 +231,11 @@ export default function CoachPage() {
       content: input.trim(),
     };
 
+    isUserScrolledUp.current = false;
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setIsLoading(true);
+    setTimeout(() => scrollToBottom(true), 50);
 
     const isFirstMessage = messages.length <= 1;
 
@@ -368,11 +403,25 @@ export default function CoachPage() {
             {profile.goal && <span className="bg-background/60 px-2.5 py-1 rounded-md border border-primary/20 text-muted-foreground capitalize">Goal: {profile.goal.replace("_", " ")}</span>}
             {profile.activityLevel && <span className="bg-background/60 px-2.5 py-1 rounded-md border border-primary/20 text-muted-foreground capitalize">Activity: {profile.activityLevel.replace("_", " ")}</span>}
             {profile.weight && <span className="bg-background/60 px-2.5 py-1 rounded-md border border-primary/20 text-muted-foreground capitalize">Weight: {profile.weight} kg</span>}
+            {profile.food_preference && profile.food_preference !== "none" && (
+              <span className="bg-background/60 px-2.5 py-1 rounded-md border border-emerald-500/30 text-emerald-400 font-medium capitalize">
+                Diet: {profile.food_preference}
+              </span>
+            )}
+            {profile.medical_history && profile.medical_history.toLowerCase() !== "none" && profile.medical_history.toLowerCase() !== "none specified" && (
+              <span className="bg-background/60 px-2.5 py-1 rounded-md border border-red-500/30 text-red-400 capitalize">
+                Medical: {profile.medical_history}
+              </span>
+            )}
           </div>
         )}
 
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border/50 [&::-webkit-scrollbar-track]:bg-transparent">
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:bg-border/50 [&::-webkit-scrollbar-track]:bg-transparent"
+        >
           {isFetchingHistory ? (
             <div className="flex justify-center items-center h-full">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />

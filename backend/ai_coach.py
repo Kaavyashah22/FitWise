@@ -90,18 +90,20 @@ async def generate_response(req: GenerateRequest):
     weight = user_data.get("weight_kg", "Unknown")
     gender = user_data.get("gender", "Unknown")
 
-    # DYNAMIC GUARDRAILS
+    # DYNAMIC GUARDRAILS (PROFILE OVERRIDES HISTORY)
     if food_pref == "VEGAN":
-        diet_guardrail = "MANDATORY DIET CONSTRAINT: The user is strictly VEGAN. You are completely forbidden from suggesting meat, poultry, fish, eggs, dairy, or any animal-derived products. ONLY suggest 100% plant-based foods."
-    elif food_pref == "VEGETARIAN" or food_pref == "VEG":
-        diet_guardrail = "MANDATORY DIET CONSTRAINT: The user is VEGETARIAN. Do not suggest meat, poultry, or fish. You may suggest dairy and eggs."
+        diet_guardrail = "CRITICAL MANDATORY DIET CONSTRAINT: The user's active profile is strictly VEGAN. You are completely FORBIDDEN from suggesting meat, poultry, fish, eggs, dairy, or any animal-derived products. ONLY suggest 100% plant-based foods. THIS ACTIVE PROFILE CONSTRAINT OVERRIDES ANY PREVIOUS CHAT HISTORY."
+    elif food_pref in ["VEGETARIAN", "VEG"]:
+        diet_guardrail = "CRITICAL MANDATORY DIET CONSTRAINT: The user's active profile is strictly VEGETARIAN. You are completely FORBIDDEN from suggesting meat, poultry, or fish. Suggest vegetarian proteins like lentils, paneer, tofu, Greek yogurt, or whey. THIS ACTIVE PROFILE CONSTRAINT OVERRIDES ANY PREVIOUS CHAT HISTORY (even if previous messages in this session discussed non-veg foods)."
+    elif food_pref in ["NONVEG", "NON-VEG", "NON_VEG"]:
+        diet_guardrail = "DIET NOTE: The user is Non-Vegetarian. You may recommend lean meats, poultry, fish, eggs, and dairy, alongside plant-based foods."
     else:
-        diet_guardrail = "DIET NOTE: The user is Non-Vegetarian. You may recommend a balanced diet including lean meats, poultry, fish, eggs, dairy, as well as plant-based options."
+        diet_guardrail = "DIET NOTE: No specific dietary restriction indicated. Recommend healthy, wholesome foods."
 
     if med_history.upper() not in ["NONE", "NONE SPECIFIED", "N/A", ""]:
-        medical_guardrail = f"MANDATORY MEDICAL CONSTRAINT: The user is actively managing {med_history}. You MUST explicitly acknowledge this in your response (e.g., 'Since you are managing {med_history}...') and ensure all exercise and dietary advice is strictly safe and tailored for this condition."
+        medical_guardrail = f"CRITICAL MEDICAL CONSTRAINT: The user is actively managing {med_history}. You MUST prioritize safety for this condition across all exercise and dietary suggestions. THIS OVERRIDES ANY GENERAL GUIDELINES."
     else:
-        medical_guardrail = "MEDICAL NOTE: No specific medical conditions reported. Standard fitness guidelines apply."
+        medical_guardrail = "MEDICAL NOTE: No specific medical conditions reported."
 
     context = f"""
     [FITWISE CRITICAL PROFILE]
@@ -120,13 +122,13 @@ async def generate_response(req: GenerateRequest):
     """
 
     FORMATTING_GUIDELINE = """
-    MANDATORY FORMATTING RULES:
-    1. You MUST format all responses using rich Markdown.
-    2. Use ## Headings for main sections (e.g., ## Your Next Workout, ## Nutrition Focus).
-    3. Use **bold** text to highlight key exercises, metrics, or important concepts.
-    4. Use bullet points (-) or numbered lists for all workout plans and step-by-step advice.
-    5. Be energetic! Generously sprinkle highly relevant emojis (e.g., 💪, 🏃‍♂️, 🥗, 🔥, 🏋️‍♀️) throughout your response to make it visually engaging and highly motivating.
-    6. Keep paragraphs very short and punchy for easy reading.
+    CONVERSATIONAL & AUTHENTICITY RULES:
+    1. Act like an authentic, world-class personal coach: warm, direct, conversational, and grounded in exercise science.
+    2. Match response length to the user's question:
+       - If the user asks a quick or simple question, give a direct, punchy answer in 2 to 4 sentences. Do NOT generate huge multi-section essays for quick questions.
+       - Only generate structured plans with ## Headings and bullet points when the user explicitly requests a workout routine, diet split, or comprehensive guide.
+    3. Talk like a real trainer in the gym, not a robot or textbook.
+    4. Use **bolding** naturally for key numbers (sets, reps, grams) to make advice easy to scan.
     """
 
     full_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>

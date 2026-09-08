@@ -74,3 +74,39 @@ def get_daily_metrics(
     ).order_by(DailyMetric.date.desc()).limit(limit).all()
     
     return metrics
+
+
+@router.get("/injury-risk")
+def get_injury_risk(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Predict real-time injury risk for the current user using GBDT Machine Learning.
+    Evaluates today's recovery metrics alongside trailing volume load.
+    """
+    from services.injury_predictor import predict_user_injury_risk
+
+    # Fetch latest daily metric logged by the user
+    latest_metric = db.query(DailyMetric).filter(
+        DailyMetric.user_id == current_user.id
+    ).order_by(DailyMetric.date.desc()).first()
+
+    sleep = float(latest_metric.sleep_hours) if latest_metric and latest_metric.sleep_hours is not None else 7.0
+    soreness = int(latest_metric.soreness_score) if latest_metric and latest_metric.soreness_score is not None else 3
+    nutrition = int(latest_metric.caloric_adherence) if latest_metric and latest_metric.caloric_adherence is not None else 85
+    volume = float(latest_metric.volume_load) if latest_metric and latest_metric.volume_load is not None else 2500.0
+
+    prediction = predict_user_injury_risk(
+        sleep_hours=sleep,
+        soreness_score=soreness,
+        caloric_adherence=nutrition,
+        volume_load=volume
+    )
+
+    return {
+        "success": True,
+        "has_logged_today": latest_metric is not None and latest_metric.date == date.today(),
+        **prediction
+    }
+
