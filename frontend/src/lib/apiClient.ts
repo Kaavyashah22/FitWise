@@ -262,6 +262,7 @@ export type DailyMetric = {
 };
 
 export async function logDailyMetric(metric: DailyMetric): Promise<DailyMetric> {
+  invalidateInjuryRiskCache();
   return request<DailyMetric>("/api/v1/metrics/daily", {
     method: "POST",
     auth: true,
@@ -295,10 +296,26 @@ export type InjuryRiskPrediction = {
   };
 };
 
-export async function getInjuryRiskAPI(): Promise<InjuryRiskPrediction> {
-  return request<InjuryRiskPrediction>("/api/v1/metrics/injury-risk", {
+let injuryRiskCache: InjuryRiskPrediction | null = null;
+let lastInjuryRiskFetch = 0;
+
+export function invalidateInjuryRiskCache() {
+  injuryRiskCache = null;
+  lastInjuryRiskFetch = 0;
+}
+
+export async function getInjuryRiskAPI(forceRefresh = false): Promise<InjuryRiskPrediction> {
+  if (!forceRefresh && injuryRiskCache && Date.now() - lastInjuryRiskFetch < 45000) {
+    return injuryRiskCache;
+  }
+  const res = await request<InjuryRiskPrediction>("/api/v1/metrics/injury-risk", {
     method: "GET",
     auth: true,
   });
+  if (res && res.success) {
+    injuryRiskCache = res;
+    lastInjuryRiskFetch = Date.now();
+  }
+  return res;
 }
 

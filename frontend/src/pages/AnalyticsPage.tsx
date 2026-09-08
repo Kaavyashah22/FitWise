@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserWorkouts, getWeightLogs, addWeightLog, EXERCISES, WorkoutEntry, WeightLog } from "@/lib/workouts";
+import { getUserWorkouts, getWeightLogs, addWeightLog, EXERCISES, WorkoutEntry, WeightLog, getCachedWorkouts, getCachedWeightLogs } from "@/lib/workouts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,8 +25,8 @@ const AnalyticsPage = () => {
   const [selectedExercise, setSelectedExercise] = useState("Bench Press");
   const [weightDate, setWeightDate] = useState(new Date().toISOString().split("T")[0]);
   const [weightVal, setWeightVal] = useState("");
-  const [weightLogs, setWeightLogs] = useState<WeightLog[]>([]);
-  const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
+  const [weightLogs, setWeightLogs] = useState<WeightLog[]>(() => getCachedWeightLogs());
+  const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
   const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(null);
 
   useEffect(() => {

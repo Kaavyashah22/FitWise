@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { addWorkout, getUserWorkouts, deleteWorkout, WorkoutEntry } from "@/lib/workouts";
+import { addWorkout, getUserWorkouts, deleteWorkout, WorkoutEntry, getCachedWorkouts } from "@/lib/workouts";
 import { EXERCISE_LIBRARY } from "@/lib/exercise-library";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ const WorkoutsPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
+  const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [expandedDates, setExpandedDates] = useState<Record<string, boolean>>({});
 
