@@ -103,17 +103,14 @@ def predict_user_injury_risk(
     if risk_score >= 65:
         risk_level = "High"
         color = "#ef4444"  # Red
-        recommendation = "High risk of acute strain. Schedule a de-load or active recovery session today."
     elif risk_score >= 40:
         risk_level = "Moderate"
         color = "#f59e0b"  # Amber
-        recommendation = "Moderate strain accumulated. Prioritize stretching and keep RPE under 7."
     else:
         risk_level = "Low"
         color = "#10b981"  # Emerald
-        recommendation = "Optimal recovery profile. You are cleared for high-intensity training."
-        
-    # Explainable AI (XAI): Identify top 2 primary risk drivers for this user
+
+    # Explainable AI (XAI): Identify primary risk drivers for this user
     drivers = []
     if sleep < 6.5:
         drivers.append(f"Sleep Debt ({sleep:.1f} hrs vs recommended 7.5+ hrs)")
@@ -122,10 +119,37 @@ def predict_user_injury_risk(
     if workload_load > 12.0:
         drivers.append("High Acute Workload Spike")
     if nutrition < 70:
-        drivers.append("Caloric / Macronutrient Deficit")
-        
+        drivers.append(f"Caloric / Macronutrient Deficit ({nutrition}% adherence)")
+
     if not drivers:
         drivers.append("Balanced Workload & Healthy Sleep Profile")
+
+    # Dynamic Clinical AI Recommendation tailored to the athlete's specific risk drivers
+    if risk_level == "High":
+        if sleep < 6.0 and soreness >= 6:
+            recommendation = f"Severe strain alert: {sleep:.1f}h sleep debt combined with level {soreness}/10 soreness. Enforce an active recovery or rest day to prevent tissue tear."
+        elif sleep < 6.0:
+            recommendation = f"Neuromuscular fatigue detected due to acute sleep debt ({sleep:.1f} hrs). Prioritize 8+ hours of sleep and avoid maximal eccentric loading."
+        elif soreness >= 6:
+            recommendation = f"High muscular strain ({soreness}/10 soreness). Replace high-intensity lifts with mobility work, foam rolling, and adequate protein intake."
+        elif workload_load > 12.0:
+            recommendation = f"Acute training workload spike detected. Reduce overall volume load by 30-40% today to avert overtraining syndrome."
+        else:
+            recommendation = "Elevated biomechanical strain. Schedule a de-load or low-intensity mobility session today."
+    elif risk_level == "Moderate":
+        if sleep < 6.5:
+            recommendation = f"Mild recovery deficit from {sleep:.1f}h sleep. Cap lifting intensity at RPE 7 and extend your warmup by 10 minutes."
+        elif soreness >= 5:
+            recommendation = f"Noticeable residual soreness ({soreness}/10). Focus on antagonist muscle groups and avoid training to concentric failure."
+        elif nutrition < 70:
+            recommendation = f"Nutrition adherence at {nutrition}%. Supplement pre-workout carbohydrates to offset glycogen depletion during training."
+        else:
+            recommendation = "Moderate strain accumulated. Maintain moderate volume and prioritize post-workout hydration."
+    else:
+        if sleep >= 7.5 and soreness <= 2:
+            recommendation = f"Peak physiological readiness! Sleep ({sleep:.1f}h) and recovery are optimal. You are cleared for high-intensity work or PR attempts."
+        else:
+            recommendation = "Optimal recovery profile. Biomarkers indicate balanced workload and readiness for progressive overload."
 
     return {
         "risk_score": risk_score,

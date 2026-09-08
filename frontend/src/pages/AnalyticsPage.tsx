@@ -178,13 +178,13 @@ const AnalyticsPage = () => {
                 <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
                     <Dumbbell className="w-3.5 h-3.5 text-primary" />
-                    <span>7-Day Mechanical Volume</span>
+                    <span>7-Day Volume Load (Tonnage)</span>
                   </div>
                   <div className="text-xl font-extrabold text-foreground">
-                    {(injuryRisk.seven_day_total_volume || 2500).toLocaleString()} <span className="text-xs font-medium text-muted-foreground">kg lifted</span>
+                    {(injuryRisk.seven_day_total_volume ?? 0).toLocaleString()} <span className="text-xs font-medium text-muted-foreground">kg lifted</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {injuryRisk.logged_workouts_evaluated ? `${injuryRisk.logged_workouts_evaluated} workouts logged this week` : "Standard baseline volume"}
+                    {injuryRisk.logged_workouts_evaluated ? `${injuryRisk.logged_workouts_evaluated} workouts evaluated this week` : "No workouts logged this week"}
                   </p>
                 </div>
 

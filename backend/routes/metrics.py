@@ -96,6 +96,7 @@ def get_injury_risk(
     nutrition = int(latest_metric.caloric_adherence) if latest_metric and latest_metric.caloric_adherence is not None else 85
 
     # 1. Calculate actual volume load from real workouts logged by the user over the trailing 7 days
+    import json
     seven_days_ago = date.today() - timedelta(days=7)
     recent_workouts = db.query(Workout).filter(
         Workout.user_id == current_user.id,
@@ -105,10 +106,24 @@ def get_injury_risk(
     total_actual_volume = 0.0
     workout_count = len(recent_workouts)
     for w in recent_workouts:
-        for we in w.workout_exercises:
-            for s in we.sets:
-                if s.reps and s.weight_kg:
-                    total_actual_volume += float(s.reps) * float(s.weight_kg)
+        volume_found = False
+        if w.workout_exercises:
+            for we in w.workout_exercises:
+                for s in we.sets:
+                    if s.reps and s.weight_kg:
+                        total_actual_volume += float(s.reps) * float(s.weight_kg)
+                        volume_found = True
+
+        # FitWise stores sets, reps, and weight in w.notes as serialized JSON
+        if not volume_found and w.notes:
+            try:
+                data = json.loads(w.notes)
+                sets = float(data.get("sets", 0))
+                reps = float(data.get("reps", 0))
+                weight = float(data.get("weight", 0))
+                total_actual_volume += sets * reps * weight
+            except Exception:
+                pass
 
     # If user logged real workouts, use average session volume; else fallback to metric or baseline
     if workout_count > 0 and total_actual_volume > 0:
