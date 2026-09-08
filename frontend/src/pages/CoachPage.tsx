@@ -195,11 +195,19 @@ export default function CoachPage() {
           .order("created_at", { ascending: true });
 
         if (data && data.length > 0) {
-          setMessages(data.map((m: any) => ({
-            id: m.id || Date.now().toString(),
-            role: m.role,
-            content: m.content
-          })));
+          const cleanMessages = data
+            .filter((m: any) => !m.content?.includes("Inference Error:") && !m.content?.includes("exceed context window"))
+            .map((m: any) => ({
+              id: m.id || Date.now().toString(),
+              role: m.role,
+              content: m.content
+            }));
+
+          setMessages(cleanMessages.length > 0 ? cleanMessages : [{
+            id: "welcome",
+            role: "assistant",
+            content: "Hello! I'm FitWise Coach. How can I help you with your fitness journey today?",
+          }]);
         } else {
           setMessages([{
             id: "welcome",

@@ -1,8 +1,10 @@
 import {
   createWorkout,
+  apiDeleteWorkout,
   getWorkouts as apiGetWorkouts,
   createWeightLog,
   getWeightLogs as apiGetWeightLogs,
+  invalidateInjuryRiskCache,
 } from "@/lib/apiClient";
 
 export interface WorkoutEntry {
@@ -110,6 +112,7 @@ export async function addWorkout(entry: Omit<WorkoutEntry, "id">): Promise<Worko
     localStorage.setItem(WORKOUTS_CACHE_KEY, JSON.stringify(updated));
   } catch {}
 
+  invalidateInjuryRiskCache();
   return newEntry;
 }
 
@@ -150,7 +153,17 @@ export async function getUserWorkouts(_userId?: string, forceRefresh = false): P
 }
 
 export async function deleteWorkout(id: string) {
-  console.warn("Delete not implemented yet:", id);
+  try {
+    await apiDeleteWorkout(id);
+  } catch (e) {
+    console.error("Failed to delete workout on server:", e);
+  }
+  const current = getCachedWorkouts().filter((w) => w.id !== id);
+  workoutsCache = current;
+  try {
+    localStorage.setItem(WORKOUTS_CACHE_KEY, JSON.stringify(current));
+  } catch {}
+  invalidateInjuryRiskCache();
 }
 
 export interface WeightLog {

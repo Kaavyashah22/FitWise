@@ -85,6 +85,33 @@ def list_workouts(
     ]
 
 
+@router.delete("/workouts/{workout_id}")
+def delete_workout(
+    workout_id: str,
+    db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    try:
+        workout = db.query(Workout).filter(
+            Workout.id == workout_id,
+            Workout.user_id == current_user.id
+        ).first()
+
+        if not workout:
+            raise HTTPException(status_code=404, detail="Workout not found")
+
+        db.delete(workout)
+        db.commit()
+        return {"success": True, "message": "Workout deleted successfully"}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        db.rollback()
+        import logging
+        logging.error(f"Error deleting workout: {exc}")
+        raise HTTPException(status_code=500, detail="An internal server error occurred while deleting workout.")
+
+
 @router.post("/weight-logs")
 def create_weight_log(
     payload: WeightLogCreate,

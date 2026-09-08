@@ -151,6 +151,13 @@ export async function createWorkout(workout: { date: string; name?: string | nul
   });
 }
 
+export async function apiDeleteWorkout(id: string) {
+  return request<{ success: boolean; message: string }>(`/workouts/${id}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}
+
 export type ApiWeightLog = {
   id: string;
   user_id: string;

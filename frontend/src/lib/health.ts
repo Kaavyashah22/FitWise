@@ -1,11 +1,13 @@
 import type { UserProfile } from "./auth";
 
 export function calculateBMI(weight: number, heightCm: number): number {
+  if (!weight || !heightCm || heightCm <= 0 || weight <= 0) return 0;
   const heightM = heightCm / 100;
   return weight / (heightM * heightM);
 }
 
 export function getBMICategory(bmi: number): { label: string; className: string } {
+  if (!bmi || bmi <= 0) return { label: "Unknown", className: "text-muted-foreground bg-secondary border-border" };
   if (bmi < 18.5) return { label: "Underweight", className: "text-amber-500 bg-amber-500/10 border-amber-500/20" };
   if (bmi < 25) return { label: "Normal", className: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20" };
   if (bmi < 30) return { label: "Overweight", className: "text-orange-500 bg-orange-500/10 border-orange-500/20" };
@@ -13,6 +15,7 @@ export function getBMICategory(bmi: number): { label: string; className: string 
 }
 
 export function calculateBMR(profile: UserProfile): number {
+  if (!profile.weight || !profile.height || !profile.age) return 1800;
   // Mifflin-St Jeor
   if (profile.gender === "male") {
     return 10 * profile.weight + 6.25 * profile.height - 5 * profile.age + 5;
