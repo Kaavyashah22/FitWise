@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { BarChart3, TrendingUp, Weight, Plus } from "lucide-react";
+import { BarChart3, TrendingUp, Weight, Plus, ShieldAlert, Activity, Moon, Dumbbell, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getInjuryRiskAPI, InjuryRiskPrediction } from "@/lib/apiClient";
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -26,6 +27,7 @@ const AnalyticsPage = () => {
   const [weightVal, setWeightVal] = useState("");
   const [weightLogs, setWeightLogs] = useState<WeightLog[]>([]);
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>([]);
+  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -42,6 +44,12 @@ const AnalyticsPage = () => {
         });
       }
     })();
+
+    getInjuryRiskAPI()
+      .then((res) => {
+        if (res && res.success) setInjuryRisk(res);
+      })
+      .catch((err) => console.warn("Failed to fetch injury risk in analytics", err));
   }, [user, toast]);
 
   // Volume by date
@@ -127,6 +135,106 @@ const AnalyticsPage = () => {
         <h1 className="text-2xl font-bold tracking-tight">Progress Analytics</h1>
         <p className="text-muted-foreground">Visualize your fitness journey</p>
       </motion.div>
+
+      {/* AI Predictive Biomechanics & Injury Radar Hero Card */}
+      {injuryRisk && (
+        <motion.div variants={item}>
+          <Card className="glass-card border-t-4 border-t-primary overflow-hidden shadow-xl">
+            <CardHeader className="pb-3 border-b border-border/40">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-primary/10 border border-primary/20 text-primary">
+                    <ShieldAlert className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-lg font-bold flex items-center gap-2">
+                      Predictive Biomechanics & Injury Radar
+                      <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/20">
+                        XGBoost Engine
+                      </span>
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Real-time strain forecasting based on acute volume spikes, sleep deficit, and recovery capacity
+                    </p>
+                  </div>
+                </div>
+
+                <div 
+                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold border backdrop-blur-md self-start sm:self-auto shadow-sm"
+                  style={{
+                    backgroundColor: `${injuryRisk.color}15`,
+                    borderColor: `${injuryRisk.color}40`,
+                    color: injuryRisk.color,
+                  }}
+                >
+                  <Activity className="w-4 h-4 animate-pulse" />
+                  <span>AI Injury Risk: {injuryRisk.risk_score}% ({injuryRisk.risk_level})</span>
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="pt-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                    <Dumbbell className="w-3.5 h-3.5 text-primary" />
+                    <span>7-Day Mechanical Volume</span>
+                  </div>
+                  <div className="text-xl font-extrabold text-foreground">
+                    {(injuryRisk.seven_day_total_volume || 2500).toLocaleString()} <span className="text-xs font-medium text-muted-foreground">kg lifted</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {injuryRisk.logged_workouts_evaluated ? `${injuryRisk.logged_workouts_evaluated} workouts logged this week` : "Standard baseline volume"}
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                    <Moon className="w-3.5 h-3.5 text-cyan-400" />
+                    <span>Sleep & Recovery Index</span>
+                  </div>
+                  <div className="text-xl font-extrabold text-foreground">
+                    {injuryRisk.metrics_evaluated.sleep_hours} <span className="text-xs font-medium text-muted-foreground">hrs/night</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Readiness Score: {injuryRisk.metrics_evaluated.recovery_index}/100
+                  </p>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
+                    <Activity className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Muscle Soreness Strain</span>
+                  </div>
+                  <div className="text-xl font-extrabold text-foreground">
+                    {injuryRisk.metrics_evaluated.soreness_score} <span className="text-xs font-medium text-muted-foreground">/ 10 Soreness</span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    Dietary Adherence: {injuryRisk.metrics_evaluated.caloric_adherence}%
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                <div className="flex items-start sm:items-center gap-2 text-muted-foreground">
+                  <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5 sm:mt-0" />
+                  <div>
+                    <span className="font-semibold text-foreground mr-1.5">Clinical AI Recommendation:</span>
+                    <span>{injuryRisk.recommendation}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+                  {injuryRisk.drivers.map((driver, idx) => (
+                    <span key={idx} className="px-2.5 py-1 rounded-md bg-secondary text-[11px] font-medium text-muted-foreground border border-border/50">
+                      {driver}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Weight Tracking */}
       <motion.div variants={item}>

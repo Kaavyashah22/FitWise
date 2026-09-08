@@ -279,6 +279,8 @@ export async function getDailyMetrics(limit: number = 14): Promise<DailyMetric[]
 export type InjuryRiskPrediction = {
   success: boolean;
   has_logged_today: boolean;
+  logged_workouts_evaluated?: number;
+  seven_day_total_volume?: number;
   risk_score: number;
   risk_level: "Low" | "Moderate" | "High";
   color: string;

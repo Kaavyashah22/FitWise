@@ -119,8 +119,8 @@ export default function AppNavigation() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" className="rounded-full gap-2 pl-2 pr-4 border border-border/50">
-                <div className="h-7 w-7 rounded-full overflow-hidden flex items-center justify-center shadow-inner">
-                  <img src="/assets/kaavya_avatar.jpg" alt="Avatar" className="w-full h-full object-cover" />
+                <div className="h-7 w-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <User className="w-3.5 h-3.5 text-primary" />
                 </div>
                 <span className="text-sm truncate max-w-[100px] font-medium">{user?.name?.split(' ')[0]}</span>
               </Button>
@@ -178,8 +178,8 @@ export default function AppNavigation() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex flex-col items-center justify-center w-[4.5rem] h-14 rounded-xl text-muted-foreground hover:text-foreground hover:bg-transparent">
-              <div className="h-7 w-7 rounded-full overflow-hidden mb-1 shadow-sm">
-                <img src="/assets/kaavya_avatar.jpg" alt="Avatar" className="w-full h-full object-cover" />
+              <div className="h-7 w-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-1">
+                <User className="w-3.5 h-3.5 text-primary" />
               </div>
               <span className="text-[10px] font-medium">Menu</span>
             </Button>

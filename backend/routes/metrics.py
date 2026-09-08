@@ -1,5 +1,4 @@
-import uuid
-from datetime import date
+from datetime import date, timedelta
 from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -7,7 +6,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from db import get_db
-from models import User, DailyMetric
+from models import User, DailyMetric, Workout, WorkoutExercise, Set
 from routes.auth import get_current_user
 from schemas.metrics import DailyMetricCreate, DailyMetricResponse
 
@@ -95,7 +94,29 @@ def get_injury_risk(
     sleep = float(latest_metric.sleep_hours) if latest_metric and latest_metric.sleep_hours is not None else 7.0
     soreness = int(latest_metric.soreness_score) if latest_metric and latest_metric.soreness_score is not None else 3
     nutrition = int(latest_metric.caloric_adherence) if latest_metric and latest_metric.caloric_adherence is not None else 85
-    volume = float(latest_metric.volume_load) if latest_metric and latest_metric.volume_load is not None else 2500.0
+
+    # 1. Calculate actual volume load from real workouts logged by the user over the trailing 7 days
+    seven_days_ago = date.today() - timedelta(days=7)
+    recent_workouts = db.query(Workout).filter(
+        Workout.user_id == current_user.id,
+        Workout.date >= seven_days_ago
+    ).all()
+
+    total_actual_volume = 0.0
+    workout_count = len(recent_workouts)
+    for w in recent_workouts:
+        for we in w.workout_exercises:
+            for s in we.sets:
+                if s.reps and s.weight_kg:
+                    total_actual_volume += float(s.reps) * float(s.weight_kg)
+
+    # If user logged real workouts, use average session volume; else fallback to metric or baseline
+    if workout_count > 0 and total_actual_volume > 0:
+        volume = total_actual_volume / workout_count
+    elif latest_metric and latest_metric.volume_load is not None:
+        volume = float(latest_metric.volume_load)
+    else:
+        volume = 2500.0
 
     prediction = predict_user_injury_risk(
         sleep_hours=sleep,
@@ -107,6 +128,8 @@ def get_injury_risk(
     return {
         "success": True,
         "has_logged_today": latest_metric is not None and latest_metric.date == date.today(),
+        "logged_workouts_evaluated": workout_count,
+        "seven_day_total_volume": round(total_actual_volume, 1),
         **prediction
     }
 

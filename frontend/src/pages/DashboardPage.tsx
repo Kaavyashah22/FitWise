@@ -269,20 +269,11 @@ const DashboardPage = () => {
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-8">
       {/* Hero Header */}
       <motion.div variants={item} className="mb-2 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-        <div className="flex items-center gap-6">
-          <div className="hidden sm:block h-24 w-24 shrink-0 rounded-2xl overflow-hidden shadow-2xl bg-black border border-white/5">
-            <img 
-              src="/assets/hero_illustration.jpg" 
-              alt="Fitness AI Graphic" 
-              className="w-full h-full object-cover mix-blend-screen opacity-90 scale-110 hover:scale-125 transition-transform duration-700" 
-            />
-          </div>
-          <div>
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-emerald-400 to-cyan-500 bg-clip-text text-transparent pb-1">
-              Health Dashboard
-            </h1>
-            <p className="text-muted-foreground mt-1 text-lg">Your personalized fitness journey starts here.</p>
-          </div>
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-primary via-emerald-400 to-cyan-500 bg-clip-text text-transparent pb-1">
+            Health Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1 text-lg">Your personalized fitness journey starts here.</p>
         </div>
         
         <div className="flex items-center gap-3">
