@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { motion } from "framer-motion";
 import { BarChart3, TrendingUp, Weight, Plus, ShieldAlert, Activity, Moon, Dumbbell, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { getInjuryRiskAPI, InjuryRiskPrediction } from "@/lib/apiClient";
+import { getInjuryRiskAPI, getCachedInjuryRisk, InjuryRiskPrediction } from "@/lib/apiClient";
 import {
   LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
@@ -27,7 +27,7 @@ const AnalyticsPage = () => {
   const [weightVal, setWeightVal] = useState("");
   const [weightLogs, setWeightLogs] = useState<WeightLog[]>(() => getCachedWeightLogs());
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
-  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(null);
+  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(() => getCachedInjuryRisk());
 
   useEffect(() => {
     if (!user) return;

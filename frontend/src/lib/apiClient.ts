@@ -296,17 +296,34 @@ export type InjuryRiskPrediction = {
   };
 };
 
+const INJURY_CACHE_KEY = "fitwise_injury_risk_cache";
 let injuryRiskCache: InjuryRiskPrediction | null = null;
 let lastInjuryRiskFetch = 0;
+
+export function getCachedInjuryRisk(): InjuryRiskPrediction | null {
+  if (injuryRiskCache) return injuryRiskCache;
+  try {
+    const raw = localStorage.getItem(INJURY_CACHE_KEY);
+    if (raw) {
+      injuryRiskCache = JSON.parse(raw);
+      return injuryRiskCache;
+    }
+  } catch {}
+  return null;
+}
 
 export function invalidateInjuryRiskCache() {
   injuryRiskCache = null;
   lastInjuryRiskFetch = 0;
+  try {
+    localStorage.removeItem(INJURY_CACHE_KEY);
+  } catch {}
 }
 
 export async function getInjuryRiskAPI(forceRefresh = false): Promise<InjuryRiskPrediction> {
-  if (!forceRefresh && injuryRiskCache && Date.now() - lastInjuryRiskFetch < 45000) {
-    return injuryRiskCache;
+  const cached = getCachedInjuryRisk();
+  if (!forceRefresh && cached && Date.now() - lastInjuryRiskFetch < 45000) {
+    return cached;
   }
   const res = await request<InjuryRiskPrediction>("/api/v1/metrics/injury-risk", {
     method: "GET",
@@ -315,6 +332,9 @@ export async function getInjuryRiskAPI(forceRefresh = false): Promise<InjuryRisk
   if (res && res.success) {
     injuryRiskCache = res;
     lastInjuryRiskFetch = Date.now();
+    try {
+      localStorage.setItem(INJURY_CACHE_KEY, JSON.stringify(res));
+    } catch {}
   }
   return res;
 }

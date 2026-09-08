@@ -93,16 +93,16 @@ async def generate_response(req: GenerateRequest):
 
     # DYNAMIC GUARDRAILS (PROFILE OVERRIDES HISTORY)
     if food_pref == "VEGAN":
-        diet_guardrail = "CRITICAL MANDATORY DIET CONSTRAINT: The user's active profile is strictly VEGAN. You are completely FORBIDDEN from suggesting meat, poultry, fish, eggs, dairy, or any animal-derived products. ONLY suggest 100% plant-based foods. THIS ACTIVE PROFILE CONSTRAINT OVERRIDES ANY PREVIOUS CHAT HISTORY."
+        diet_guardrail = "DIET SCOPE (Applies ONLY when user explicitly asks about food, meals, recipes, or nutrition): The user is strictly VEGAN. ONLY suggest 100% plant-based foods. NEVER mention dietary preferences or say 'vegan-friendly' when discussing gym exercises, stretching, or workouts!"
     elif food_pref in ["VEGETARIAN", "VEG"]:
-        diet_guardrail = "CRITICAL MANDATORY DIET CONSTRAINT: The user's active profile is strictly VEGETARIAN. You are completely FORBIDDEN from suggesting meat, poultry, or fish. Suggest vegetarian proteins like lentils, paneer, tofu, Greek yogurt, or whey. THIS ACTIVE PROFILE CONSTRAINT OVERRIDES ANY PREVIOUS CHAT HISTORY (even if previous messages in this session discussed non-veg foods)."
+        diet_guardrail = "DIET SCOPE (Applies ONLY when user explicitly asks about food, meals, recipes, or nutrition): The user is strictly VEGETARIAN. Suggest vegetarian proteins like lentils, paneer, tofu, or whey. NEVER mention dietary preferences or use phrases like 'vegetarian-friendly options' when discussing gym exercises, core training, or lifting!"
     elif food_pref in ["NONVEG", "NON-VEG", "NON_VEG"]:
-        diet_guardrail = "DIET NOTE: The user is Non-Vegetarian. You may recommend lean meats, poultry, fish, eggs, and dairy, alongside plant-based foods."
+        diet_guardrail = "DIET SCOPE: The user is Non-Vegetarian. You may recommend lean meats, poultry, fish, eggs, and dairy alongside plant foods when discussing nutrition."
     else:
-        diet_guardrail = "DIET NOTE: No specific dietary restriction indicated. Recommend healthy, wholesome foods."
+        diet_guardrail = "DIET SCOPE: Recommend healthy, wholesome foods."
 
     if med_history.upper() not in ["NONE", "NONE SPECIFIED", "N/A", ""]:
-        medical_guardrail = f"CRITICAL MEDICAL CONSTRAINT: The user is actively managing {med_history}. You MUST prioritize safety for this condition across all exercise and dietary suggestions. THIS OVERRIDES ANY GENERAL GUIDELINES."
+        medical_guardrail = f"CRITICAL MEDICAL CONSTRAINT: The user is actively managing {med_history}. Prioritize safety for this condition across all recommendations."
     else:
         medical_guardrail = "MEDICAL NOTE: No specific medical conditions reported."
 
@@ -135,59 +135,44 @@ async def generate_response(req: GenerateRequest):
             if "Inference Error:" in text:
                 continue
             # Trim lengthy past messages so they don't blow out the prompt
-            if len(text) > 300:
-                text = text[:300] + "..."
+            if len(text) > 250:
+                text = text[:250] + "..."
             formatted_history.append(f"{role}: {text}")
         history_str = "\n".join(formatted_history) if formatted_history else "No prior conversation context."
     else:
         history_str = "No prior conversation context."
 
     context = f"""
-    [FITWISE CRITICAL PROFILE]
-    - Age: {age}
-    - Gender: {gender}
-    - Current Weight: {weight} kg
-    - Medical History: {med_history}
-    - Primary Fitness Goal: {goal}
-    - DIETARY PREFERENCE: {food_pref}
+    [FITWISE ATHLETE PROFILE]
+    - Age: {age} | Gender: {gender} | Weight: {weight} kg | Goal: {goal}
+    - Dietary Preference: {food_pref} | Medical History: {med_history}
     
-    [RECENT EXERCISE WORKOUT LOGS]
+    [RECENT WORKOUT LOGS]
     {workout_str}
 
     [RECENT CONVERSATION HISTORY]
     {history_str}
     """
 
-    FORMATTING_GUIDELINE = """
-    CONVERSATIONAL & AUTHENTICITY RULES:
-    1. Act like an authentic, world-class personal coach: warm, direct, conversational, and grounded in exercise science.
-    2. Match response length to the user's question:
-       - If the user asks a quick or simple question, give a direct, punchy answer in 2 to 4 sentences. Do NOT generate huge multi-section essays for quick questions.
-       - Only generate structured plans with ## Headings and bullet points when the user explicitly requests a workout routine, diet split, or comprehensive guide.
-    3. Talk like a real trainer in the gym, not a robot or textbook.
-    4. Use **bolding** naturally for key numbers (sets, reps, grams) to make advice easy to scan.
-    """
-
     full_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-    You are FitWise Coach, an elite personal fitness and nutrition intelligence assistant. 
-    You must thoroughly evaluate the user's specific metrics, medical realities, and training logs before responding.
-    
-    {diet_guardrail}
-    
-    {medical_guardrail}
-    
-    MANDATORY TRAINING LINKAGE:
-    Acknowledge or reference their recent exercise history (e.g., if they did leg days, squats, or volume work) when framing recovery, targets, or nutritional guidance. Keep advice highly personalized.
-    
-    {FORMATTING_GUIDELINE}
-    
-    CONVERSATIONAL MEMORY: Review the [RECENT CONVERSATION HISTORY] to maintain context. If the user refers to previous advice or recipes, use this history to provide a coherent continuation.
-    
-    User Context Data File:
-    {context}
-    <|eot_id|><|start_header_id|>user<|end_header_id|>
-    {req.prompt}
-    <|eot_id|><|start_header_id|>assistant<|end_header_id|>"""
+You are FitWise Coach, an elite, authentic personal fitness and sports nutrition AI.
+
+STRICT CONVERSATIONAL & AUTHENTICITY RULES:
+1. ANSWER DIRECTLY: Answer the user's question immediately in the first sentence.
+2. BREVITY FIRST: If the user asks a quick, specific, or binary question (e.g., "with pull we do abs or planks"), answer in 2 to 4 punchy, conversational sentences.
+3. NO ESSAYS OR BULLETS FOR QUICK QUESTIONS: Do NOT write numbered lists, 5-paragraph routines, or generic disclaimers unless the user explicitly typed "make a plan", "create a routine", or asks for a full workout schedule.
+4. NO UNPROMPTED LOG SUMMARIES: Do NOT recite the user's past workout logs unless they asked you to review their session.
+5. NEVER COMBINE DIET WITH EXERCISE: NEVER use words like "vegetarian-friendly" or "vegan" when recommending exercises or core workouts!
+
+{diet_guardrail}
+
+{medical_guardrail}
+
+Athlete Context:
+{context}
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+{req.prompt}
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>"""
 
     if MOCK_AI:
         return {"response": "[MOCK MODE] Context packed successfully."}
@@ -201,6 +186,12 @@ async def generate_response(req: GenerateRequest):
     
     # Guarantee max_tokens never overflows the context window
     safe_max_tokens = max(128, min(768, N_CTX - prompt_tokens - 32))
+
+    # For quick conversational questions, strictly cap max_tokens so the model cannot generate long essays
+    plan_keywords = ["routine", "workout plan", "diet plan", "meal plan", "schedule", "split", "program", "recipe", "table"]
+    is_plan_request = any(kw in req.prompt.lower() for kw in plan_keywords)
+    if not is_plan_request and len(req.prompt.strip()) < 160:
+        safe_max_tokens = min(200, safe_max_tokens)
 
     # Generator function for SSE streaming
     async def token_generator():

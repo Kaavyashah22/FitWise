@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
 import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics, getInjuryRiskAPI, InjuryRiskPrediction } from "@/lib/apiClient";
+import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics, getInjuryRiskAPI, getCachedInjuryRisk, InjuryRiskPrediction } from "@/lib/apiClient";
 import { Pie } from "react-chartjs-2";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -54,7 +54,7 @@ const DashboardPage = () => {
   const [isCheckInDone, setIsCheckInDone] = useState(false);
   const [submittingMetrics, setSubmittingMetrics] = useState(false);
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
-  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(null);
+  const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(() => getCachedInjuryRisk());
 
   const fetchInjuryRisk = () => {
     getInjuryRiskAPI()

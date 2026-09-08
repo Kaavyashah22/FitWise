@@ -47,6 +47,15 @@ app.add_middleware(
 # ------------------
 
 
+@app.on_event("startup")
+def preload_ml_models():
+    try:
+        from services.injury_predictor import load_injury_model
+        load_injury_model()
+        print("✅ Pre-warmed ML injury prediction model in memory on startup.")
+    except Exception as e:
+        print(f"⚠️ Failed to preload injury model: {e}")
+
 @app.get("/")
 def read_root():
     return {"status": "FitWise API running"}
