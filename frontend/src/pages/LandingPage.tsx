@@ -500,24 +500,10 @@ export default function LandingPage() {
         })}
       </aside>
 
-      {/* Logged-in Quick Return Ribbon */}
-      {user && (
-        <div className="w-full bg-primary/10 border-b border-primary/20 py-2 px-4 text-center text-xs font-medium text-foreground flex items-center justify-center gap-2 sm:gap-4 sticky top-0 z-[60] backdrop-blur-md">
-          <span>You are logged in as <strong>{user.name || "Athlete"}</strong></span>
-          <Button 
-            size="sm" 
-            onClick={() => navigate("/dashboard")} 
-            className="h-6 px-3 rounded-full text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
-          >
-            Go to Dashboard &rarr;
-          </Button>
-        </div>
-      )}
-
       {/* =========================================================================
           1. FLOATING NAVIGATION BAR
           ========================================================================= */}
-      <header className={cn("sticky z-50 w-[94%] max-w-6xl mx-auto", user ? "top-3" : "top-4")}>
+      <header className="sticky top-4 z-50 w-[94%] max-w-6xl mx-auto">
         <nav className="flex items-center justify-between px-5 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">

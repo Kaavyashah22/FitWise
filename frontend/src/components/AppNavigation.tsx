@@ -15,7 +15,7 @@ import {
   User,
   Edit2,
   Loader2,
-  Globe
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -83,7 +83,7 @@ export default function AppNavigation() {
       {/* DESKTOP TOP NAV (Floating Pill) */}
       <nav className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl items-center justify-between px-6 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-2xl">
         {/* Logo */}
-        <Link to="/dashboard" className="flex items-center gap-2 transition-transform hover:scale-105">
+        <Link to="/landing" className="flex items-center gap-2 transition-transform hover:scale-105" title="FitWise Home">
           <div className="p-1.5 rounded-full bg-primary/20">
             <Dumbbell className="h-5 w-5 text-primary" />
           </div>
@@ -135,8 +135,8 @@ export default function AppNavigation() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link to="/landing" className="flex items-center w-full">
-                  <Globe className="mr-2 h-4 w-4 text-primary" />
-                  <span>View Landing Page</span>
+                  <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                  <span>Product Overview</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
@@ -196,8 +196,8 @@ export default function AppNavigation() {
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link to="/landing" className="flex items-center w-full">
-                <Globe className="mr-2 h-4 w-4 text-primary" />
-                <span>View Landing Page</span>
+                <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                <span>Product Overview</span>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={toggle}>
