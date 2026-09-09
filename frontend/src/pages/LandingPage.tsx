@@ -1353,7 +1353,7 @@ export default function LandingPage() {
           className="text-center mb-8 sm:mb-10"
         >
           <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 mb-3 px-3 py-1 text-xs">
-            <GraduationCap className="h-3.5 w-3.5 mr-1.5 inline" /> Academic Defense & Empirical Research
+            <ShieldCheck className="h-3.5 w-3.5 mr-1.5 inline" /> Empirical Model Telemetry
           </Badge>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">
             Model Performance & Cross-Validation
@@ -1365,10 +1365,10 @@ export default function LandingPage() {
           {/* Interactive Mode Pills */}
           <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
             {[
-              { id: "learning", label: "Learning Curve (Overfitting Check)", icon: TrendingUp },
+              { id: "learning", label: "Learning Curve (Convergence)", icon: TrendingUp },
               { id: "cv", label: "5-Fold Cross-Validation", icon: Award },
               { id: "features", label: "Feature Importance (XAI)", icon: BarChart3 },
-              { id: "ablation", label: "Single vs Multi-Sport Study", icon: Scale },
+              { id: "ablation", label: "Cohort Scaling Analysis", icon: Scale },
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeMlTab === tab.id;
@@ -1545,48 +1545,52 @@ export default function LandingPage() {
                   </table>
                 </div>
                 <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300">
-                  <strong>Academic Takeaway:</strong> Human muscle tissue breakdown and recovery fatigue are universal physiological invariants. Combining multi-sport telemetry expanded dataset density, eliminating sample starvation and lifting accuracy from 67.57% to 92.50%.
+                  <strong>Methodological Finding:</strong> Human muscle tissue breakdown and recovery fatigue are universal physiological invariants. Combining multi-sport telemetry expanded dataset density, eliminating sample starvation and lifting accuracy from 67.57% to 92.50%.
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Column: Faculty / Judge Defense Card (4 cols) */}
+          {/* Right Column: Key Validation Findings & Highlights (4 cols) */}
           <div className="lg:col-span-4 rounded-3xl border border-border/80 bg-card/60 backdrop-blur-xl p-6 sm:p-7 shadow-xl space-y-5">
             <div className="flex items-center gap-2 text-primary font-semibold text-sm">
-              <GraduationCap className="h-4 w-4" />
-              <span>Project Defense Guide for Faculty</span>
+              <Cpu className="h-4 w-4" />
+              <span>Key Model Findings</span>
             </div>
 
             <div className="space-y-3.5 text-xs sm:text-sm text-muted-foreground leading-relaxed">
               <div className="p-3 rounded-2xl bg-background/60 border border-border/60 space-y-1">
-                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block">Question 1</span>
-                <p className="text-foreground font-medium text-xs">"Why did 1 sport get 65% while all 6 got 92%?"</p>
+                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block text-emerald-400">Sample Scaling Dynamics</span>
                 <p className="text-[12px] text-muted-foreground mt-1">
-                  <strong>Sample Starvation.</strong> At N=146, the minority "High-Risk" tier had &lt;15 observations in that single sport. The model lacked data density to learn robust split boundaries.
+                  Expanding from isolated single-sport cohorts (N=146) to multi-sport telemetry (N=1,000) resolved minority class sample starvation, enabling gradient boosted trees to map non-linear strain thresholds.
                 </p>
               </div>
 
               <div className="p-3 rounded-2xl bg-background/60 border border-border/60 space-y-1">
-                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block">Question 2</span>
-                <p className="text-foreground font-medium text-xs">"Is the 92% accuracy overfitting?"</p>
+                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block text-emerald-400">Generalization Convergence</span>
                 <p className="text-[12px] text-muted-foreground mt-1">
-                  <strong>Disproven by the Learning Curve.</strong> As training size scaled from N=120 to N=800, out-of-fold CV accuracy climbed from 82.2% to 92.4%, while the generalization gap narrowed from 17.8% down to 7.6%.
+                  The empirical learning curve shows cross-validation accuracy steadily advancing from 82.2% to 92.4%, while the generalization gap contracted from 17.8% to 7.6%, confirming robust model convergence.
                 </p>
               </div>
 
               <div className="p-3 rounded-2xl bg-background/60 border border-border/60 space-y-1">
-                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block">Question 3</span>
-                <p className="text-foreground font-medium text-xs">"Is the test split lucky?"</p>
+                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block text-emerald-400">Cross-Fold Stability</span>
                 <p className="text-[12px] text-muted-foreground mt-1">
-                  <strong>Zero test leakage.</strong> 5-Fold Stratified Cross-Validation yielded a rock-solid <strong>92.40% (±2.29%)</strong> across all 5 distinct validation subsets.
+                  5-Fold Stratified Cross-Validation confirms a uniform <strong>92.40% (±2.29%)</strong> accuracy across distinct out-of-fold validation splits with zero data leakage.
+                </p>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-background/60 border border-border/60 space-y-1">
+                <span className="font-semibold text-foreground text-xs uppercase tracking-wider block text-emerald-400">Clinical Safety Standard</span>
+                <p className="text-[12px] text-muted-foreground mt-1">
+                  Maintained <strong>100% precision</strong> on the acute high-risk tier to protect athletes by preventing false-negative injury predictions.
                 </p>
               </div>
             </div>
 
             <div className="pt-2 border-t border-border/40 flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Validated in Scikit-Learn</span>
-              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10">100% Precision (High Risk)</Badge>
+              <span className="text-muted-foreground">Scikit-Learn & XGBoost</span>
+              <Badge variant="outline" className="border-emerald-500/30 text-emerald-400 bg-emerald-500/10">1,000 Athletes Evaluated</Badge>
             </div>
           </div>
         </motion.div>
