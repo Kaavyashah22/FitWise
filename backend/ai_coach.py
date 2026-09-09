@@ -69,7 +69,7 @@ async def generate_response(req: GenerateRequest):
         user_response = supabase.table("user_profiles").select("*").eq("user_id", req.user_id).execute()
         user_data = user_response.data[0] if user_response.data else {}
         
-        workout_response = supabase.table("workouts").select("*").eq("user_id", req.user_id).order("created_at", desc=True).limit(3).execute()
+        workout_response = supabase.table("workouts").select("*").eq("user_id", req.user_id).order("created_at", desc=True).limit(15).execute()
         workout_data = workout_response.data if workout_response.data else []
         
         # Fetch the top 3 most recent chat messages for conversational memory
@@ -106,22 +106,53 @@ async def generate_response(req: GenerateRequest):
     else:
         medical_guardrail = "MEDICAL NOTE: No specific medical conditions reported."
 
-    # Format recent workouts cleanly into human-readable compact text (saves ~300 tokens)
+    # Movement category mapping for intelligent RAG context
+    PUSH_MUSCLES = {"CHEST", "SHOULDERS", "SHOULDER", "TRICEPS", "TRICEP"}
+    PULL_MUSCLES = {"BACK", "BICEPS", "BICEP", "LATS", "TRAPS", "FOREARMS"}
+    LEG_MUSCLES = {"LEGS", "QUADRICEPS", "QUADS", "HAMSTRINGS", "GLUTES", "CALVES"}
+
+    # Format recent workouts grouped by session date with muscle group enrichment
     if workout_data:
-        formatted_workouts = []
+        sessions_by_date = {}
         for w in workout_data:
-            d = w.get("date", "")
+            d = str(w.get("date", "Recent"))
             notes = w.get("notes", "")
             name = w.get("name", "Workout")
+            muscle = ""
             detail = name
             if notes:
                 try:
                     p = json.loads(notes)
-                    detail = f"{p.get('exercise', name)} ({p.get('sets', 0)} sets x {p.get('reps', 0)} reps @ {p.get('weight', 0)}kg)"
+                    muscle = str(p.get("muscleGroup", "")).strip()
+                    detail = f"{p.get('exercise', name)} ({p.get('sets', 0)}x{p.get('reps', 0)} @ {p.get('weight', 0)}kg)"
                 except Exception:
                     detail = f"{name} ({notes})"
-            formatted_workouts.append(f"- {d}: {detail}")
-        workout_str = "\n".join(formatted_workouts)
+            
+            if d not in sessions_by_date:
+                sessions_by_date[d] = {"muscles": set(), "exercises": []}
+            if muscle:
+                sessions_by_date[d]["muscles"].add(muscle)
+            sessions_by_date[d]["exercises"].append(detail)
+
+        formatted_sessions = []
+        for d, s in list(sessions_by_date.items())[:3]:
+            muscles_list = list(s["muscles"])
+            muscles_str = ", ".join(muscles_list) if muscles_list else "General"
+            
+            m_upper = {m.upper() for m in muscles_list}
+            if m_upper & PUSH_MUSCLES and not (m_upper & PULL_MUSCLES):
+                cat = "Push Focus"
+            elif m_upper & PULL_MUSCLES and not (m_upper & PUSH_MUSCLES):
+                cat = "Pull Focus"
+            elif m_upper & LEG_MUSCLES:
+                cat = "Legs Focus"
+            else:
+                cat = "Mixed Focus"
+                
+            ex_summary = ", ".join(s["exercises"][:4])
+            formatted_sessions.append(f"- {d} [{cat} - {muscles_str}]: {ex_summary}")
+
+        workout_str = "\n".join(formatted_sessions)
     else:
         workout_str = "No recent exercises logged yet."
 
@@ -147,7 +178,7 @@ async def generate_response(req: GenerateRequest):
     - Age: {age} | Gender: {gender} | Weight: {weight} kg | Goal: {goal}
     - Dietary Preference: {food_pref} | Medical History: {med_history}
     
-    [RECENT WORKOUT LOGS]
+    [RECENT TRAINING SESSIONS]
     {workout_str}
 
     [RECENT CONVERSATION HISTORY]
@@ -155,14 +186,25 @@ async def generate_response(req: GenerateRequest):
     """
 
     full_prompt = f"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-You are FitWise Coach, an elite, authentic personal fitness and sports nutrition AI.
+You are FitWise Coach, an elite, knowledgeable personal fitness coach and sports nutritionist.
 
-STRICT CONVERSATIONAL & AUTHENTICITY RULES:
-1. ANSWER DIRECTLY: Answer the user's question immediately in the first sentence.
-2. BREVITY FIRST: If the user asks a quick, specific, or binary question (e.g., "with pull we do abs or planks"), answer in 2 to 4 punchy, conversational sentences.
-3. NO ESSAYS OR BULLETS FOR QUICK QUESTIONS: Do NOT write numbered lists, 5-paragraph routines, or generic disclaimers unless the user explicitly typed "make a plan", "create a routine", or asks for a full workout schedule.
-4. NO UNPROMPTED LOG SUMMARIES: Do NOT recite the user's past workout logs unless they asked you to review their session.
-5. NEVER COMBINE DIET WITH EXERCISE: NEVER use words like "vegetarian-friendly" or "vegan" when recommending exercises or core workouts!
+CORE SPORTS SCIENCE & EXERCISE PROGRAMMING:
+1. PERIODIZATION & MUSCLE RECOVERY:
+- Human skeletal muscle requires approximately 48 hours to recover and adapt after resistance training.
+- Check the athlete's [RECENT TRAINING SESSIONS]. Never recommend training the same fatigued muscle groups on consecutive training days.
+- When the athlete asks what to train next, tomorrow, or asks for recommendations following a recent workout, suggest complementary, fresh muscle groups following standard split progression:
+  * If they recently completed a Push workout (Chest, Shoulders, Triceps), guide them toward Pull (Back, Biceps) or Legs next.
+  * If they recently completed a Pull workout (Back, Biceps), guide them toward Legs or Push next.
+  * If they recently completed Legs, guide them toward Push or Pull next.
+
+2. CONVERSATIONAL & NATURAL COACHING:
+- Answer the user's question directly and conversationally in your first sentence.
+- If the user asks a quick, specific, or binary question (e.g., "with pull we do abs or planks"), answer in 2 to 4 punchy sentences.
+- Avoid multi-paragraph routines, numbered lists, or essay dumps unless the user explicitly requests a routine, split, or workout schedule.
+- Seamlessly factor in their recent workout history without robotically reading out database logs unless asked.
+
+3. DOMAIN SEPARATION:
+- Restrict dietary preferences strictly to food and nutrition questions. Never apply dietary terms (like 'vegetarian-friendly') when recommending gym exercises or workouts.
 
 {diet_guardrail}
 
