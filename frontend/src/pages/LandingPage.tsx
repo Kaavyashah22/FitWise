@@ -311,7 +311,6 @@ const SECTIONS = [
   { id: "ml-benchmarks", label: "ML Telemetry" },
   { id: "architecture", label: "Architecture" },
   { id: "comparison", label: "Benchmark" },
-  { id: "faq", label: "FAQ" },
   { id: "cta", label: "Get Started" },
 ];
 
@@ -592,7 +591,7 @@ export default function LandingPage() {
               <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-emerald-500/40 text-emerald-500 bg-emerald-500/10">92.5%</Badge>
             </button>
             <button onClick={() => scrollToSection("architecture")} className="hover:text-foreground transition-colors">Architecture</button>
-            <button onClick={() => scrollToSection("faq")} className="hover:text-foreground transition-colors">FAQ</button>
+            <button onClick={() => scrollToSection("comparison")} className="hover:text-foreground transition-colors">Benchmark</button>
           </div>
 
           {/* Right Action Buttons */}
@@ -1763,80 +1762,6 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          FAQ ACCORDION (APPLE-STYLE SCROLL REVEAL)
-          ========================================================================= */}
-      <section id="faq" className="min-h-screen flex flex-col justify-center pt-24 pb-20 px-4 max-w-4xl mx-auto relative border-t border-border/40 scroll-mt-0">
-        <motion.div
-          variants={appleFadeUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15, margin: "-40px" }}
-          className="text-center mb-8 sm:mb-10"
-        >
-          <Badge className="bg-primary/10 text-primary border-primary/20 mb-3 px-3 py-1">
-            <HelpCircle className="h-3 w-3 mr-1.5" /> Answers & Clarity
-          </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
-            Frequently Asked Questions
-          </h2>
-          <p className="mt-3 text-muted-foreground max-w-xl mx-auto text-sm sm:text-base">
-            Everything you need to know about how FitWise leverages AI safely for your training.
-          </p>
-        </motion.div>
-
-        <motion.div
-          variants={appleStagger}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.15, margin: "-40px" }}
-        >
-          <Accordion type="single" collapsible className="w-full space-y-3">
-            {[
-              {
-                id: "faq-1",
-                question: "How does the AI know my medical limitations without hallucinating?",
-                answer: "FitWise uses a strict RAG (Retrieval-Augmented Generation) pipeline coupled with hard guardrails. Before Coach Llama 3 generates any exercise, your medical flags (e.g. Asthma, Hypertension, Joint issues) are retrieved from our PostgreSQL database and fed through explicit clinical exclusion rules. The model was explicitly fine-tuned on 300+ medical fitness cases to respect these boundaries.",
-              },
-              {
-                id: "faq-2",
-                question: "Do I need a commercial gym membership to use FitWise?",
-                answer: "Not at all. You can prompt Coach Llama 3 with your exact equipment availability (e.g., 'Only a pair of 20lb dumbbells and a pull-up bar' or 'Home bodyweight only'). The AI dynamically adjusts exercise selections, rep ranges, and density sets to match your environment.",
-              },
-              {
-                id: "faq-3",
-                question: "Why did you choose Llama 3 over standard ChatGPT?",
-                answer: "Llama 3 (8B) allows us to host dedicated fine-tuned weights on serverless NVIDIA GPUs via Modal. By applying 4-bit GGUF quantization, we dropped model memory from 15GB to 4.5GB and achieved warm latencies under 2.8 seconds—at zero idle cost. This guarantees strict privacy and zero third-party data selling.",
-              },
-              {
-                id: "faq-4",
-                question: "How does the KNN goal classification model work?",
-                answer: "FitWise uses scikit-learn K-Nearest Neighbors to categorize your biometric inputs and goal trajectory into strategic athletic clusters (Cut, Bulk, Recomp). This provides mathematical benchmarks for calorie calculations and volume progression rather than rough guesswork.",
-              },
-              {
-                id: "faq-5",
-                question: "Is FitWise free to use?",
-                answer: "Yes! FitWise is a showcase project offering free access to the AI Coach, workout logger, biometric analytics, and customized workout generation.",
-              },
-            ].map((item) => (
-              <motion.div key={item.id} variants={appleChild}>
-                <AccordionItem 
-                  value={item.id}
-                  className="rounded-2xl border border-border/80 bg-card/60 backdrop-blur-md px-6 py-1 data-[state=open]:border-primary/50 transition-all"
-                >
-                  <AccordionTrigger className="text-left font-semibold text-foreground hover:no-underline py-4 text-sm sm:text-base">
-                    {item.question}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-4">
-                    {item.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              </motion.div>
-            ))}
-          </Accordion>
-        </motion.div>
-      </section>
-
-      {/* =========================================================================
           7. FINAL CALL TO ACTION BANNER (APPLE-STYLE SCROLL REVEAL)
           ========================================================================= */}
       <section id="cta" className="min-h-[85vh] flex flex-col justify-center pt-24 pb-24 px-4 max-w-5xl mx-auto relative border-t border-border/40 scroll-mt-0">
@@ -1903,8 +1828,9 @@ export default function LandingPage() {
             <button onClick={() => scrollToSection("preview")} className="hover:text-foreground transition-colors">Tour</button>
             <button onClick={() => scrollToSection("simulator")} className="hover:text-foreground transition-colors">Simulator</button>
             <button onClick={() => scrollToSection("features")} className="hover:text-foreground transition-colors">Features</button>
+            <button onClick={() => scrollToSection("ml-benchmarks")} className="hover:text-foreground transition-colors">ML Telemetry</button>
             <button onClick={() => scrollToSection("architecture")} className="hover:text-foreground transition-colors">Architecture</button>
-            <button onClick={() => scrollToSection("faq")} className="hover:text-foreground transition-colors">FAQ</button>
+            <button onClick={() => scrollToSection("comparison")} className="hover:text-foreground transition-colors">Benchmark</button>
             <Link to="/auth" className="hover:text-foreground transition-colors">Sign In</Link>
           </div>
         </div>
