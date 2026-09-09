@@ -127,7 +127,7 @@ const AnalyticsPage = () => {
 
   const chartColor = "hsl(152, 76%, 40%)"; // Vibrant primary
   const chartColor2 = "hsl(200, 100%, 50%)"; // Vibrant cyan
-  const chartColor3 = "hsl(330, 80%, 55%)"; // Vibrant pink
+  const chartColor3 = "hsl(20, 95%, 53%)"; // Vibrant athletic red-orange
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">

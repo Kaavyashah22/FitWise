@@ -434,11 +434,11 @@ const DashboardPage = () => {
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left Column: Quick Stats (Bento Box side panel) */}
         <motion.div variants={item} className="lg:col-span-4 space-y-4">
-          <Card className="glass-card hover:-translate-y-1 hover:shadow-2xl hover:border-pink-500/30 transition-all duration-300">
+          <Card className="glass-card hover:-translate-y-1 hover:shadow-2xl hover:border-rose-500/30 transition-all duration-300">
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
-                  <Activity className="h-4 w-4 text-pink-500" /> BMI
+                  <Activity className="h-4 w-4 text-rose-500" /> BMI
                 </div>
                 {bmiCat && <Badge variant="outline" className={bmiCat.className}>{bmiCat.label}</Badge>}
               </div>
