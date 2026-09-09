@@ -14,7 +14,8 @@ import {
   Moon,
   User,
   Edit2,
-  Loader2
+  Loader2,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -132,9 +133,11 @@ export default function AppNavigation() {
                 <Edit2 className="mr-2 h-4 w-4" />
                 <span>Edit Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile Settings</span>
+              <DropdownMenuItem asChild className="cursor-pointer">
+                <Link to="/landing" className="flex items-center w-full">
+                  <Globe className="mr-2 h-4 w-4 text-primary" />
+                  <span>View Landing Page</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
                 <LogOut className="mr-2 h-4 w-4" />
@@ -190,6 +193,12 @@ export default function AppNavigation() {
             <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="cursor-pointer">
               <Edit2 className="mr-2 h-4 w-4" />
               <span>Edit Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild className="cursor-pointer">
+              <Link to="/landing" className="flex items-center w-full">
+                <Globe className="mr-2 h-4 w-4 text-primary" />
+                <span>View Landing Page</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={toggle}>
               {theme === "dark" ? <Sun className="mr-2 h-4 w-4" /> : <Moon className="mr-2 h-4 w-4" />}

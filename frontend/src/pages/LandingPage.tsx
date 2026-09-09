@@ -15,6 +15,7 @@ import {
   Dumbbell, 
   Sparkles, 
   ShieldCheck, 
+  ShieldAlert,
   Activity, 
   Cpu, 
   Database, 
@@ -499,10 +500,24 @@ export default function LandingPage() {
         })}
       </aside>
 
+      {/* Logged-in Quick Return Ribbon */}
+      {user && (
+        <div className="w-full bg-primary/10 border-b border-primary/20 py-2 px-4 text-center text-xs font-medium text-foreground flex items-center justify-center gap-2 sm:gap-4 sticky top-0 z-[60] backdrop-blur-md">
+          <span>You are logged in as <strong>{user.name || "Athlete"}</strong></span>
+          <Button 
+            size="sm" 
+            onClick={() => navigate("/dashboard")} 
+            className="h-6 px-3 rounded-full text-xs font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm"
+          >
+            Go to Dashboard &rarr;
+          </Button>
+        </div>
+      )}
+
       {/* =========================================================================
           1. FLOATING NAVIGATION BAR
           ========================================================================= */}
-      <header className="sticky top-4 z-50 w-[94%] max-w-6xl mx-auto">
+      <header className={cn("sticky z-50 w-[94%] max-w-6xl mx-auto", user ? "top-3" : "top-4")}>
         <nav className="flex items-center justify-between px-5 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
@@ -546,28 +561,19 @@ export default function LandingPage() {
             {user ? (
               <Button 
                 onClick={() => navigate("/dashboard")} 
-                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-5 shadow-lg shadow-primary/25"
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 shadow-lg shadow-primary/25"
               >
                 Go to Dashboard
                 <ChevronRight className="ml-1.5 h-4 w-4" />
               </Button>
             ) : (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate("/auth")}
-                  className="rounded-full text-sm font-medium hover:bg-foreground/5 hidden sm:inline-flex"
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  onClick={() => navigate("/auth")}
-                  className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-sm px-4 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300"
-                >
-                  Get Started Free
-                  <ArrowRight className="ml-1.5 h-4 w-4" />
-                </Button>
-              </div>
+              <Button 
+                onClick={() => navigate("/auth")}
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm px-5 py-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300"
+              >
+                Get Started
+                <ArrowRight className="ml-1.5 h-4 w-4" />
+              </Button>
             )}
           </div>
         </nav>
@@ -585,21 +591,21 @@ export default function LandingPage() {
         >
           {/* Top Pill Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-wide uppercase mb-6 shadow-sm shadow-primary/10 backdrop-blur-md">
-            <Cpu className="h-3.5 w-3.5 animate-pulse" />
-            <span>Fine-Tuned Llama 3 • Serverless Modal GPUs • Clinical Guardrails</span>
+            <ShieldAlert className="h-3.5 w-3.5 animate-pulse" />
+            <span>XGBoost Injury Radar • Fine-Tuned Llama 3 • Clinical Guardrails</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground max-w-4xl leading-[1.1] font-sans">
             Transform Your Body With <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-emerald-400 via-primary to-teal-300 bg-clip-text text-transparent">
-              Clinical AI Intelligence
+              Predictive AI Biomechanics
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="mt-6 text-base sm:text-xl text-muted-foreground max-w-2xl font-normal leading-relaxed">
-            The first full-stack fitness intelligence system combining Meta's Llama 3 (8B), dynamic PostgreSQL RAG, and automated medical guardrails. No generic routines—every rep is tailored to your unique biology.
+            The first full-stack fitness intelligence system combining XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
           {/* Action CTAs */}
@@ -632,20 +638,20 @@ export default function LandingPage() {
             className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 w-full max-w-3xl pt-8 border-t border-border/60"
           >
             <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">300+</span>
+              <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">92.5%</span>
+              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">XGBoost Accuracy</span>
+            </motion.div>
+            <motion.div variants={appleChild} className="flex flex-col items-center">
+              <span className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">100%</span>
+              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">High-Risk Precision</span>
+            </motion.div>
+            <motion.div variants={appleChild} className="flex flex-col items-center">
+              <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">&lt; 2.8s</span>
+              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Modal GPU Streaming</span>
+            </motion.div>
+            <motion.div variants={appleChild} className="flex flex-col items-center">
+              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight">300+</span>
               <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Medical Protocols</span>
-            </motion.div>
-            <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">&lt; 2.8s</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Modal GPU Inference</span>
-            </motion.div>
-            <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">100%</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Biometric RAG Precision</span>
-            </motion.div>
-            <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight">Zero</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Injury Contradictions</span>
             </motion.div>
           </motion.div>
         </motion.div>
@@ -1253,18 +1259,18 @@ export default function LandingPage() {
             </p>
           </motion.div>
 
-          {/* Card 4: KNN Goal Classification */}
+          {/* Card 4: Predictive Biomechanics & Injury Radar */}
           <motion.div 
             variants={appleChild}
             className="rounded-3xl border border-border/80 bg-card/60 backdrop-blur-md p-8 relative overflow-hidden group hover:border-primary/50 transition-all duration-300"
           >
-            <div className="p-2.5 w-fit rounded-2xl bg-cyan-500/15 text-cyan-400 border border-cyan-500/20 mb-5">
-              <TrendingUp className="h-6 w-6" />
+            <div className="p-2.5 w-fit rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/20 mb-5">
+              <ShieldAlert className="h-6 w-6" />
             </div>
-            <span className="text-xs font-semibold text-cyan-400 uppercase tracking-wider">Classical Machine Learning</span>
-            <h3 className="text-xl font-bold text-foreground mt-1 mb-3">KNN Goal Clustering</h3>
+            <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Predictive Machine Learning</span>
+            <h3 className="text-xl font-bold text-foreground mt-1 mb-3">XGBoost Injury Radar</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Trained <code className="text-xs bg-secondary/80 px-1 py-0.5 rounded text-cyan-400">scikit-learn</code> models cluster user trajectories (Cut, Bulk, Recomp) to dynamically benchmark progress against real athletic cohorts.
+              Trained on 1,000 multi-sport athlete datasets with <strong>92.5% accuracy</strong> and <strong>100% high-risk precision</strong>. Continuously forecasts acute strain by evaluating trailing 7-day volume load (tonnage), sleep deficit, and Borg CR10 soreness before injuries occur.
             </p>
           </motion.div>
 

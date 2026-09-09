@@ -62,6 +62,7 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<RootRoute />} />
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/auth" element={<AuthPage />} />
       
       <Route element={<ProtectedRoute />}>
