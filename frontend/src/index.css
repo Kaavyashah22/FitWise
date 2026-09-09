@@ -6,33 +6,33 @@
 
 @layer base {
   :root {
-    --background: 160 10% 97%;
-    --foreground: 160 20% 10%;
+    --background: 160 20% 98.5%;
+    --foreground: 160 30% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 160 20% 10%;
+    --card-foreground: 160 30% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 160 20% 10%;
+    --popover-foreground: 160 30% 9%;
 
-    --primary: 152 76% 40%;
+    --primary: 152 76% 38%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 15% 92%;
-    --secondary-foreground: 160 20% 10%;
+    --secondary: 152 25% 94%;
+    --secondary-foreground: 160 25% 12%;
 
-    --muted: 160 10% 94%;
-    --muted-foreground: 160 10% 45%;
+    --muted: 160 15% 95%;
+    --muted-foreground: 160 12% 44%;
 
-    --accent: 152 50% 90%;
-    --accent-foreground: 152 60% 25%;
+    --accent: 152 40% 92%;
+    --accent-foreground: 152 65% 20%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 15% 88%;
-    --input: 160 15% 88%;
-    --ring: 152 60% 42%;
+    --border: 160 15% 87%;
+    --input: 160 15% 87%;
+    --ring: 152 65% 42%;
 
     --radius: 0.75rem;
 
@@ -102,8 +102,22 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background text-foreground font-sans antialiased min-h-screen relative;
     font-family: 'Inter', sans-serif;
+    background-image: 
+      radial-gradient(at 15% 0%, rgba(16, 185, 129, 0.09) 0px, transparent 50%),
+      radial-gradient(at 85% 0%, rgba(20, 184, 166, 0.07) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, rgba(16, 185, 129, 0.05) 0px, transparent 60%),
+      linear-gradient(to bottom, transparent, rgba(240, 253, 244, 0.35));
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image: 
+      radial-gradient(at 20% 0%, rgba(16, 185, 129, 0.07) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(20, 184, 166, 0.05) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, rgba(16, 185, 129, 0.04) 0px, transparent 60%);
+    background-attachment: fixed;
   }
 
   h1,
@@ -118,6 +132,6 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/60 backdrop-blur-2xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300;
+    @apply bg-white/80 dark:bg-card/60 backdrop-blur-2xl border border-border/80 dark:border-white/10 shadow-[0_4px_24px_-2px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300;
   }
 }

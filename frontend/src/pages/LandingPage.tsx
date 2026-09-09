@@ -406,7 +406,7 @@ export default function LandingPage() {
             repeatType: "mirror",
             ease: "easeInOut",
           }}
-          className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[700px] sm:w-[950px] h-[550px] bg-primary/20 rounded-full blur-[140px] opacity-75"
+          className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[700px] sm:w-[950px] h-[550px] bg-emerald-400/25 dark:bg-primary/20 rounded-full blur-[140px] opacity-90 dark:opacity-75"
         />
 
         {/* Animated Orb 2: Mid-page Deep Teal Flow */}
@@ -422,7 +422,7 @@ export default function LandingPage() {
             repeatType: "mirror",
             ease: "easeInOut",
           }}
-          className="absolute top-[35%] -left-[10%] w-[550px] h-[550px] bg-emerald-500/15 rounded-full blur-[160px] opacity-60"
+          className="absolute top-[35%] -left-[10%] w-[550px] h-[550px] bg-teal-400/20 dark:bg-emerald-500/15 rounded-full blur-[160px] opacity-80 dark:opacity-60"
         />
 
         {/* Animated Orb 3: Lower-page Cyan Ambient */}
@@ -438,11 +438,11 @@ export default function LandingPage() {
             repeatType: "mirror",
             ease: "easeInOut",
           }}
-          className="absolute top-[65%] -right-[10%] w-[650px] h-[650px] bg-teal-500/15 rounded-full blur-[180px] opacity-55"
+          className="absolute top-[65%] -right-[10%] w-[650px] h-[650px] bg-emerald-300/25 dark:bg-teal-500/15 rounded-full blur-[180px] opacity-75 dark:opacity-55"
         />
 
         {/* Subtle Cyber Grid Texture */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)] opacity-80" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98114_1px,transparent_1px),linear-gradient(to_bottom,#10b98114_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)] opacity-90" />
 
         {/* Floating Neural Particle Nodes */}
         {[

@@ -21,10 +21,16 @@ const queryClient = new QueryClient();
 
 function MainLayout({ children, noPadding = false }: { children: React.ReactNode, noPadding?: boolean }) {
   return (
-    <div className="min-h-[100dvh] flex flex-col bg-background relative">
+    <div className="min-h-[100dvh] flex flex-col bg-background/50 relative overflow-x-hidden">
+      {/* Ambient soft glow behind navbar and content */}
+      <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute -top-[15%] left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-primary/15 dark:bg-primary/15 rounded-full blur-[140px] opacity-70" />
+        <div className="absolute top-[35%] -right-[15%] w-[550px] h-[550px] bg-emerald-400/12 dark:bg-emerald-500/10 rounded-full blur-[160px] opacity-60" />
+        <div className="absolute -bottom-[10%] -left-[10%] w-[650px] h-[500px] bg-teal-400/12 dark:bg-teal-500/10 rounded-full blur-[160px] opacity-55" />
+      </div>
       <AppNavigation />
       <main className={cn(
-        "flex-1 w-full max-w-7xl mx-auto flex flex-col transition-all duration-300",
+        "flex-1 w-full max-w-7xl mx-auto flex flex-col transition-all duration-300 relative",
         // Desktop: top padding for TopNav. Mobile: bottom padding for BottomTabBar
         "pt-4 md:pt-28 pb-28 md:pb-6", 
         noPadding ? "h-[100dvh] overflow-hidden !max-w-none !px-0" : "px-4 md:px-8 overflow-auto"
