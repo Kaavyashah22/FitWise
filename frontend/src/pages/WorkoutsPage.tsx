@@ -15,6 +15,7 @@ import { Plus, Trash2, Dumbbell, Loader2, Trophy, ChevronDown, ChevronRight, Cal
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
+import { RestTimer } from "@/components/workouts/RestTimer";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -261,6 +262,11 @@ const WorkoutsPage = () => {
             </div>
           </DialogContent>
         </Dialog>
+      </motion.div>
+
+      {/* In-App Gym Rest Timer */}
+      <motion.div variants={item}>
+        <RestTimer />
       </motion.div>
 
       {/* History */}

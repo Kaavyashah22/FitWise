@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { getProfile, saveProfile, UserProfile } from "@/lib/auth";
 import { calculateBMI, getBMICategory, calculateBMR, calculateTDEE, getCalorieTarget, validateGoal } from "@/lib/health";
@@ -15,6 +16,8 @@ import { motion } from "framer-motion";
 import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics, getInjuryRiskAPI, getCachedInjuryRisk, InjuryRiskPrediction } from "@/lib/apiClient";
+import { getUserWorkouts, getCachedWorkouts, WorkoutEntry } from "@/lib/workouts";
+import { DailyConsistencyCard } from "@/components/dashboard/DailyConsistencyCard";
 import { Pie } from "react-chartjs-2";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -39,10 +42,44 @@ const SORENESS_LEVELS = [
   { value: 5, label: "Extreme", desc: "Acute strain, limits daily function", activeRing: "ring-rose-500 border-rose-500 bg-rose-500/20 text-rose-400 font-bold" },
 ];
 
+function calculateStreak(workoutDates: string[], metricDates: string[]): number {
+  const activeSet = new Set<string>([...workoutDates, ...metricDates]);
+  if (activeSet.size === 0) return 0;
+
+  const today = new Date();
+  const formatYMD = (d: Date) => d.toISOString().split("T")[0];
+  const todayStr = formatYMD(today);
+
+  let checkDate = new Date(today);
+  let streak = 0;
+
+  // If today isn't logged yet, see if yesterday was logged to maintain ongoing streak
+  if (!activeSet.has(todayStr)) {
+    checkDate.setDate(checkDate.getDate() - 1);
+    if (!activeSet.has(formatYMD(checkDate))) {
+      return 0;
+    }
+  }
+
+  while (true) {
+    const dStr = formatYMD(checkDate);
+    if (activeSet.has(dStr)) {
+      streak++;
+      checkDate.setDate(checkDate.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
 const DashboardPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const existing = user ? getProfile(user.id) : null;
+  const todayStr = useMemo(() => new Date().toISOString().split("T")[0], []);
 
   const [age, setAge] = useState(existing?.age?.toString() || "");
   const [height, setHeight] = useState(existing?.height?.toString() || "");
@@ -64,6 +101,22 @@ const DashboardPage = () => {
   const [submittingMetrics, setSubmittingMetrics] = useState(false);
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
   const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(() => getCachedInjuryRisk());
+
+  // Habit Consistency & Streak State
+  const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
+  const [metricDates, setMetricDates] = useState<string[]>([]);
+  const [isNutritionDone, setIsNutritionDone] = useState<boolean>(() => {
+    const today = new Date().toISOString().split("T")[0];
+    return localStorage.getItem(`fitwise_nutrition_${today}`) === "true";
+  });
+
+  const toggleNutrition = () => {
+    setIsNutritionDone((prev) => {
+      const next = !prev;
+      localStorage.setItem(`fitwise_nutrition_${todayStr}`, String(next));
+      return next;
+    });
+  };
 
   const fetchInjuryRisk = () => {
     getInjuryRiskAPI()
@@ -91,11 +144,17 @@ const DashboardPage = () => {
         console.warn("Could not fetch profile from API, using local form state.", err);
       });
 
-      // Check if user already logged metrics today
-      getDailyMetrics(1).then((metrics) => {
+      // Fetch user workouts for streaks and today's status
+      getUserWorkouts(user.id)
+        .then((ws) => setWorkouts(ws))
+        .catch((err) => console.warn("Failed to fetch workouts for streak", err));
+
+      // Check if user already logged metrics today & fetch last 30 days for streak calculation
+      getDailyMetrics(30).then((metrics) => {
         if (metrics && metrics.length > 0) {
-          const today = new Date().toISOString().split('T')[0];
-          if (metrics[0].date === today) {
+          const dates = metrics.map((m: any) => m.date);
+          setMetricDates(dates);
+          if (dates.includes(todayStr)) {
             setIsCheckInDone(true);
           }
         }
@@ -104,6 +163,15 @@ const DashboardPage = () => {
       fetchInjuryRisk();
     }
   }, [user]);
+
+  const hasWorkoutToday = useMemo(() => {
+    return workouts.some((w) => w.date === todayStr);
+  }, [workouts, todayStr]);
+
+  const currentStreak = useMemo(() => {
+    const workoutDates = workouts.map((w) => w.date);
+    return calculateStreak(workoutDates, metricDates);
+  }, [workouts, metricDates, isCheckInDone]);
 
   const profile: UserProfile | null = useMemo(() => {
     if (!user || !age || !height || !weight) return null;
@@ -258,6 +326,7 @@ const DashboardPage = () => {
       });
       setIsCheckInDone(true);
       setIsCheckInModalOpen(false);
+      setMetricDates((prev) => Array.from(new Set([today, ...prev])));
       fetchInjuryRisk();
       toast({
         title: "Metrics Logged",
@@ -474,6 +543,19 @@ const DashboardPage = () => {
           </DialogContent>
         </Dialog>
         </div>
+      </motion.div>
+
+      {/* Daily Consistency Streaks & Checkpoints */}
+      <motion.div variants={item}>
+        <DailyConsistencyCard
+          streak={currentStreak}
+          hasWorkoutToday={hasWorkoutToday}
+          isRecoveryDone={isCheckInDone}
+          isNutritionDone={isNutritionDone}
+          onOpenRecoveryModal={() => setIsCheckInModalOpen(true)}
+          onToggleNutrition={toggleNutrition}
+          onGoToWorkouts={() => navigate("/workouts")}
+        />
       </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-12">
