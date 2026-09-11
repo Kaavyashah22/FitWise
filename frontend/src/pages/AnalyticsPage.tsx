@@ -207,7 +207,7 @@ const AnalyticsPage = () => {
                     <span>Muscle Soreness Strain</span>
                   </div>
                   <div className="text-xl font-extrabold text-foreground">
-                    {injuryRisk.metrics_evaluated.soreness_score} <span className="text-xs font-medium text-muted-foreground">/ 10 Soreness</span>
+                    Level {Math.min(5, Math.max(1, Math.round((injuryRisk.metrics_evaluated.soreness_score || 2) / 2)))} <span className="text-xs font-medium text-muted-foreground">/ 5 ({injuryRisk.metrics_evaluated.soreness_score}/10 strain)</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
                     Dietary Adherence: {injuryRisk.metrics_evaluated.caloric_adherence}%

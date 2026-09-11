@@ -115,7 +115,7 @@ def predict_user_injury_risk(
     if sleep < 6.5:
         drivers.append(f"Sleep Debt ({sleep:.1f} hrs vs recommended 7.5+ hrs)")
     if soreness >= 6:
-        drivers.append(f"Elevated Muscular Soreness ({soreness}/10)")
+        drivers.append(f"Elevated Muscular Soreness (Level {round(soreness/2)}/5)")
     if workload_load > 12.0:
         drivers.append("High Acute Workload Spike")
     if nutrition < 70:
@@ -127,11 +127,11 @@ def predict_user_injury_risk(
     # Dynamic Clinical AI Recommendation tailored to the athlete's specific risk drivers
     if risk_level == "High":
         if sleep < 6.0 and soreness >= 6:
-            recommendation = f"Severe strain alert: {sleep:.1f}h sleep debt combined with level {soreness}/10 soreness. Enforce an active recovery or rest day to prevent tissue tear."
+            recommendation = f"Severe strain alert: {sleep:.1f}h sleep debt combined with Level {round(soreness/2)}/5 soreness. Enforce an active recovery or rest day to prevent tissue tear."
         elif sleep < 6.0:
             recommendation = f"Neuromuscular fatigue detected due to acute sleep debt ({sleep:.1f} hrs). Prioritize 8+ hours of sleep and avoid maximal eccentric loading."
         elif soreness >= 6:
-            recommendation = f"High muscular strain ({soreness}/10 soreness). Replace high-intensity lifts with mobility work, foam rolling, and adequate protein intake."
+            recommendation = f"High muscular strain (Level {round(soreness/2)}/5 soreness). Replace high-intensity lifts with mobility work, foam rolling, and adequate protein intake."
         elif workload_load > 12.0:
             recommendation = f"Acute training workload spike detected. Reduce overall volume load by 30-40% today to avert overtraining syndrome."
         else:
@@ -140,7 +140,7 @@ def predict_user_injury_risk(
         if sleep < 6.5:
             recommendation = f"Mild recovery deficit from {sleep:.1f}h sleep. Cap lifting intensity at RPE 7 and extend your warmup by 10 minutes."
         elif soreness >= 5:
-            recommendation = f"Noticeable residual soreness ({soreness}/10). Focus on antagonist muscle groups and avoid training to concentric failure."
+            recommendation = f"Noticeable residual soreness (Level {round(soreness/2)}/5). Focus on antagonist muscle groups and avoid training to concentric failure."
         elif nutrition < 70:
             recommendation = f"Nutrition adherence at {nutrition}%. Supplement pre-workout carbohydrates to offset glycogen depletion during training."
         else:

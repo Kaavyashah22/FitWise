@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics, getInjuryRiskAPI, getCachedInjuryRisk, InjuryRiskPrediction } from "@/lib/apiClient";
 import { Pie } from "react-chartjs-2";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 import {
   Chart as ChartJS,
@@ -29,6 +30,14 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
+
+const SORENESS_LEVELS = [
+  { value: 1, label: "None", desc: "Fresh & ready, zero stiffness", activeRing: "ring-emerald-500 border-emerald-500 bg-emerald-500/20 text-emerald-400 font-bold" },
+  { value: 2, label: "Mild", desc: "Light tightness, full range of motion", activeRing: "ring-teal-500 border-teal-500 bg-teal-500/20 text-teal-400 font-bold" },
+  { value: 3, label: "Moderate", desc: "Noticeable DOMS, requires warmup", activeRing: "ring-amber-500 border-amber-500 bg-amber-500/20 text-amber-400 font-bold" },
+  { value: 4, label: "Severe", desc: "Tender to touch, movement restricted", activeRing: "ring-orange-500 border-orange-500 bg-orange-500/20 text-orange-400 font-bold" },
+  { value: 5, label: "Extreme", desc: "Acute strain, limits daily function", activeRing: "ring-rose-500 border-rose-500 bg-rose-500/20 text-rose-400 font-bold" },
+];
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -50,7 +59,7 @@ const DashboardPage = () => {
   
   // Daily Metrics Check-in State
   const [sleepHours, setSleepHours] = useState("");
-  const [sorenessScore, setSorenessScore] = useState("");
+  const [sorenessLevel, setSorenessLevel] = useState<number | null>(null);
   const [isCheckInDone, setIsCheckInDone] = useState(false);
   const [submittingMetrics, setSubmittingMetrics] = useState(false);
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
@@ -237,14 +246,14 @@ const DashboardPage = () => {
   };
 
   const handleDailyCheckIn = async () => {
-    if (!sleepHours || !sorenessScore) return;
+    if (!sleepHours || !sorenessLevel) return;
     setSubmittingMetrics(true);
     try {
       const today = new Date().toISOString().split('T')[0];
       await logDailyMetric({
         date: today,
         sleep_hours: parseFloat(sleepHours),
-        soreness_score: parseInt(sorenessScore),
+        soreness_score: sorenessLevel * 2, // Map 1-5 to 2-10 for ML model compatibility
         caloric_adherence: 100 // Defaulting for now
       });
       setIsCheckInDone(true);
@@ -285,7 +294,7 @@ const DashboardPage = () => {
                   <Moon className="w-4 h-4 mr-2" /> Log Recovery
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[400px] glass-card border-t-4 border-t-cyan-500">
+              <DialogContent className="sm:max-w-[420px] glass-card border-t-4 border-t-cyan-500">
                 <DialogHeader>
                   <DialogTitle className="text-xl flex items-center gap-2 text-cyan-500">
                     <Moon className="h-5 w-5" /> Recovery Check-in
@@ -299,13 +308,49 @@ const DashboardPage = () => {
                     <Label className="text-sm">Sleep (hours)</Label>
                     <Input type="number" min="0" max="24" step="0.5" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder="e.g. 7.5" />
                   </div>
+                  
                   <div className="space-y-2">
-                    <Label className="text-sm">Muscle Soreness (1-10)</Label>
-                    <Input type="number" min="1" max="10" value={sorenessScore} onChange={(e) => setSorenessScore(e.target.value)} placeholder="e.g. 4" />
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Muscle Soreness (1 - 5)</Label>
+                      {sorenessLevel && (
+                        <span className="text-xs font-semibold text-cyan-400">
+                          Level {sorenessLevel}: {SORENESS_LEVELS[sorenessLevel - 1].label}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-5 gap-1.5">
+                      {SORENESS_LEVELS.map((lvl) => {
+                        const isSelected = sorenessLevel === lvl.value;
+                        return (
+                          <button
+                            key={lvl.value}
+                            type="button"
+                            onClick={() => setSorenessLevel(lvl.value)}
+                            className={cn(
+                              "flex flex-col items-center justify-center py-2.5 px-1 rounded-xl border text-center transition-all cursor-pointer select-none",
+                              isSelected
+                                ? `${lvl.activeRing} ring-2 shadow-md scale-[1.03]`
+                                : "border-border/60 hover:bg-accent/40 text-muted-foreground hover:text-foreground"
+                            )}
+                          >
+                            <span className="text-base font-extrabold">{lvl.value}</span>
+                            <span className="text-[10px] font-medium leading-tight mt-0.5">{lvl.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <p className="text-[11px] text-muted-foreground min-h-[16px] text-center italic">
+                      {sorenessLevel
+                        ? `"${SORENESS_LEVELS[sorenessLevel - 1].desc}"`
+                        : "Tap 1 (Fresh) to 5 (Extreme Soreness)"}
+                    </p>
                   </div>
+
                   <Button 
                     onClick={handleDailyCheckIn} 
-                    disabled={submittingMetrics || !sleepHours || !sorenessScore}
+                    disabled={submittingMetrics || !sleepHours || !sorenessLevel}
                     className="w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-md mt-2"
                   >
                     {submittingMetrics ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />} Save Metrics
