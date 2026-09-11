@@ -653,7 +653,7 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="mt-6 text-base sm:text-xl text-muted-foreground max-w-2xl font-normal leading-relaxed">
-            The first full-stack fitness intelligence system combining XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
+            Full-stack fitness intelligence system combining XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
           {/* Action CTAs */}
@@ -1433,6 +1433,7 @@ export default function LandingPage() {
                       <RcYAxis domain={[75, 102]} stroke="#888" fontSize={11} tickLine={false} unit="%" />
                       <RcTooltip
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "12px", color: "#f8fafc", fontSize: "12px" }}
+                        labelStyle={{ color: "#f8fafc", fontWeight: 600 }}
                         formatter={(val: any) => [`${Number(val).toFixed(1)}%`, ""]}
                       />
                       <RcLegend verticalAlign="top" height={36} wrapperStyle={{ fontSize: "12px" }} />
@@ -1472,6 +1473,8 @@ export default function LandingPage() {
                       <RcYAxis domain={[80, 100]} stroke="#888" fontSize={11} tickLine={false} unit="%" />
                       <RcTooltip
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "12px", color: "#f8fafc", fontSize: "12px" }}
+                        labelStyle={{ color: "#f8fafc", fontWeight: 600 }}
+                        itemStyle={{ color: "#10b981", fontWeight: 500 }}
                         formatter={(val: any) => [`${Number(val).toFixed(1)}% Validation Accuracy`, "Score"]}
                       />
                       <RcReferenceLine y={92.4} stroke="#ef4444" strokeDasharray="4 4" strokeWidth={2} label={{ value: "Mean CV: 92.40%", fill: "#ef4444", fontSize: 11, position: "top" }} />
@@ -1503,6 +1506,8 @@ export default function LandingPage() {
                       <RcYAxis dataKey="feature" type="category" stroke="#888" fontSize={11} tickLine={false} width={130} />
                       <RcTooltip
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "12px", color: "#f8fafc", fontSize: "12px" }}
+                        labelStyle={{ color: "#f8fafc", fontWeight: 600 }}
+                        itemStyle={{ color: "#10b981", fontWeight: 500 }}
                         formatter={(val: any, name: any, item: any) => [`${val}% (Formula: ${item.payload.formula})`, "Feature Weight"]}
                       />
                       <RcBar dataKey="importance" fill="#10b981" radius={[0, 8, 8, 0]}>
