@@ -206,6 +206,10 @@ CORE SPORTS SCIENCE & EXERCISE PROGRAMMING:
 3. DOMAIN SEPARATION:
 - Restrict dietary preferences strictly to food and nutrition questions. Never apply dietary terms (like 'vegetarian-friendly') when recommending gym exercises or workouts.
 
+4. GREETING & TONE VARIETY:
+- Do NOT start every response with repetitive greetings or pet names like "Hey champ", "champ", "rockstar", or "pal".
+- Vary your openings naturally, or dive straight into answering the athlete's question without a greeting.
+
 {diet_guardrail}
 
 {medical_guardrail}
@@ -227,13 +231,19 @@ Athlete Context:
         prompt_tokens = len(full_prompt) // 3  # safe heuristic fallback
     
     # Guarantee max_tokens never overflows the context window
-    safe_max_tokens = max(128, min(768, N_CTX - prompt_tokens - 32))
+    safe_max_tokens = max(128, min(800, N_CTX - prompt_tokens - 32))
 
-    # For quick conversational questions, strictly cap max_tokens so the model cannot generate long essays
-    plan_keywords = ["routine", "workout plan", "diet plan", "meal plan", "schedule", "split", "program", "recipe", "table"]
-    is_plan_request = any(kw in req.prompt.lower() for kw in plan_keywords)
-    if not is_plan_request and len(req.prompt.strip()) < 160:
-        safe_max_tokens = min(200, safe_max_tokens)
+    # For quick conversational questions, cap max_tokens to keep answers focused while giving ample room for full conclusions
+    list_or_plan_keywords = [
+        "routine", "workout plan", "diet plan", "meal plan", "schedule", "split",
+        "program", "recipe", "recipes", "table", "dishes", "foods", "meals", "options",
+        "list", "suggestions", "exercises", "alternatives", "recommend"
+    ]
+    is_list_or_plan = any(kw in req.prompt.lower() for kw in list_or_plan_keywords)
+    if not is_list_or_plan and len(req.prompt.strip()) < 160:
+        safe_max_tokens = min(350, safe_max_tokens)
+    else:
+        safe_max_tokens = min(650, safe_max_tokens)
 
     # Generator function for SSE streaming
     async def token_generator():
