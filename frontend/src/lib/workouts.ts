@@ -63,6 +63,67 @@ let lastWeightLogsFetch = 0;
 
 const WORKOUTS_CACHE_KEY = "fitwise_cached_workouts";
 const WEIGHT_CACHE_KEY = "fitwise_cached_weight_logs";
+const OFFLINE_WORKOUTS_QUEUE_KEY = "fitwise_offline_workout_queue";
+
+export function getOfflineWorkoutsQueue(): Omit<WorkoutEntry, "id">[] {
+  try {
+    const raw = localStorage.getItem(OFFLINE_WORKOUTS_QUEUE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function addToOfflineQueue(entry: Omit<WorkoutEntry, "id">) {
+  try {
+    const queue = getOfflineWorkoutsQueue();
+    queue.push(entry);
+    localStorage.setItem(OFFLINE_WORKOUTS_QUEUE_KEY, JSON.stringify(queue));
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function syncOfflineWorkouts(): Promise<number> {
+  if (typeof window === "undefined" || (navigator && !navigator.onLine)) return 0;
+  const queue = getOfflineWorkoutsQueue();
+  if (queue.length === 0) return 0;
+
+  const remaining: Omit<WorkoutEntry, "id">[] = [];
+  let syncedCount = 0;
+
+  for (const entry of queue) {
+    try {
+      await createWorkout({
+        date: entry.date,
+        name: entry.exercise,
+        notes: encodeNotes(entry),
+      });
+      syncedCount++;
+    } catch {
+      remaining.push(entry);
+    }
+  }
+
+  try {
+    localStorage.setItem(OFFLINE_WORKOUTS_QUEUE_KEY, JSON.stringify(remaining));
+  } catch {
+    /* ignore */
+  }
+
+  if (syncedCount > 0) {
+    await getUserWorkouts(undefined, true).catch(() => {});
+  }
+
+  return syncedCount;
+}
+
+// Auto-sync whenever internet connectivity is restored
+if (typeof window !== "undefined") {
+  window.addEventListener("online", () => {
+    syncOfflineWorkouts().catch(() => {});
+  });
+}
 
 export function getCachedWorkouts(): WorkoutEntry[] {
   if (workoutsCache) return workoutsCache;
@@ -93,21 +154,38 @@ export function getCachedWeightLogs(): WeightLog[] {
 }
 
 export async function addWorkout(entry: Omit<WorkoutEntry, "id">): Promise<WorkoutEntry> {
-  const data = await createWorkout({
-    date: entry.date,
-    name: entry.exercise,
-    notes: encodeNotes(entry),
-  });
-  const newEntry: WorkoutEntry = {
-    id: data.id,
-    userId: data.user_id,
-    date: data.date,
-    muscleGroup: entry.muscleGroup,
-    exercise: entry.exercise,
-    sets: entry.sets,
-    reps: entry.reps,
-    weight: entry.weight
-  };
+  let newEntry: WorkoutEntry;
+
+  try {
+    const data = await createWorkout({
+      date: entry.date,
+      name: entry.exercise,
+      notes: encodeNotes(entry),
+    });
+    newEntry = {
+      id: data.id,
+      userId: data.user_id,
+      date: data.date,
+      muscleGroup: entry.muscleGroup,
+      exercise: entry.exercise,
+      sets: entry.sets,
+      reps: entry.reps,
+      weight: entry.weight
+    };
+  } catch (networkErr) {
+    console.warn("Network error creating workout. Saving optimistically to offline queue:", networkErr);
+    newEntry = {
+      id: `offline-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+      userId: entry.userId,
+      date: entry.date,
+      muscleGroup: entry.muscleGroup,
+      exercise: entry.exercise,
+      sets: entry.sets,
+      reps: entry.reps,
+      weight: entry.weight
+    };
+    addToOfflineQueue(entry);
+  }
 
   const current = getCachedWorkouts();
   const updated = [newEntry, ...current];

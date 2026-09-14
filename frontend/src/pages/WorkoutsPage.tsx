@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { addWorkout, getUserWorkouts, deleteWorkout, WorkoutEntry, getCachedWorkouts } from "@/lib/workouts";
+import { addWorkout, getUserWorkouts, deleteWorkout, WorkoutEntry, getCachedWorkouts, syncOfflineWorkouts } from "@/lib/workouts";
 import { EXERCISE_LIBRARY } from "@/lib/exercise-library";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,13 @@ const WorkoutsPage = () => {
     if (!user) return;
     (async () => {
       try {
+        const synced = await syncOfflineWorkouts().catch(() => 0);
+        if (synced > 0) {
+          toast({
+            title: "Cloud Sync Complete ☁️",
+            description: `Synchronized ${synced} offline workout set${synced > 1 ? "s" : ""} to your cloud account.`,
+          });
+        }
         const ws = await getUserWorkouts(user.id);
         setWorkouts(ws);
       } catch (err: any) {
