@@ -7,6 +7,7 @@ from security import get_current_user
 
 router = APIRouter()
 
+@router.get("", response_model=ProfileResponse)
 @router.get("/", response_model=ProfileResponse)
 def get_profile(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
@@ -37,6 +38,7 @@ def get_profile(current_user: User = Depends(get_current_user), db: Session = De
         
     return profile_dict
 
+@router.post("", response_model=ProfileResponse)
 @router.post("/", response_model=ProfileResponse)
 def upsert_profile(payload: ProfileUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     print(f"--- PROFILE POST LOG ---")

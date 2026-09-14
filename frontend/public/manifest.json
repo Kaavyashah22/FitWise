@@ -28,7 +28,7 @@
       "purpose": "any"
     }
   ],
-  "start_url": "/dashboard",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
   "theme_color": "#10b981",

@@ -71,7 +71,7 @@ async function request<T>(
   const data = (isJson ? await res.json() : await res.text()) as any;
 
   if (!res.ok) {
-    if (res.status === 401) {
+    if (res.status === 401 && path.startsWith("/auth/me")) {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("auth:unauthorized"));
       }
@@ -208,11 +208,11 @@ export type ApiProfile = {
 };
 
 export async function getProfileAPI() {
-  return request<ApiProfile>("/api/v1/profile", { auth: true });
+  return request<ApiProfile>("/api/v1/profile/", { auth: true });
 }
 
 export async function saveProfileAPI(profile: ApiProfile) {
-  return request<ApiProfile>("/api/v1/profile", {
+  return request<ApiProfile>("/api/v1/profile/", {
     method: "POST",
     auth: true,
     body: JSON.stringify(profile),
