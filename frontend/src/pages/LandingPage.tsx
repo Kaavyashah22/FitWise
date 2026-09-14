@@ -663,28 +663,26 @@ export default function LandingPage() {
           </p>
 
           {/* Tour Tabs Bar */}
-          <div className="mt-5 w-full max-w-xl mx-auto p-1.5 rounded-2xl sm:rounded-full bg-secondary/50 border border-border/60 backdrop-blur-md">
-            <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-1 sm:gap-0.5">
-              {[
-                { id: "coach", label: "AI Coach Chat", icon: Bot },
-                { id: "analytics", label: "KNN Analytics", icon: LineChart },
-                { id: "workouts", label: "Workout Tracker", icon: Dumbbell },
-                { id: "medical", label: "Medical Safety Layer", icon: ShieldCheck },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => setActiveTourTab(t.id as "coach" | "analytics" | "workouts" | "medical")}
-                  className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl sm:rounded-full text-xs sm:text-sm font-medium transition-all duration-200 text-center ${
-                    activeTourTab === t.id
-                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <t.icon className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{t.label}</span>
-                </button>
-              ))}
-            </div>
+          <div className="mt-5 inline-grid grid-cols-2 sm:inline-flex sm:items-center p-1.5 rounded-2xl sm:rounded-full bg-secondary/50 border border-border/60 backdrop-blur-md gap-1 sm:gap-1.5 max-w-[95vw] sm:max-w-none">
+            {[
+              { id: "coach", label: "AI Coach Chat", icon: Bot },
+              { id: "analytics", label: "KNN Analytics", icon: LineChart },
+              { id: "workouts", label: "Workout Tracker", icon: Dumbbell },
+              { id: "medical", label: "Medical Safety Layer", icon: ShieldCheck },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTourTab(t.id as "coach" | "analytics" | "workouts" | "medical")}
+                className={`flex items-center justify-center gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-full text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  activeTourTab === t.id
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 font-semibold"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <t.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 shrink-0" />
+                <span>{t.label}</span>
+              </button>
+            ))}
           </div>
         </motion.div>
 
