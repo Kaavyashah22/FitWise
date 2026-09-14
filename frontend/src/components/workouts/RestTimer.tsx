@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +20,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({ className, initialSeconds 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Clean Web Audio API synthesis for a pleasant 2-tone gym chime (offline, zero assets)
-  const playChime = () => {
+  const playChime = useCallback(() => {
     if (!soundEnabled) return;
     try {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -53,7 +53,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({ className, initialSeconds 
     } catch {
       // AudioContext might be blocked until first user gesture
     }
-  };
+  }, [soundEnabled]);
 
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
@@ -76,7 +76,7 @@ export const RestTimer: React.FC<RestTimerProps> = ({ className, initialSeconds 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [isRunning, timeLeft, soundEnabled]);
+  }, [isRunning, timeLeft, playChime]);
 
   const handleStart = () => {
     if (timeLeft === 0) {

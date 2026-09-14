@@ -86,7 +86,7 @@ function AppRoutes() {
 function App() {
   // Wake up backend when frontend loads
   useEffect(() => {
-    fetch(import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/");
+    fetch(import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/").catch(() => {});
   }, []);
 
   return (

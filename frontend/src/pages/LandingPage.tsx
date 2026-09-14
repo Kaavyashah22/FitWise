@@ -736,7 +736,7 @@ export default function LandingPage() {
             ].map((t) => (
               <button
                 key={t.id}
-                onClick={() => setActiveTourTab(t.id as any)}
+                onClick={() => setActiveTourTab(t.id as "coach" | "analytics" | "workouts" | "medical")}
                 className={`flex items-center gap-2 px-3.5 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
                   activeTourTab === t.id
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
@@ -1374,7 +1374,7 @@ export default function LandingPage() {
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveMlTab(tab.id as any)}
+                  onClick={() => setActiveMlTab(tab.id as "learning" | "cv" | "features" | "ablation")}
                   className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border ${
                     isActive
                       ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20 scale-[1.02]"
@@ -1434,7 +1434,7 @@ export default function LandingPage() {
                       <RcTooltip
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "12px", color: "#f8fafc", fontSize: "12px" }}
                         labelStyle={{ color: "#f8fafc", fontWeight: 600 }}
-                        formatter={(val: any) => [`${Number(val).toFixed(1)}%`, ""]}
+                        formatter={(val: number | string) => [`${Number(val).toFixed(1)}%`, ""]}
                       />
                       <RcLegend verticalAlign="top" height={36} wrapperStyle={{ fontSize: "12px" }} />
                       <RcLine type="monotone" dataKey="trainAcc" name="Training Accuracy" stroke="#ef4444" strokeWidth={2.5} dot={{ r: 4, fill: "#ef4444" }} />
@@ -1475,7 +1475,7 @@ export default function LandingPage() {
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "12px", color: "#f8fafc", fontSize: "12px" }}
                         labelStyle={{ color: "#f8fafc", fontWeight: 600 }}
                         itemStyle={{ color: "#10b981", fontWeight: 500 }}
-                        formatter={(val: any) => [`${Number(val).toFixed(1)}% Validation Accuracy`, "Score"]}
+                        formatter={(val: number | string) => [`${Number(val).toFixed(1)}% Validation Accuracy`, "Score"]}
                       />
                       <RcReferenceLine y={92.4} stroke="#ef4444" strokeDasharray="4 4" strokeWidth={2} label={{ value: "Mean CV: 92.40%", fill: "#ef4444", fontSize: 11, position: "top" }} />
                       <RcBar dataKey="accuracy" name="Validation Accuracy (%)" radius={[8, 8, 0, 0]}>
@@ -1508,7 +1508,7 @@ export default function LandingPage() {
                         contentStyle={{ backgroundColor: "#0f172a", borderColor: "#334155", borderRadius: "12px", color: "#f8fafc", fontSize: "12px" }}
                         labelStyle={{ color: "#f8fafc", fontWeight: 600 }}
                         itemStyle={{ color: "#10b981", fontWeight: 500 }}
-                        formatter={(val: any, name: any, item: any) => [`${val}% (Formula: ${item.payload.formula})`, "Feature Weight"]}
+                        formatter={(val: number | string, _name: string, item: { payload?: { formula?: string } }) => [`${val}% (Formula: ${item?.payload?.formula || ""})`, "Feature Weight"]}
                       />
                       <RcBar dataKey="importance" fill="#10b981" radius={[0, 8, 8, 0]}>
                         {FEATURE_IMPORTANCE_DATA.map((entry, index) => (

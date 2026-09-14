@@ -50,7 +50,7 @@ function calculateStreak(workoutDates: string[], metricDates: string[]): number 
   const formatYMD = (d: Date) => d.toISOString().split("T")[0];
   const todayStr = formatYMD(today);
 
-  let checkDate = new Date(today);
+  const checkDate = new Date(today);
   let streak = 0;
 
   // If today isn't logged yet, see if yesterday was logged to maintain ongoing streak

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 const TOKEN_KEY = "fitwise_access_token";
@@ -315,7 +314,9 @@ export function getCachedInjuryRisk(): InjuryRiskPrediction | null {
       injuryRiskCache = JSON.parse(raw);
       return injuryRiskCache;
     }
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   return null;
 }
 
@@ -324,7 +325,9 @@ export function invalidateInjuryRiskCache() {
   lastInjuryRiskFetch = 0;
   try {
     localStorage.removeItem(INJURY_CACHE_KEY);
-  } catch {}
+  } catch {
+    /* ignore */
+  }
 }
 
 export async function getInjuryRiskAPI(forceRefresh = false): Promise<InjuryRiskPrediction> {
@@ -341,7 +344,9 @@ export async function getInjuryRiskAPI(forceRefresh = false): Promise<InjuryRisk
     lastInjuryRiskFetch = Date.now();
     try {
       localStorage.setItem(INJURY_CACHE_KEY, JSON.stringify(res));
-    } catch {}
+    } catch {
+      /* ignore */
+    }
   }
   return res;
 }

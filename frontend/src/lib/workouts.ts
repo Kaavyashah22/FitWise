@@ -72,7 +72,9 @@ export function getCachedWorkouts(): WorkoutEntry[] {
       workoutsCache = JSON.parse(raw);
       return workoutsCache || [];
     }
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   return [];
 }
 
@@ -84,7 +86,9 @@ export function getCachedWeightLogs(): WeightLog[] {
       weightLogsCache = JSON.parse(raw);
       return weightLogsCache || [];
     }
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   return [];
 }
 
@@ -110,7 +114,9 @@ export async function addWorkout(entry: Omit<WorkoutEntry, "id">): Promise<Worko
   workoutsCache = updated;
   try {
     localStorage.setItem(WORKOUTS_CACHE_KEY, JSON.stringify(updated));
-  } catch {}
+  } catch {
+    /* ignore */
+  }
 
   invalidateInjuryRiskCache();
   return newEntry;
@@ -141,7 +147,9 @@ export async function getUserWorkouts(_userId?: string, forceRefresh = false): P
     lastWorkoutsFetch = Date.now();
     try {
       localStorage.setItem(WORKOUTS_CACHE_KEY, JSON.stringify(mapped));
-    } catch {}
+    } catch {
+      /* ignore */
+    }
 
     return mapped;
   } catch (err) {
@@ -162,7 +170,9 @@ export async function deleteWorkout(id: string) {
   workoutsCache = current;
   try {
     localStorage.setItem(WORKOUTS_CACHE_KEY, JSON.stringify(current));
-  } catch {}
+  } catch {
+    /* ignore */
+  }
   invalidateInjuryRiskCache();
 }
 
@@ -191,7 +201,9 @@ export async function getWeightLogs(_userId?: string, forceRefresh = false): Pro
     lastWeightLogsFetch = Date.now();
     try {
       localStorage.setItem(WEIGHT_CACHE_KEY, JSON.stringify(mapped));
-    } catch {}
+    } catch {
+      /* ignore */
+    }
 
     return mapped;
   } catch (err) {
@@ -216,7 +228,9 @@ export async function addWeightLog(_userId: string, date: string, weight: number
   weightLogsCache = updated;
   try {
     localStorage.setItem(WEIGHT_CACHE_KEY, JSON.stringify(updated));
-  } catch {}
+  } catch {
+    /* ignore */
+  }
 
   return newLog;
 }
