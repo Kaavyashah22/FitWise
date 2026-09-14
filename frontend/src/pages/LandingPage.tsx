@@ -2015,11 +2015,17 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground text-center sm:text-left">
-          <p>
-            Designed & Developed by <strong className="text-foreground">Kaavya Shah</strong> • Full-Stack & Generative AI Engineer
-          </p>
-          <div className="flex items-center gap-4">
+        <div className="mt-8 pt-6 border-t border-border/40 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground text-center md:text-left">
+          <div className="space-y-1">
+            <p>
+              Designed & Developed by <strong className="text-foreground">Kaavya Shah</strong> • Full-Stack & Generative AI Engineer
+            </p>
+            <p className="text-[11px] text-muted-foreground flex items-center justify-center md:justify-start gap-1.5">
+              <GraduationCap className="h-3.5 w-3.5 text-primary shrink-0" />
+              <span>Developed under the guidance & mentorship of <strong className="text-foreground">Dr. Amandeep Cheema</strong></span>
+            </p>
+          </div>
+          <div className="flex items-center gap-4 shrink-0">
             <a 
               href="https://github.com/Kaavyashah22/FitWise" 
               target="_blank" 
