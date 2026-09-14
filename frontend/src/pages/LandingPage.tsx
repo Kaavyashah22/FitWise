@@ -687,7 +687,7 @@ export default function LandingPage() {
             variants={appleStagger}
             initial="hidden"
             animate="visible"
-            className="mt-7 sm:mt-9 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 w-full max-w-3xl pt-5 sm:pt-6 border-t border-border/60"
+            className="mt-8 sm:mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 w-full max-w-3xl"
           >
             <motion.div variants={appleChild} className="flex flex-col items-center">
               <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground tracking-tight">92.5%</span>
@@ -706,13 +706,16 @@ export default function LandingPage() {
               <span className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">Medical Protocols</span>
             </motion.div>
           </motion.div>
+
+          {/* End of Hero Section Divider (Placed below the numbers where the section actually ends) */}
+          <div className="w-full max-w-3xl border-b border-border/50 mt-8 sm:mt-10" />
         </motion.div>
       </section>
 
       {/* =========================================================================
           PRODUCT TOUR SECTION (APPLE-STYLE SCROLL REVEAL)
           ========================================================================= */}
-      <section id="preview" className="min-h-screen flex flex-col justify-center pt-24 pb-20 px-4 max-w-6xl mx-auto relative border-t border-border/40 scroll-mt-0">
+      <section id="preview" className="min-h-screen flex flex-col justify-center pt-24 pb-20 px-4 max-w-6xl mx-auto relative scroll-mt-0">
         <motion.div
           variants={appleFadeUp}
           initial="hidden"
@@ -734,7 +737,7 @@ export default function LandingPage() {
           <div className="mt-5 inline-grid grid-cols-2 sm:inline-flex sm:items-center p-1.5 rounded-2xl sm:rounded-full bg-secondary/50 border border-border/60 backdrop-blur-md gap-1 sm:gap-1.5 max-w-[95vw] sm:max-w-none">
             {[
               { id: "coach", label: "AI Coach Chat", icon: Bot },
-              { id: "analytics", label: "KNN Analytics", icon: LineChart },
+              { id: "analytics", label: "Volume Analytics", icon: LineChart },
               { id: "workouts", label: "Workout Tracker", icon: Dumbbell },
               { id: "medical", label: "Medical Safety Layer", icon: ShieldCheck },
             ].map((t) => (
@@ -832,13 +835,13 @@ export default function LandingPage() {
               >
                 <div className="lg:col-span-6 space-y-4">
                   <Badge variant="outline" className="text-cyan-400 border-cyan-400/30 bg-cyan-400/5">
-                    Algorithmic Intelligence
+                    Progressive Overload Telemetry
                   </Badge>
                   <h3 className="text-2xl sm:text-3xl font-bold text-foreground">
-                    KNN Goal Clustering & Volume Telemetry
+                    Progressive Overload & Volume Analytics
                   </h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    Powered by scikit-learn machine learning. Clusters your historic metrics to compare your rate of progression against athletic profiles, giving you predictive clarity on when you'll reach your targets.
+                    Tracks cumulative weekly tonnage across muscle groups and monitors rate of progression, giving you predictive clarity on hypertrophy plateaus and recovery capacity.
                   </p>
                   <div className="space-y-2 pt-2">
                     <div className="flex items-center gap-2.5 text-xs text-foreground/90">
@@ -847,7 +850,7 @@ export default function LandingPage() {
                     </div>
                     <div className="flex items-center gap-2.5 text-xs text-foreground/90">
                       <CheckCheck className="h-4 w-4 text-cyan-400 shrink-0" />
-                      <span>Dynamic caloric & macronutrient adjustment based on weight drift</span>
+                      <span>Automated progressive overload targets based on fatigue & volume drift</span>
                     </div>
                   </div>
                 </div>
@@ -1919,7 +1922,7 @@ export default function LandingPage() {
               {
                 feature: "Goal Classification",
                 traditional: "Rule-based estimation",
-                fitwise: "Trained KNN mathematical clustering",
+                fitwise: "Trained KNN Archetype Classifier (k=3)",
               },
             ].map((row, i) => (
               <div key={i} className="grid grid-cols-12 p-4 sm:p-5 items-center hover:bg-foreground/[0.02] transition-colors">
