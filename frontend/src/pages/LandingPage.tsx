@@ -316,12 +316,12 @@ const SECTIONS = [
 
 // Academic & Model Performance Benchmark Telemetry
 const LEARNING_CURVE_DATA = [
-  { n: 120, label: "N=120 (Single-Sport)", trainAcc: 100.0, cvAcc: 82.2, gap: 17.8 },
+  { n: 120, label: "N=120 (15% Sample)", trainAcc: 100.0, cvAcc: 82.2, gap: 17.8 },
   { n: 255, label: "N=255", trainAcc: 100.0, cvAcc: 88.5, gap: 11.5 },
   { n: 392, label: "N=392", trainAcc: 100.0, cvAcc: 90.3, gap: 9.7 },
   { n: 528, label: "N=528", trainAcc: 100.0, cvAcc: 91.5, gap: 8.5 },
   { n: 664, label: "N=664", trainAcc: 100.0, cvAcc: 91.8, gap: 8.2 },
-  { n: 800, label: "N=800 (Multi-Sport)", trainAcc: 100.0, cvAcc: 92.4, gap: 7.6 },
+  { n: 800, label: "N=800 (Full Cohort)", trainAcc: 100.0, cvAcc: 92.4, gap: 7.6 },
 ];
 
 const CV_FOLDS_DATA = [
@@ -1331,7 +1331,7 @@ export default function LandingPage() {
               <LineChart className="h-6 w-6" />
             </div>
             <span className="text-xs font-semibold text-indigo-400 uppercase tracking-wider">Telemetry & Progress</span>
-            <h3 className="text-xl font-bold text-foreground mt-1 mb-3">Volume & Macro Telemetry</h3>
+            <h3 className="text-xl font-bold text-foreground mt-1 mb-3">Volume <span className="font-sans font-semibold">&</span> Macro Telemetry</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Track multi-week tonnage, micro-consistency streaks, and biometric trendlines through interactive Chart.js & Recharts dashboards.
             </p>
@@ -1355,7 +1355,7 @@ export default function LandingPage() {
             <ShieldCheck className="h-3.5 w-3.5 mr-1.5 inline" /> Empirical Model Telemetry
           </Badge>
           <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">
-            Model Performance & Cross-Validation
+            Model Performance <span className="font-sans font-semibold">&</span> Cross-Validation
           </h2>
           <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
             Live verifiable telemetry from our scikit-learn & XGBoost pipeline. Interactive diagnostic learning curves, 5-fold cross-validation stability, and explainable feature importances.
@@ -1444,12 +1444,12 @@ export default function LandingPage() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-border/40 text-xs">
                   <div className="p-3 rounded-xl bg-background/50 border border-border/50">
-                    <span className="text-muted-foreground block">Single-Sport Scale (N=120)</span>
+                    <span className="text-muted-foreground block">Subsampled Baseline (N=120)</span>
                     <span className="text-base font-bold text-amber-400 mt-0.5 block">82.2% CV (Gap: 17.8%)</span>
-                    <span className="text-[11px] text-muted-foreground">High variance / data starved</span>
+                    <span className="text-[11px] text-muted-foreground">Outperforms 67.57% single-sport POC</span>
                   </div>
                   <div className="p-3 rounded-xl bg-background/50 border border-border/50">
-                    <span className="text-muted-foreground block">Multi-Sport Scale (N=800)</span>
+                    <span className="text-muted-foreground block">Full Multi-Sport (N=800)</span>
                     <span className="text-base font-bold text-emerald-400 mt-0.5 block">92.4% CV (Gap: 7.6%)</span>
                     <span className="text-[11px] text-muted-foreground">Variance shrinks by 57%</span>
                   </div>
