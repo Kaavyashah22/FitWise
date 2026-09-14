@@ -1,4 +1,4 @@
-const CACHE_NAME = "fitwise-v1";
+const CACHE_NAME = "fitwise-v2";
 const ASSETS_TO_PRECACHE = [
   "/",
   "/index.html",

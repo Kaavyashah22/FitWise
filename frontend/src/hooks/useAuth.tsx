@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, getSession, logout as doLogout, setSession } from "@/lib/auth";
-import { clearAccessToken, clearStoredUser, getCurrentUser, getStoredUser, login, register, loginWithGoogleAPI, updateUserNameAPI } from "@/lib/apiClient";
+import { clearAccessToken, clearStoredUser, getCurrentUser, getStoredUser, login, register, loginWithGoogleAPI, updateUserNameAPI, getAccessToken } from "@/lib/apiClient";
 
 interface AuthCtx {
   user: User | null;
@@ -38,19 +38,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (session) setUser(session);
         }
 
-        // If we have a token, confirm session via /auth/me
-        try {
-          const me = await getCurrentUser();
-          const u: User = {
-            id: me.id,
-            email: me.email || "",
-            name: me.display_name,
-            createdAt: me.created_at,
-          };
-          setSession(u);
-          setUser(u);
-        } catch {
-          // token invalid or missing; keep existing local session if any
+        // Only confirm session via /auth/me if an access token actually exists
+        const token = getAccessToken();
+        if (token) {
+          try {
+            const me = await getCurrentUser();
+            const u: User = {
+              id: me.id,
+              email: me.email || "",
+              name: me.display_name,
+              createdAt: me.created_at,
+            };
+            setSession(u);
+            setUser(u);
+          } catch {
+            // Network failure or offline in gym; retain optimistic local session
+          }
         }
       } finally {
         setLoading(false);
