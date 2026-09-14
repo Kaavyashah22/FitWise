@@ -630,21 +630,21 @@ export default function LandingPage() {
       {/* =========================================================================
           2. HERO SECTION (APPLE-STYLE FLUID REVEAL)
           ========================================================================= */}
-      <section id="hero" className="min-h-[92vh] flex flex-col justify-center items-center pt-24 pb-16 px-4 max-w-5xl mx-auto text-center relative scroll-mt-0">
+      <section id="hero" className="min-h-[calc(100vh-4.5rem)] flex flex-col justify-center items-center pt-24 sm:pt-28 pb-8 sm:pb-12 px-4 max-w-5xl mx-auto text-center relative scroll-mt-0">
         <motion.div
           variants={appleFadeUp}
           initial="hidden"
           animate="visible"
-          className="flex flex-col items-center"
+          className="flex flex-col items-center my-auto"
         >
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold tracking-wide uppercase mb-6 shadow-sm shadow-primary/10 backdrop-blur-md">
+          <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-[11px] sm:text-xs font-semibold tracking-wide uppercase mb-3 sm:mb-4 shadow-sm shadow-primary/10 backdrop-blur-md">
             <ShieldAlert className="h-3.5 w-3.5 animate-pulse" />
             <span>XGBoost Injury Radar • Fine-Tuned Llama 3 • Clinical Guardrails</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-foreground max-w-4xl leading-[1.1] font-sans">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl leading-[1.12] font-sans">
             Transform Your Body With <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-emerald-400 via-primary to-teal-300 bg-clip-text text-transparent">
               Predictive AI Biomechanics
@@ -652,16 +652,16 @@ export default function LandingPage() {
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 text-base sm:text-xl text-muted-foreground max-w-2xl font-normal leading-relaxed">
+          <p className="mt-3.5 sm:mt-4 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl font-normal leading-relaxed">
             Full-stack fitness intelligence system combining XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
           {/* Action CTAs */}
-          <div className="mt-10 flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+          <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Button 
               size="lg" 
               onClick={() => navigate(user ? "/dashboard" : "/auth")}
-              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-8 h-12 text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform duration-200"
+              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 h-11 sm:h-12 text-sm sm:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform duration-200"
             >
               Build Your Custom Plan Free
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -671,7 +671,7 @@ export default function LandingPage() {
               size="lg" 
               variant="outline" 
               onClick={() => scrollToSection("simulator")}
-              className="w-full sm:w-auto rounded-full border-border/80 bg-background/50 hover:bg-foreground/5 h-12 px-7 text-base font-medium backdrop-blur-md"
+              className="w-full sm:w-auto rounded-full border-border/80 bg-background/50 hover:bg-foreground/5 h-11 sm:h-12 px-6 text-sm sm:text-base font-medium backdrop-blur-md"
             >
               <Sliders className="mr-2 h-4 w-4 text-primary" />
               Test Drive AI Simulator
@@ -683,23 +683,23 @@ export default function LandingPage() {
             variants={appleStagger}
             initial="hidden"
             animate="visible"
-            className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 w-full max-w-3xl pt-8 border-t border-border/60"
+            className="mt-7 sm:mt-9 grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 w-full max-w-3xl pt-5 sm:pt-6 border-t border-border/60"
           >
             <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">92.5%</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">XGBoost Accuracy</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground tracking-tight">92.5%</span>
+              <span className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">XGBoost Accuracy</span>
             </motion.div>
             <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-primary tracking-tight">100%</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">High-Risk Precision</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-primary tracking-tight">100%</span>
+              <span className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">High-Risk Precision</span>
             </motion.div>
             <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">&lt; 2.8s</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Modal GPU Streaming</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground tracking-tight">&lt; 2.8s</span>
+              <span className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">Modal GPU Streaming</span>
             </motion.div>
             <motion.div variants={appleChild} className="flex flex-col items-center">
-              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-400 tracking-tight">300+</span>
-              <span className="text-xs sm:text-sm text-muted-foreground mt-0.5">Medical Protocols</span>
+              <span className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-emerald-400 tracking-tight">300+</span>
+              <span className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">Medical Protocols</span>
             </motion.div>
           </motion.div>
         </motion.div>

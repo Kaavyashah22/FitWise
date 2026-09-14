@@ -275,7 +275,12 @@ const AnalyticsPage = () => {
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" vertical={false} />
                   <XAxis dataKey="date" tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
                   <YAxis domain={["dataMin - 2", "dataMax + 2"]} tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px' }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '10px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.4)', padding: '8px 12px', fontSize: '12px' }} 
+                    labelStyle={{ color: '#f8fafc', fontWeight: 600, marginBottom: '2px' }}
+                    itemStyle={{ color: '#fb923c', fontWeight: 500, fontSize: '12px' }}
+                    formatter={(val: number | string) => [`${val} kg`, "Body Weight"]}
+                  />
                   <Area type="monotone" dataKey="weight" stroke={chartColor3} strokeWidth={3} fillOpacity={1} fill="url(#colorWeight)" />
                 </AreaChart>
               </ResponsiveContainer>
@@ -337,7 +342,13 @@ const AnalyticsPage = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" vertical={false} />
                       <XAxis dataKey="date" tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px' }} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '10px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.4)', padding: '8px 12px', fontSize: '12px' }} 
+                        labelStyle={{ color: '#f8fafc', fontWeight: 600, marginBottom: '2px' }}
+                        itemStyle={{ color: '#34d399', fontWeight: 500, fontSize: '12px' }}
+                        cursor={{ fill: 'rgba(255,255,255,0.05)' }} 
+                        formatter={(val: number | string) => [`${Number(val).toLocaleString()} kg`, "Total Volume"]}
+                      />
                       <Bar dataKey="volume" fill="url(#colorVolume)" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -398,7 +409,12 @@ const AnalyticsPage = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(160, 12%, 20%)" vertical={false} />
                       <XAxis dataKey="date" tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fill: '#888' }} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={{ backgroundColor: '#1f2937', borderColor: '#374151', borderRadius: '8px' }} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#0f172a', borderColor: 'rgba(255,255,255,0.15)', borderRadius: '10px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.4)', padding: '8px 12px', fontSize: '12px' }} 
+                        labelStyle={{ color: '#f8fafc', fontWeight: 600, marginBottom: '2px' }}
+                        itemStyle={{ color: '#38bdf8', fontWeight: 500, fontSize: '12px' }}
+                        formatter={(val: number | string) => [`${val} kg`, "Estimated 1RM"]}
+                      />
                       <Area
                         type="monotone"
                         dataKey="oneRM"
