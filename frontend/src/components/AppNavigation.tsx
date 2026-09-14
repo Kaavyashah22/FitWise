@@ -15,7 +15,8 @@ import {
   User,
   Edit2,
   Loader2,
-  Sparkles
+  Sparkles,
+  Smartphone
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -50,6 +51,7 @@ export default function AppNavigation() {
   const location = useLocation();
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isInstallOpen, setIsInstallOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [isSavingName, setIsSavingName] = useState(false);
 
@@ -143,6 +145,10 @@ export default function AppNavigation() {
                   <Edit2 className="mr-2 h-4 w-4" />
                   <span>Edit Profile</span>
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsInstallOpen(true)} className="cursor-pointer">
+                  <Smartphone className="mr-2 h-4 w-4 text-primary" />
+                  <span>Install Mobile App</span>
+                </DropdownMenuItem>
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link to="/landing" className="flex items-center w-full">
                     <Sparkles className="mr-2 h-4 w-4 text-primary" />
@@ -205,6 +211,10 @@ export default function AppNavigation() {
               <Edit2 className="mr-2 h-4 w-4" />
               <span>Edit Profile</span>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsInstallOpen(true)} className="cursor-pointer">
+              <Smartphone className="mr-2 h-4 w-4 text-primary" />
+              <span>Install Mobile App</span>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer">
               <Link to="/landing" className="flex items-center w-full">
                 <Sparkles className="mr-2 h-4 w-4 text-primary" />
@@ -249,6 +259,59 @@ export default function AppNavigation() {
           <DialogFooter>
             <Button onClick={handleSaveName} disabled={isSavingName || !newName.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90">
               {isSavingName ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* INSTALL APP / PWA MODAL */}
+      <Dialog open={isInstallOpen} onOpenChange={setIsInstallOpen}>
+        <DialogContent className="sm:max-w-[420px] glass-card border-primary/20 bg-background/95">
+          <DialogHeader className="text-left">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-primary/30 flex items-center justify-center mb-2">
+              <Dumbbell className="w-6 h-6 text-primary" />
+            </div>
+            <DialogTitle className="text-xl font-bold">Install FitWise on iPhone</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Run FitWise in full-screen standalone mode without any browser bars — perfect for gym sessions.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-2 text-sm">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">1</div>
+              <div>
+                <p className="font-semibold text-foreground text-xs">Open in Safari & Tap Share</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Tap the Safari <strong>Share</strong> icon at the bottom of your screen (<span className="text-primary font-mono text-xs">⎋ / [↑]</span>).
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+              <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">2</div>
+              <div>
+                <p className="font-semibold text-foreground text-xs">Tap &quot;Add to Home Screen&quot;</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Scroll down the share sheet and select <strong>&quot;Add to Home Screen&quot;</strong>, then tap <strong>Add</strong>.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+              <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">3</div>
+              <div>
+                <p className="font-semibold text-foreground text-xs">Launch from Home Screen</p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  Tap the FitWise icon on your Home Screen for the full native gym app experience!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => setIsInstallOpen(false)} className="w-full bg-primary text-primary-foreground font-semibold">
+              Got it!
             </Button>
           </DialogFooter>
         </DialogContent>

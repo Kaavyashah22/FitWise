@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10b981" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- App Icon Base Background -->
+  <rect width="512" height="512" rx="118" fill="url(#bgGrad)" />
+  <rect width="510" height="510" x="1" y="1" rx="117" fill="none" stroke="rgba(16,185,129,0.3)" stroke-width="2" />
+
+  <!-- Radial Glow Behind Dumbbell -->
+  <circle cx="256" cy="256" r="160" fill="url(#ambientGlow)" />
+
+  <!-- Dumbbell Icon -->
+  <g transform="translate(136, 136) scale(10)" stroke="url(#primaryGrad)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="m6.5 6.5 11 11" />
+    <path d="m21 21-1-1" />
+    <path d="m3 3 1 1" />
+    <path d="m18 22 4-4" />
+    <path d="m2 6 4-4" />
+    <path d="m3 10 7-7" />
+    <path d="m14 21 7-7" />
+  </g>
+</svg>
