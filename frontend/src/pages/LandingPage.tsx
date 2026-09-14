@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -352,12 +353,21 @@ const ABLATION_ROWS = [
   { metric: "Limiting Factor / Diagnosis", single: "Sample Starvation (<15 High-Risk cases)", multi: "Cross-Disciplinary Generalization on Invariants" },
 ];
 
+const LANDING_NAV_LINKS = [
+  { id: "preview", label: "Tour" },
+  { id: "simulator", label: "Simulator" },
+  { id: "features", label: "Features" },
+  { id: "ml-benchmarks", label: "ML Telemetry", badge: "92.5%" },
+  { id: "architecture", label: "Architecture" },
+  { id: "comparison", label: "Benchmark" },
+];
+
 export default function LandingPage() {
   const { user } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
 
-  // Active section state for floating jump pills
+  // Active section state for floating jump pills and navbar indicator
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [activeMlTab, setActiveMlTab] = useState<"learning" | "cv" | "features" | "ablation">("learning");
 
@@ -393,8 +403,9 @@ export default function LandingPage() {
           // Backward jump (Shift + Space)
           for (let i = sectionElements.length - 1; i >= 0; i--) {
             const el = sectionElements[i];
-            if (el.offsetTop < currentScrollY - 40) {
-              window.scrollTo({ top: el.offsetTop, behavior: "smooth" });
+            const targetY = Math.max(0, el.offsetTop - 70);
+            if (targetY < currentScrollY - 40) {
+              window.scrollTo({ top: targetY, behavior: "smooth" });
               return;
             }
           }
@@ -403,8 +414,9 @@ export default function LandingPage() {
           // Forward jump (Space)
           for (let i = 0; i < sectionElements.length; i++) {
             const el = sectionElements[i];
-            if (el.offsetTop > currentScrollY + 40) {
-              window.scrollTo({ top: el.offsetTop, behavior: "smooth" });
+            const targetY = Math.max(0, el.offsetTop - 70);
+            if (targetY > currentScrollY + 40) {
+              window.scrollTo({ top: targetY, behavior: "smooth" });
               return;
             }
           }
@@ -412,9 +424,9 @@ export default function LandingPage() {
       }
     };
 
-    // Observer for updating active section on scroll (only needed on desktop where quick-jump dots are visible)
+    // Scrollspy observer for updating active section on scroll
     let observer: IntersectionObserver | null = null;
-    if (typeof window !== "undefined" && window.innerWidth >= 1280) {
+    if (typeof window !== "undefined") {
       observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -423,7 +435,7 @@ export default function LandingPage() {
             }
           });
         },
-        { rootMargin: "-35% 0px -35% 0px" }
+        { rootMargin: "-15% 0px -60% 0px" }
       );
 
       SECTIONS.forEach((s) => {
@@ -442,7 +454,8 @@ export default function LandingPage() {
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      window.scrollTo({ top: el.offsetTop, behavior: "smooth" });
+      const topOffset = el.getBoundingClientRect().top + window.scrollY - 70;
+      window.scrollTo({ top: Math.max(0, topOffset), behavior: "smooth" });
     }
   };
 
@@ -494,49 +507,67 @@ export default function LandingPage() {
         })}
       </aside>
 
+      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past Dynamic Island / notch) */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-50 safe-top-status-bar bg-background/80 backdrop-blur-xl pointer-events-none transition-all" />
+
       {/* =========================================================================
-          1. FLOATING NAVIGATION BAR
+          1. FIXED TOP NAVIGATION BAR (EDGE-TO-EDGE WITH SLIDING ACTIVE INDICATOR)
           ========================================================================= */}
-      <header className="sticky top-[calc(env(safe-area-inset-top,0px)+1rem)] md:top-4 z-50 w-[94%] max-w-6xl mx-auto">
-        <nav className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5">
+      <header className="fixed top-0 left-0 right-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm transition-all duration-200 pt-[env(safe-area-inset-top,0px)]">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 transition-transform hover:scale-105 shrink-0">
-            <div className="p-1.5 sm:p-2 rounded-xl bg-primary/20 text-primary border border-primary/30 shadow-sm shadow-primary/20">
-              <Dumbbell className="h-4 w-4 sm:h-5 sm:w-5" />
+          <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105 shrink-0" title="FitWise Home">
+            <div className="p-1.5 rounded-xl bg-primary/20 text-primary">
+              <Dumbbell className="h-5 w-5" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-base sm:text-lg tracking-tight text-foreground font-sans">
-                Fit<span className="text-primary">Wise</span>
-              </span>
-            </div>
+            <span className="font-bold text-lg text-foreground tracking-tight font-sans">FitWise</span>
             <Badge variant="outline" className="hidden sm:inline-flex text-[10px] px-2 py-0 border-primary/30 text-primary bg-primary/10">
               AI 2.0
             </Badge>
           </Link>
 
-          {/* Center Links */}
-          <div className="hidden md:flex items-center gap-6 text-sm font-medium text-muted-foreground">
-            <button onClick={() => scrollToSection("preview")} className="hover:text-foreground transition-colors">Tour</button>
-            <button onClick={() => scrollToSection("simulator")} className="hover:text-foreground transition-colors flex items-center gap-1.5">
-              <span>Simulator</span>
-              <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
-            </button>
-            <button onClick={() => scrollToSection("features")} className="hover:text-foreground transition-colors">Features</button>
-            <button onClick={() => scrollToSection("ml-benchmarks")} className="hover:text-foreground transition-colors flex items-center gap-1.5 text-foreground font-semibold">
-              <span>ML Telemetry</span>
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-emerald-500/40 text-emerald-500 bg-emerald-500/10">92.5%</Badge>
-            </button>
-            <button onClick={() => scrollToSection("architecture")} className="hover:text-foreground transition-colors">Architecture</button>
-            <button onClick={() => scrollToSection("comparison")} className="hover:text-foreground transition-colors">Benchmark</button>
-          </div>
+          {/* Center Links (Sliding active indicator line matching dashboard) */}
+          <nav className="hidden md:flex items-center h-full gap-1 lg:gap-4" aria-label="Landing page navigation">
+            {LANDING_NAV_LINKS.map((link) => {
+              const isActive = activeSection === link.id;
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => scrollToSection(link.id)}
+                  className={cn(
+                    "relative h-full flex items-center px-3.5 text-sm font-medium transition-colors duration-150 group",
+                    isActive
+                      ? "text-foreground font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <span className="py-1 px-1 rounded-md group-hover:text-foreground transition-colors">
+                    {link.label}
+                  </span>
+                  {link.badge && (
+                    <Badge variant="outline" className="ml-1.5 text-[9px] px-1.5 py-0 border-emerald-500/40 text-emerald-500 bg-emerald-500/10">
+                      {link.badge}
+                    </Badge>
+                  )}
+                  {isActive && (
+                    <motion.div
+                      layoutId="landingNavActiveIndicator"
+                      className="absolute bottom-0 inset-x-1 h-[2px] bg-primary rounded-t-full shadow-[0_0_10px_rgba(16,185,129,0.75)]"
+                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    />
+                  )}
+                </button>
+              );
+            })}
+          </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={toggle} 
-              className="rounded-full text-muted-foreground hover:text-foreground h-8 w-8 sm:h-9 sm:w-9"
+              className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 h-9 w-9"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -545,7 +576,7 @@ export default function LandingPage() {
             {user ? (
               <Button 
                 onClick={() => navigate("/dashboard")} 
-                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-3.5 sm:px-5 h-8 sm:h-9 text-xs sm:text-sm shadow-lg shadow-primary/25 shrink-0 whitespace-nowrap"
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 sm:px-5 h-9 text-xs sm:text-sm shadow-lg shadow-primary/25 shrink-0 whitespace-nowrap"
               >
                 <span><span className="hidden sm:inline">Go to </span>Dashboard</span>
                 <ChevronRight className="ml-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -553,20 +584,20 @@ export default function LandingPage() {
             ) : (
               <Button 
                 onClick={() => navigate("/auth")}
-                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-3.5 sm:px-5 h-8 sm:h-9 text-xs sm:text-sm shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 shrink-0 whitespace-nowrap"
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 sm:px-5 h-9 text-xs sm:text-sm shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 shrink-0 whitespace-nowrap"
               >
                 <span>Get Started</span>
                 <ArrowRight className="ml-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             )}
           </div>
-        </nav>
+        </div>
       </header>
 
       {/* =========================================================================
           2. HERO SECTION (APPLE-STYLE FLUID REVEAL)
           ========================================================================= */}
-      <section id="hero" className="min-h-[calc(100vh-4.5rem)] flex flex-col justify-center items-center pt-24 sm:pt-28 pb-8 sm:pb-12 px-4 max-w-5xl mx-auto text-center relative scroll-mt-0">
+      <section id="hero" className="min-h-[calc(100vh-4.5rem)] flex flex-col justify-center items-center pt-[calc(env(safe-area-inset-top,0px)+5.5rem)] sm:pt-28 pb-8 sm:pb-12 px-4 max-w-5xl mx-auto text-center relative scroll-mt-0">
         <motion.div
           variants={appleFadeUp}
           initial="hidden"
