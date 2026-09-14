@@ -15,6 +15,8 @@ import CoachPage from "./pages/CoachPage";
 import AppNavigation from "./components/AppNavigation";
 import ProtectedRoute from "./components/ProtectedRoute";
 import NotFound from "./pages/NotFound";
+import { RestTimerProvider } from "@/context/RestTimerContext";
+import { MiniRestTimer } from "@/components/workouts/MiniRestTimer";
 import { cn } from "@/lib/utils";
 
 const queryClient = new QueryClient();
@@ -38,6 +40,7 @@ function MainLayout({ children, noPadding = false }: { children: React.ReactNode
       )}>
         {children}
       </main>
+      <MiniRestTimer />
     </div>
   );
 }
@@ -98,7 +101,9 @@ function App() {
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              <AppRoutes />
+              <RestTimerProvider>
+                <AppRoutes />
+              </RestTimerProvider>
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

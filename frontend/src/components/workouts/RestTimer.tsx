@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Pause, RotateCcw, Plus, Timer, Volume2, VolumeX, Sparkles } from "lucide-react";
+import { useRestTimer } from "@/context/RestTimerContext";
 import { cn } from "@/lib/utils";
 
 interface RestTimerProps {
@@ -10,99 +11,62 @@ interface RestTimerProps {
   initialSeconds?: number;
 }
 
-export const RestTimer: React.FC<RestTimerProps> = ({ className, initialSeconds = 90 }) => {
-  const [targetSeconds, setTargetSeconds] = useState(initialSeconds);
-  const [timeLeft, setTimeLeft] = useState(initialSeconds);
-  const [isRunning, setIsRunning] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [isFinished, setIsFinished] = useState(false);
+export const RestTimer: React.FC<RestTimerProps> = ({ className, initialSeconds }) => {
+  const {
+    targetSeconds,
+    timeLeft,
+    isRunning,
+    isFinished,
+    soundEnabled,
+    startTimer,
+    pauseTimer,
+    resetTimer,
+    addSeconds,
+    toggleSound,
+  } = useRestTimer();
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Clean Web Audio API synthesis for a pleasant 2-tone gym chime (offline, zero assets)
-  const playChime = useCallback(() => {
-    if (!soundEnabled) return;
-    try {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      const ctx = new AudioCtx();
-      
-      const now = ctx.currentTime;
-      // Note 1: High crisp bell (A5 = 880Hz)
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.type = "sine";
-      osc1.frequency.setValueAtTime(880, now);
-      gain1.gain.setValueAtTime(0.25, now);
-      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start(now);
-      osc1.stop(now + 0.5);
-
-      // Note 2: Harmonic resolution (D6 = 1174.66Hz)
-      const osc2 = ctx.createOscillator();
-      const gain2 = ctx.createGain();
-      osc2.type = "sine";
-      osc2.frequency.setValueAtTime(1174.66, now + 0.16);
-      gain2.gain.setValueAtTime(0.3, now + 0.16);
-      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.75);
-      osc2.connect(gain2);
-      gain2.connect(ctx.destination);
-      osc2.start(now + 0.16);
-      osc2.stop(now + 0.75);
-    } catch {
-      // AudioContext might be blocked until first user gesture
-    }
-  }, [soundEnabled]);
-
+  // If an initialSeconds prop is explicitly provided and different from targetSeconds, sync on mount if idle
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current!);
-            setIsRunning(false);
-            setIsFinished(true);
-            playChime();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
+    if (initialSeconds !== undefined && initialSeconds !== targetSeconds && !isRunning && timeLeft === targetSeconds) {
+      resetTimer(initialSeconds);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSeconds]);
 
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
+  // Spacebar quick shortcut to Start / Pause timer (unless typing in inputs)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        const activeTag = document.activeElement?.tagName.toLowerCase();
+        if (activeTag === "input" || activeTag === "textarea" || (document.activeElement as HTMLElement)?.isContentEditable) {
+          return;
+        }
+        e.preventDefault();
+        if (isRunning) {
+          pauseTimer();
+        } else {
+          startTimer();
+        }
+      }
     };
-  }, [isRunning, timeLeft, playChime]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isRunning, pauseTimer, startTimer]);
 
   const handleStart = () => {
-    if (timeLeft === 0) {
-      setTimeLeft(targetSeconds);
-      setIsFinished(false);
-    }
-    setIsRunning(true);
-    setIsFinished(false);
+    startTimer();
   };
 
   const handlePause = () => {
-    setIsRunning(false);
+    pauseTimer();
   };
 
   const handleReset = (newSecs?: number) => {
-    const s = newSecs !== undefined ? newSecs : targetSeconds;
-    setIsRunning(false);
-    setIsFinished(false);
-    if (newSecs !== undefined) setTargetSeconds(newSecs);
-    setTimeLeft(s);
+    resetTimer(newSecs);
   };
 
   const addThirtySeconds = () => {
-    setTimeLeft((prev) => prev + 30);
-    setTargetSeconds((prev) => Math.max(prev, timeLeft + 30));
-    setIsFinished(false);
+    addSeconds(30);
   };
 
   // Format mm:ss
@@ -170,6 +134,9 @@ export const RestTimer: React.FC<RestTimerProps> = ({ className, initialSeconds 
                 <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
                   <Timer className="w-4 h-4 text-cyan-400" /> In-App Rest Timer
                 </span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono bg-muted/60 text-muted-foreground rounded border border-border/60" title="Press spacebar anywhere to toggle start / pause">
+                  Space
+                </kbd>
                 {isFinished && (
                   <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[10px] animate-bounce">
                     <Sparkles className="w-2.5 h-2.5 mr-1" /> Rest Complete!

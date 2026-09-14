@@ -229,14 +229,15 @@ export default function CoachPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSend = async (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent, promptOverride?: string) => {
     if (e) e.preventDefault();
-    if (!input.trim() || isLoading || !currentSessionId) return;
+    const textToSend = (promptOverride || input).trim();
+    if (!textToSend || isLoading || !currentSessionId) return;
 
     const userMsg: LocalMessage = {
       id: Date.now().toString(),
       role: "user",
-      content: input.trim(),
+      content: textToSend,
     };
 
     isUserScrolledUp.current = false;
@@ -511,13 +512,20 @@ export default function CoachPage() {
           
           {!isFetchingHistory && messages.length <= 1 && (
             <div className="flex flex-wrap justify-center gap-2 mb-4 w-full max-w-4xl">
-              {["Why did my bench press stall?", "Suggest a new 15-min HIIT routine", "How do I optimize my protein intake?"].map((prompt, i) => (
+              {[
+                { label: "What should I train today?", prompt: "What should I train today based on my recent workout history and recovery?" },
+                { label: "Review weekly progressive overload", prompt: "Review my weekly volume progression and advise if I am progressively overloading effectively." },
+                { label: "Post-workout recovery meals", prompt: "Suggest optimal high-protein post-workout recovery meals based on my dietary preference." },
+                { label: "Analyze fatigue & injury risk", prompt: "Analyze my recent training frequency and intensity for signs of central nervous system fatigue or injury risk." },
+              ].map((item, i) => (
                 <button
                   key={i}
-                  onClick={() => setInput(prompt)}
-                  className="text-xs bg-secondary/60 hover:bg-primary/20 hover:text-primary hover:border-primary/50 text-muted-foreground border border-border/50 rounded-full px-4 py-1.5 transition-all flex items-center gap-1.5"
+                  type="button"
+                  onClick={() => handleSend(undefined, item.prompt)}
+                  className="text-xs bg-secondary/70 hover:bg-primary/20 hover:text-primary hover:border-primary/50 text-muted-foreground border border-border/60 rounded-full px-3.5 py-1.5 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
+                  title={`Ask: "${item.prompt}"`}
                 >
-                  <Zap className="w-3 h-3" /> {prompt}
+                  <Sparkles className="w-3 h-3 text-primary" /> {item.label}
                 </button>
               ))}
             </div>

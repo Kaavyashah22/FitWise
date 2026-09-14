@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { RestTimer } from "@/components/workouts/RestTimer";
+import { useRestTimer } from "@/context/RestTimerContext";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -23,6 +24,7 @@ const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
 const WorkoutsPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { startTimer } = useRestTimer();
 
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -110,6 +112,37 @@ const WorkoutsPage = () => {
     } catch (err: any) {
       toast({
         title: "Error deleting workout",
+        description: err.message ?? "Something went wrong",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRepeatSet = async (w: WorkoutEntry) => {
+    if (!user) return;
+    try {
+      const todayStr = new Date().toISOString().split("T")[0];
+      const entry = await addWorkout({
+        userId: user.id,
+        date: todayStr,
+        muscleGroup: w.muscleGroup,
+        exercise: w.exercise,
+        sets: 1,
+        reps: w.reps,
+        weight: w.weight,
+      });
+
+      setWorkouts((prev) => [...prev, entry]);
+      setExpandedDates((prev) => ({ ...prev, [todayStr]: true }));
+      startTimer(90);
+
+      toast({
+        title: "Set Logged! ⏱️",
+        description: `Logged Set: ${w.exercise} (1 x ${w.reps} @ ${w.weight}kg). 90s rest timer started!`,
+      });
+    } catch (err: any) {
+      toast({
+        title: "Error repeating set",
         description: err.message ?? "Something went wrong",
         variant: "destructive",
       });
@@ -295,7 +328,7 @@ const WorkoutsPage = () => {
                       <TableHead className="text-right">Reps</TableHead>
                       <TableHead className="text-right">Weight</TableHead>
                       <TableHead className="text-right">Volume</TableHead>
-                      <TableHead className="w-[60px]"></TableHead>
+                      <TableHead className="w-[110px] text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -345,10 +378,28 @@ const WorkoutsPage = () => {
                               <TableCell className="text-right text-primary font-bold opacity-80">
                                 {(w.sets * w.reps * w.weight).toLocaleString()}
                               </TableCell>
-                              <TableCell>
-                                <Button variant="ghost" size="icon" onClick={() => handleDelete(w.id)} className="hover:bg-destructive/10 hover:text-destructive">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                              <TableCell className="text-right">
+                                <div className="flex items-center justify-end gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRepeatSet(w)}
+                                    className="h-8 px-2 text-xs font-semibold text-primary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1"
+                                    title="1-Tap: Log another set with same weight/reps & start 90s rest timer"
+                                  >
+                                    <Plus className="w-3.5 h-3.5" />
+                                    <span className="hidden sm:inline">Set</span>
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={() => handleDelete(w.id)} 
+                                    className="h-8 w-8 hover:bg-destructive/10 hover:text-destructive rounded-lg"
+                                    title="Delete entry"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                  </Button>
+                                </div>
                               </TableCell>
                             </TableRow>
                           ))}
