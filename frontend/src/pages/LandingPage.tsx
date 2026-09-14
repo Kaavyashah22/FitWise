@@ -498,14 +498,14 @@ export default function LandingPage() {
           1. FLOATING NAVIGATION BAR
           ========================================================================= */}
       <header className="sticky top-[calc(env(safe-area-inset-top,0px)+1rem)] md:top-4 z-50 w-[94%] max-w-6xl mx-auto">
-        <nav className="flex items-center justify-between px-5 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5">
+        <nav className="flex items-center justify-between px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5">
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">
-            <div className="p-2 rounded-xl bg-primary/20 text-primary border border-primary/30 shadow-sm shadow-primary/20">
-              <Dumbbell className="h-5 w-5" />
+          <Link to="/" className="flex items-center gap-2 sm:gap-2.5 transition-transform hover:scale-105 shrink-0">
+            <div className="p-1.5 sm:p-2 rounded-xl bg-primary/20 text-primary border border-primary/30 shadow-sm shadow-primary/20">
+              <Dumbbell className="h-4 w-4 sm:h-5 sm:w-5" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-lg tracking-tight text-foreground font-sans">
+              <span className="font-extrabold text-base sm:text-lg tracking-tight text-foreground font-sans">
                 Fit<span className="text-primary">Wise</span>
               </span>
             </div>
@@ -531,12 +531,12 @@ export default function LandingPage() {
           </div>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={toggle} 
-              className="rounded-full text-muted-foreground hover:text-foreground"
+              className="rounded-full text-muted-foreground hover:text-foreground h-8 w-8 sm:h-9 sm:w-9"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -545,18 +545,18 @@ export default function LandingPage() {
             {user ? (
               <Button 
                 onClick={() => navigate("/dashboard")} 
-                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 shadow-lg shadow-primary/25"
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-3.5 sm:px-5 h-8 sm:h-9 text-xs sm:text-sm shadow-lg shadow-primary/25 shrink-0 whitespace-nowrap"
               >
-                Go to Dashboard
-                <ChevronRight className="ml-1.5 h-4 w-4" />
+                <span><span className="hidden sm:inline">Go to </span>Dashboard</span>
+                <ChevronRight className="ml-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             ) : (
               <Button 
                 onClick={() => navigate("/auth")}
-                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-sm px-5 py-2 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300"
+                className="rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-3.5 sm:px-5 h-8 sm:h-9 text-xs sm:text-sm shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all duration-300 shrink-0 whitespace-nowrap"
               >
-                Get Started
-                <ArrowRight className="ml-1.5 h-4 w-4" />
+                <span>Get Started</span>
+                <ArrowRight className="ml-1 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             )}
           </div>
@@ -663,26 +663,28 @@ export default function LandingPage() {
           </p>
 
           {/* Tour Tabs Bar */}
-          <div className="mt-5 inline-flex p-1.5 rounded-full bg-secondary/50 border border-border/60 backdrop-blur-md">
-            {[
-              { id: "coach", label: "AI Coach Chat", icon: Bot },
-              { id: "analytics", label: "KNN Analytics", icon: LineChart },
-              { id: "workouts", label: "Workout Tracker", icon: Dumbbell },
-              { id: "medical", label: "Medical Safety Layer", icon: ShieldCheck },
-            ].map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setActiveTourTab(t.id as "coach" | "analytics" | "workouts" | "medical")}
-                className={`flex items-center gap-2 px-3.5 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
-                  activeTourTab === t.id
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <t.icon className="h-3.5 w-3.5" />
-                <span>{t.label}</span>
-              </button>
-            ))}
+          <div className="mt-5 w-full max-w-xl mx-auto p-1.5 rounded-2xl sm:rounded-full bg-secondary/50 border border-border/60 backdrop-blur-md">
+            <div className="grid grid-cols-2 sm:flex sm:items-center sm:justify-center gap-1 sm:gap-0.5">
+              {[
+                { id: "coach", label: "AI Coach Chat", icon: Bot },
+                { id: "analytics", label: "KNN Analytics", icon: LineChart },
+                { id: "workouts", label: "Workout Tracker", icon: Dumbbell },
+                { id: "medical", label: "Medical Safety Layer", icon: ShieldCheck },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTourTab(t.id as "coach" | "analytics" | "workouts" | "medical")}
+                  className={`flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-xl sm:rounded-full text-xs sm:text-sm font-medium transition-all duration-200 text-center ${
+                    activeTourTab === t.id
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/20 font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <t.icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{t.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </motion.div>
 
@@ -1753,9 +1755,9 @@ export default function LandingPage() {
       {/* =========================================================================
           8. FOOTER
           ========================================================================= */}
-      <footer className="border-t border-border/60 py-12 px-4 max-w-6xl mx-auto text-sm text-muted-foreground">
+      <footer className="border-t border-border/60 py-12 px-6 max-w-6xl mx-auto text-sm text-muted-foreground pb-20 sm:pb-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2.5 shrink-0">
             <div className="p-1.5 rounded-lg bg-primary/20 text-primary">
               <Dumbbell className="h-4 w-4" />
             </div>
@@ -1765,7 +1767,7 @@ export default function LandingPage() {
             </span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs">
+          <div className="flex flex-wrap items-center justify-center sm:justify-end gap-x-5 gap-y-2.5 text-xs text-center px-1">
             <button onClick={() => scrollToSection("preview")} className="hover:text-foreground transition-colors">Tour</button>
             <button onClick={() => scrollToSection("simulator")} className="hover:text-foreground transition-colors">Simulator</button>
             <button onClick={() => scrollToSection("features")} className="hover:text-foreground transition-colors">Features</button>
@@ -1776,7 +1778,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
+        <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground text-center sm:text-left">
           <p>
             Designed & Developed by <strong className="text-foreground">Kaavya Shah</strong> • Full-Stack & Generative AI Engineer
           </p>
