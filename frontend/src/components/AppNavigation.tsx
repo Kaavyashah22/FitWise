@@ -307,7 +307,7 @@ export default function AppNavigation() {
             </div>
             <DialogTitle className="text-xl font-bold">Install FitWise Mobile App</DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
-              Install FitWise as a standalone native app on Android (Chrome) or iPhone (Safari) — zero browser bars, instant offline launch, and haptic rest alerts.
+              Install FitWise as a standalone native app on Android or iOS — zero browser bars, instant offline launch, and haptic rest alerts.
             </DialogDescription>
           </DialogHeader>
 
@@ -316,7 +316,7 @@ export default function AppNavigation() {
             <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/30 flex flex-col gap-2">
               <p className="text-xs font-semibold text-primary">Chrome detected 1-click installation:</p>
               <Button onClick={handleNativeInstall} className="w-full bg-primary text-primary-foreground font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
-                <Download className="w-4 h-4" /> Install App to Android Now
+                <Download className="w-4 h-4" /> Install App for Android
               </Button>
             </div>
           )}
@@ -333,7 +333,7 @@ export default function AppNavigation() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              🤖 Android (Chrome)
+              Android
             </button>
             <button
               type="button"
@@ -345,7 +345,7 @@ export default function AppNavigation() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              🍎 iPhone (Safari)
+              iOS
             </button>
           </div>
 
@@ -378,7 +378,7 @@ export default function AppNavigation() {
                   <div>
                     <p className="font-semibold text-foreground text-xs">Launch from App Drawer</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Chrome automatically installs FitWise into your Android Home Screen and App Drawer with vibration haptics enabled!
+                      FitWise installs into your Android Home Screen and App Drawer with vibration haptics enabled.
                     </p>
                   </div>
                 </div>
@@ -390,7 +390,7 @@ export default function AppNavigation() {
                   <div>
                     <p className="font-semibold text-foreground text-xs">Open in Safari & Tap Share</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Tap the Safari <strong>Share</strong> icon at the bottom of your screen (<span className="text-primary font-mono text-xs">⎋ / [↑]</span>).
+                      Tap the Safari <strong>Share</strong> icon at the bottom of your screen (<span className="text-primary font-mono text-xs">[↑]</span>).
                     </p>
                   </div>
                 </div>
@@ -410,7 +410,7 @@ export default function AppNavigation() {
                   <div>
                     <p className="font-semibold text-foreground text-xs">Launch from Home Screen</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Tap the FitWise icon on your Home Screen for the full native gym app experience!
+                      Tap the FitWise icon on your Home Screen for the full native app experience.
                     </p>
                   </div>
                 </div>
