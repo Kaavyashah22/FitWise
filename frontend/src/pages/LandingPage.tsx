@@ -44,8 +44,15 @@ import {
   GraduationCap,
   Award,
   Scale,
-  BarChart3
+  BarChart3,
+  Smartphone,
+  WifiOff,
+  QrCode,
+  Download,
+  Share2
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+import { InstallAppModal } from "@/components/InstallAppModal";
 
 import {
   ResponsiveContainer,
@@ -309,6 +316,7 @@ const SECTIONS = [
   { id: "preview", label: "Product Tour" },
   { id: "simulator", label: "AI Simulator" },
   { id: "features", label: "Core Features" },
+  { id: "mobile-app", label: "Mobile App" },
   { id: "ml-benchmarks", label: "ML Telemetry" },
   { id: "architecture", label: "Architecture" },
   { id: "comparison", label: "Benchmark" },
@@ -357,6 +365,7 @@ const LANDING_NAV_LINKS = [
   { id: "preview", label: "Tour" },
   { id: "simulator", label: "Simulator" },
   { id: "features", label: "Features" },
+  { id: "mobile-app", label: "App & QR", badge: "iOS / Android" },
   { id: "ml-benchmarks", label: "ML Telemetry", badge: "92.5%" },
   { id: "architecture", label: "Architecture" },
   { id: "comparison", label: "Benchmark" },
@@ -370,6 +379,11 @@ export default function LandingPage() {
   // Active section state for floating jump pills and navbar indicator
   const [activeSection, setActiveSection] = useState<string>("hero");
   const [activeMlTab, setActiveMlTab] = useState<"learning" | "cv" | "features" | "ablation">("learning");
+  const [isInstallOpen, setIsInstallOpen] = useState<boolean>(false);
+
+  const appUrl = typeof window !== "undefined" && window.location.origin 
+    ? window.location.origin 
+    : "https://fit-wise-seven.vercel.app";
 
   // Interactive Simulator State
   const [selectedGoal, setSelectedGoal] = useState<GoalType>("cut");
@@ -562,7 +576,18 @@ export default function LandingPage() {
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsInstallOpen(true)}
+              className="hidden lg:inline-flex items-center gap-1.5 rounded-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary h-9 px-3.5 text-xs font-semibold transition-all hover:scale-105"
+              title="Install FitWise Native Mobile App or Scan QR Code"
+            >
+              <Smartphone className="h-3.5 w-3.5" />
+              <span>Install App</span>
+            </Button>
+
             <Button 
               variant="ghost" 
               size="icon" 
@@ -623,6 +648,22 @@ export default function LandingPage() {
             Full-stack fitness intelligence system combining XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
+          {/* Mobile App & Offline Feature Badges */}
+          <div className="mt-3.5 flex items-center justify-center gap-2 flex-wrap text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 border border-border/60">
+              <Smartphone className="h-3.5 w-3.5 text-primary" />
+              <strong className="text-foreground">iOS & Android Native App</strong>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 border border-border/60">
+              <WifiOff className="h-3.5 w-3.5 text-emerald-400" />
+              <span>100% Offline Gym Logging</span>
+            </span>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 border border-border/60">
+              <QrCode className="h-3.5 w-3.5 text-teal-400" />
+              <span>Scan QR to Test</span>
+            </span>
+          </div>
+
           {/* Action CTAs */}
           <div className="mt-5 sm:mt-7 flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto">
             <Button 
@@ -642,6 +683,19 @@ export default function LandingPage() {
             >
               <Sliders className="mr-2 h-4 w-4 text-primary" />
               Test Drive AI Simulator
+            </Button>
+
+            <Button 
+              size="lg" 
+              variant="outline" 
+              onClick={() => scrollToSection("mobile-app")}
+              className="w-full sm:w-auto rounded-full border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary h-11 sm:h-12 px-5 text-sm sm:text-base font-semibold backdrop-blur-md flex items-center justify-center gap-2 shadow-sm"
+            >
+              <Smartphone className="h-4 w-4" />
+              <span>Mobile App & QR</span>
+              <Badge variant="outline" className="text-[10px] border-primary/40 bg-primary/20 text-primary px-1.5 py-0 ml-0.5">
+                iOS & Android
+              </Badge>
             </Button>
           </div>
 
@@ -1308,6 +1362,174 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
+          4.3. STANDALONE MOBILE APP (iOS & ANDROID) & LIVE QR SCANNER
+          ========================================================================= */}
+      <section id="mobile-app" className="min-h-screen flex flex-col justify-center pt-24 pb-20 px-4 max-w-6xl mx-auto relative border-t border-border/40 scroll-mt-0">
+        <motion.div
+          variants={appleFadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.15, margin: "-40px" }}
+          className="text-center mb-12 sm:mb-16"
+        >
+          <Badge className="bg-primary/10 text-primary border-primary/30 mb-3 px-3 py-1 text-xs">
+            <Smartphone className="h-3.5 w-3.5 mr-1.5 inline" /> Standalone Mobile Engine
+          </Badge>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+            FitWise on <span className="text-primary">iOS & Android</span>
+          </h2>
+          <p className="text-muted-foreground mt-3 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            Engineered as an installable standalone native app with zero App Store friction. Works 100% offline in gym basements, launches full-screen with native touch gestures, and delivers hardware haptic feedback.
+          </p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          {/* Left Column: 3 Core Native Features */}
+          <motion.div 
+            variants={appleFadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15, margin: "-40px" }}
+            className="lg:col-span-7 space-y-4"
+          >
+            {/* Feature 1: Offline Logging */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-card/60 backdrop-blur-xl border border-border/70 shadow-lg hover:border-primary/40 transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shrink-0 group-hover:scale-110 transition-transform">
+                  <WifiOff className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground">100% Offline Gym Logging</h3>
+                    <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-500 bg-emerald-500/10">
+                      Zero Signal Ready
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                    Gym basements, underground studios, and trail runs often have zero internet reception. FitWise uses an optimistic local queue: log sets, reps, and weights without waiting. As soon as connectivity returns, your data automatically syncs to the cloud.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 2: Standalone Native Feel */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-card/60 backdrop-blur-xl border border-border/70 shadow-lg hover:border-primary/40 transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-2xl bg-primary/15 text-primary border border-primary/30 shrink-0 group-hover:scale-110 transition-transform">
+                  <Smartphone className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground">Zero App Store Lag (iOS & Android)</h3>
+                    <Badge variant="outline" className="text-[10px] border-primary/40 text-primary bg-primary/10">
+                      Instant PWA
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                    No 500MB download or App Store account required. Install in 1 tap directly from Safari (iOS) or Chrome (Android) to your home screen or app drawer. Launches full-screen with zero browser search bars.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Feature 3: Hardware Haptic Rest Alerts */}
+            <div className="p-5 sm:p-6 rounded-2xl bg-card/60 backdrop-blur-xl border border-border/70 shadow-lg hover:border-primary/40 transition-all group">
+              <div className="flex items-start gap-4">
+                <div className="p-3 rounded-2xl bg-teal-500/15 text-teal-400 border border-teal-500/30 shrink-0 group-hover:scale-110 transition-transform">
+                  <Zap className="h-6 w-6" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-lg font-bold text-foreground">Hardware Haptic Rest Alerts</h3>
+                    <Badge variant="outline" className="text-[10px] border-teal-500/40 text-teal-500 bg-teal-500/10">
+                      Physical Vibration
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-1.5 leading-relaxed">
+                    Device vibration pulses trigger directly through your phone's haptic motor when rest intervals complete between sets, keeping workouts on pace without needing to look at your phone.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Faculty Live QR Code & Test Card */}
+          <motion.div 
+            variants={appleFadeUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.15, margin: "-40px" }}
+            className="lg:col-span-5"
+          >
+            <div className="relative p-6 sm:p-8 rounded-3xl bg-gradient-to-b from-card/80 via-card/50 to-background/80 backdrop-blur-2xl border border-primary/30 shadow-2xl shadow-black/10 dark:shadow-primary/5 text-center flex flex-col items-center">
+              {/* Header Badge */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
+                <QrCode className="h-3.5 w-3.5" />
+                <span>Faculty & Evaluator Live Test</span>
+              </div>
+
+              <h3 className="text-xl font-bold text-foreground mb-1">
+                Scan to Open on Your Phone
+              </h3>
+              <p className="text-xs text-muted-foreground max-w-xs mb-5">
+                Point your iPhone Camera or Android Google Lens at the code below to test the mobile app on your personal device right now.
+              </p>
+
+              {/* QR Code Container */}
+              <div className="p-4 bg-white rounded-2xl shadow-2xl shadow-black/20 border border-slate-200 transition-transform hover:scale-105 duration-300">
+                <QRCodeSVG
+                  value={appUrl}
+                  size={200}
+                  level="H"
+                  includeMargin={false}
+                  imageSettings={{
+                    src: "/icon-192.png",
+                    x: undefined,
+                    y: undefined,
+                    height: 42,
+                    width: 42,
+                    excavate: true,
+                  }}
+                />
+              </div>
+
+              {/* Supported OS Badges */}
+              <div className="flex items-center justify-center gap-3 mt-5">
+                <Badge variant="secondary" className="text-xs py-1 px-3 gap-1.5 font-medium border border-border/60">
+                  <span>Apple iOS (Safari)</span>
+                </Badge>
+                <Badge variant="secondary" className="text-xs py-1 px-3 gap-1.5 font-medium border border-border/60">
+                  <span>Google Android (Chrome)</span>
+                </Badge>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-2 gap-3 w-full mt-6">
+                <Button
+                  onClick={() => setIsInstallOpen(true)}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs h-10 shadow-lg shadow-primary/20 rounded-xl flex items-center justify-center gap-1.5"
+                >
+                  <Smartphone className="h-4 w-4" />
+                  <span>Install Guide</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(appUrl);
+                    alert("FitWise URL copied to clipboard!");
+                  }}
+                  className="w-full border-border/80 hover:bg-secondary/60 text-foreground font-semibold text-xs h-10 rounded-xl flex items-center justify-center gap-1.5"
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span>Copy Link</span>
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* =========================================================================
           4.5. EMPIRICAL MACHINE LEARNING VALIDATION & MODEL BENCHMARK
           ========================================================================= */}
       <section id="ml-benchmarks" className="min-h-screen flex flex-col justify-center pt-24 pb-20 px-4 max-w-6xl mx-auto relative border-t border-border/40 scroll-mt-0">
@@ -1824,6 +2046,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Install App Modal (with Live QR Code & Android/iOS guides) */}
+      <InstallAppModal open={isInstallOpen} onOpenChange={setIsInstallOpen} />
 
     </div>
   );

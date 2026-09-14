@@ -11,12 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { motion } from "framer-motion";
-import { Plus, Trash2, Dumbbell, Loader2, Trophy, ChevronDown, ChevronRight, Calendar } from "lucide-react";
+import { Plus, Trash2, Dumbbell, Loader2, Trophy, ChevronDown, ChevronRight, Calendar, WifiOff, CloudUpload, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { RestTimer } from "@/components/workouts/RestTimer";
 import { useRestTimer } from "@/context/RestTimerContext";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
 const item = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0 } };
@@ -25,6 +26,7 @@ const WorkoutsPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { startTimer } = useRestTimer();
+  const { isOnline, offlineQueueCount, isSyncing, syncNow, refreshQueueCount } = useOnlineStatus();
 
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,12 +52,16 @@ const WorkoutsPage = () => {
         }
         const ws = await getUserWorkouts(user.id);
         setWorkouts(ws);
+        refreshQueueCount();
       } catch (err: any) {
-        toast({
-          title: "Error loading workouts",
-          description: err.message ?? "Something went wrong",
-          variant: "destructive",
-        });
+        // If offline, don't show alarming error toast
+        if (navigator.onLine) {
+          toast({
+            title: "Error loading workouts",
+            description: err.message ?? "Something went wrong",
+            variant: "destructive",
+          });
+        }
       }
     })();
   }, [user, toast]);
@@ -93,14 +99,22 @@ const WorkoutsPage = () => {
         weight: Number(weight),
       });
 
-      setWorkouts((prev) => [...prev, entry]);
+      setWorkouts((prev) => [entry, ...prev.filter((p) => p.id !== entry.id)]);
       setWeight("");
       setIsModalOpen(false);
+      refreshQueueCount();
 
-      toast({
-        title: "Workout logged!",
-        description: `${selectedExercise} added successfully.`,
-      });
+      if (entry.id.startsWith("offline-") || !isOnline) {
+        toast({
+          title: "Saved to Offline Storage ⚡",
+          description: `Gym dead zone detected. ${selectedExercise} set safely queued on device. Auto-syncs to cloud when reconnected.`,
+        });
+      } else {
+        toast({
+          title: "Workout logged! 🏋️‍♂️",
+          description: `${selectedExercise} added to your cloud profile.`,
+        });
+      }
     } catch (err: any) {
       toast({
         title: "Error logging workout",
@@ -116,6 +130,7 @@ const WorkoutsPage = () => {
     try {
       await deleteWorkout(id);
       setWorkouts((prev) => prev.filter((w) => w.id !== id));
+      refreshQueueCount();
     } catch (err: any) {
       toast({
         title: "Error deleting workout",
@@ -139,14 +154,22 @@ const WorkoutsPage = () => {
         weight: w.weight,
       });
 
-      setWorkouts((prev) => [...prev, entry]);
+      setWorkouts((prev) => [entry, ...prev.filter((p) => p.id !== entry.id)]);
       setExpandedDates((prev) => ({ ...prev, [todayStr]: true }));
       startTimer(90);
+      refreshQueueCount();
 
-      toast({
-        title: "Set Logged! ⏱️",
-        description: `Logged Set: ${w.exercise} (1 x ${w.reps} @ ${w.weight}kg). 90s rest timer started!`,
-      });
+      if (entry.id.startsWith("offline-") || !isOnline) {
+        toast({
+          title: "Set Logged Offline! ⚡",
+          description: `Logged Set: ${w.exercise} (1 x ${w.reps} @ ${w.weight}kg). Queued locally • 90s rest timer started!`,
+        });
+      } else {
+        toast({
+          title: "Set Logged! ⏱️",
+          description: `Logged Set: ${w.exercise} (1 x ${w.reps} @ ${w.weight}kg). 90s rest timer started!`,
+        });
+      }
     } catch (err: any) {
       toast({
         title: "Error repeating set",
@@ -304,6 +327,59 @@ const WorkoutsPage = () => {
         </Dialog>
       </motion.div>
 
+      {/* Offline Status & Pending Cloud Sync Notification Banner */}
+      {!isOnline ? (
+        <motion.div variants={item} className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 text-xs sm:text-sm shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-500 shrink-0">
+              <WifiOff className="h-4 w-4 animate-pulse" />
+            </div>
+            <div>
+              <p className="font-bold text-foreground">Offline Gym Mode Active</p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+                No internet connection detected. You can freely log exercises, sets, and weights — all data is saved securely to your device.
+              </p>
+            </div>
+          </div>
+          {offlineQueueCount > 0 && (
+            <Badge variant="outline" className="border-amber-500/40 text-amber-500 bg-amber-500/15 shrink-0 ml-2 font-mono">
+              {offlineQueueCount} queued
+            </Badge>
+          )}
+        </motion.div>
+      ) : offlineQueueCount > 0 ? (
+        <motion.div variants={item} className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-primary/10 border border-primary/30 text-primary text-xs sm:text-sm shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-primary/20 text-primary shrink-0">
+              <CloudUpload className="h-4 w-4 animate-bounce" />
+            </div>
+            <div>
+              <p className="font-bold text-foreground">
+                {offlineQueueCount} Offline Workout Set{offlineQueueCount > 1 ? "s" : ""} Ready to Sync
+              </p>
+              <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">
+                Internet is online. Your gym sets recorded offline can be synced to your cloud account now.
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            onClick={async () => {
+              await syncNow();
+              if (user) {
+                const refreshed = await getUserWorkouts(user.id, true);
+                setWorkouts(refreshed);
+              }
+            }}
+            disabled={isSyncing}
+            className="h-8 text-xs font-semibold shrink-0 ml-3 bg-primary text-primary-foreground shadow-sm"
+          >
+            {isSyncing ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1.5" /> : <RefreshCw className="h-3.5 w-3.5 mr-1.5" />}
+            Sync Now
+          </Button>
+        </motion.div>
+      ) : null}
+
       {/* In-App Gym Rest Timer */}
       <motion.div variants={item}>
         <RestTimer />
@@ -378,7 +454,16 @@ const WorkoutsPage = () => {
                               <TableCell>
                                  <Badge variant="outline" className="bg-background/50">{w.muscleGroup}</Badge>
                               </TableCell>
-                              <TableCell className="font-medium">{w.exercise}</TableCell>
+                              <TableCell className="font-medium">
+                                <div className="flex items-center gap-2">
+                                  <span>{w.exercise}</span>
+                                  {w.id.startsWith("offline-") && (
+                                    <Badge variant="outline" className="border-amber-500/40 text-amber-500 bg-amber-500/10 text-[9px] px-1.5 py-0 flex items-center gap-0.5 font-semibold">
+                                      <WifiOff className="h-2.5 w-2.5" /> Saved Offline
+                                    </Badge>
+                                  )}
+                                </div>
+                              </TableCell>
                               <TableCell className="text-right">{w.sets}</TableCell>
                               <TableCell className="text-right">{w.reps}</TableCell>
                               <TableCell className="text-right">{w.weight} kg</TableCell>

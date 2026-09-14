@@ -13,11 +13,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2, ShieldAlert } from "lucide-react";
+import { Activity, Flame, Target, AlertTriangle, Utensils, Dumbbell, Loader2, Edit3, UserCircle, Sparkles, Moon, CheckCircle2, ShieldAlert, Smartphone, QrCode, WifiOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { createPlan, getProfileAPI, saveProfileAPI, logDailyMetric, getDailyMetrics, getInjuryRiskAPI, getCachedInjuryRisk, InjuryRiskPrediction } from "@/lib/apiClient";
 import { getUserWorkouts, getCachedWorkouts, WorkoutEntry } from "@/lib/workouts";
 import { DailyConsistencyCard } from "@/components/dashboard/DailyConsistencyCard";
+import { InstallAppModal } from "@/components/InstallAppModal";
 import { Pie } from "react-chartjs-2";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
@@ -100,6 +101,7 @@ const DashboardPage = () => {
   const [isCheckInDone, setIsCheckInDone] = useState(false);
   const [submittingMetrics, setSubmittingMetrics] = useState(false);
   const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
+  const [isInstallModalOpen, setIsInstallModalOpen] = useState(false);
   const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(() => getCachedInjuryRisk());
 
   // Habit Consistency & Streak State
@@ -545,6 +547,43 @@ const DashboardPage = () => {
         </div>
       </motion.div>
 
+      {/* Mobile App & Offline Gym Engine Callout */}
+      <motion.div variants={item}>
+        <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-teal-500/10 p-4 sm:p-5 backdrop-blur-xl shadow-lg shadow-black/5 dark:shadow-primary/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/30 shrink-0 shadow-sm shadow-primary/20">
+              <Smartphone className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-foreground text-sm sm:text-base">
+                  FitWise Mobile App for iOS & Android
+                </span>
+                <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-500 bg-emerald-500/10 flex items-center gap-1">
+                  <WifiOff className="h-3 w-3" /> 100% Offline Gym Logging
+                </Badge>
+                <Badge variant="outline" className="text-[10px] border-primary/40 text-primary bg-primary/10">
+                  Native Experience
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">
+                Experience FitWise as a standalone native app on iPhone & Android. Record sets without internet in gym dead zones, receive haptic rest alerts, and auto-sync when online.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+            <Button
+              onClick={() => setIsInstallModalOpen(true)}
+              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 h-9 text-xs shadow-md shadow-primary/20 flex items-center justify-center gap-1.5 whitespace-nowrap"
+            >
+              <QrCode className="h-3.5 w-3.5" />
+              <span>Install App / Scan QR</span>
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Daily Consistency Streaks & Checkpoints */}
       <motion.div variants={item}>
         <DailyConsistencyCard
@@ -837,6 +876,9 @@ const DashboardPage = () => {
           )}
         </motion.div>
       </div>
+
+      {/* Install Mobile App Modal (with Live QR Code & Android/iOS guides) */}
+      <InstallAppModal open={isInstallModalOpen} onOpenChange={setIsInstallModalOpen} />
     </motion.div>
   );
 };

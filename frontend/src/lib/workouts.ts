@@ -234,16 +234,35 @@ export async function getUserWorkouts(_userId?: string, forceRefresh = false): P
     if (workoutsCache && workoutsCache.length > 0) return workoutsCache;
     const local = getCachedWorkouts();
     if (local.length > 0) return local;
+    // When offline, gracefully return empty array rather than throwing
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      return [];
+    }
     throw err;
   }
 }
 
 export async function deleteWorkout(id: string) {
-  try {
-    await apiDeleteWorkout(id);
-  } catch (e) {
-    console.error("Failed to delete workout on server:", e);
+  // If this was an offline workout queued locally, remove it from the queue
+  if (id.startsWith("offline-")) {
+    const queue = getOfflineWorkoutsQueue();
+    // remove the last matching queued item
+    if (queue.length > 0) {
+      queue.pop();
+      try {
+        localStorage.setItem(OFFLINE_WORKOUTS_QUEUE_KEY, JSON.stringify(queue));
+      } catch {
+        /* ignore */
+      }
+    }
+  } else {
+    try {
+      await apiDeleteWorkout(id);
+    } catch (e) {
+      console.error("Failed to delete workout on server:", e);
+    }
   }
+
   const current = getCachedWorkouts().filter((w) => w.id !== id);
   workoutsCache = current;
   try {
