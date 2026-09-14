@@ -616,7 +616,7 @@ export default function LandingPage() {
           {/* Top Pill Badge */}
           <div className="inline-flex items-center gap-2 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-primary/30 bg-primary/10 text-primary text-[11px] sm:text-xs font-semibold tracking-wide uppercase mb-3 sm:mb-4 shadow-sm shadow-primary/10 backdrop-blur-md">
             <ShieldAlert className="h-3.5 w-3.5 animate-pulse" />
-            <span>XGBoost Injury Radar • Fine-Tuned Llama 3 • Clinical Guardrails</span>
+            <span>KNN Biometrics • XGBoost Injury Radar • Fine-Tuned Llama 3</span>
           </div>
 
           {/* Main Headline */}
@@ -629,7 +629,7 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="mt-3.5 sm:mt-4 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl font-normal leading-relaxed">
-            Full-stack fitness intelligence system combining XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
+            Full-stack fitness intelligence system combining KNN archetype classification (k=3), XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
           {/* Mobile App & Offline Feature Badges */}
@@ -1815,9 +1815,9 @@ export default function LandingPage() {
             },
             {
               step: "02",
-              title: "FastAPI Gateway",
-              subtitle: "Python Backend",
-              desc: "Asynchronous REST endpoints, session verification, and Pydantic schema validation.",
+              title: "KNN Classifier",
+              subtitle: "scikit-learn (k=3)",
+              desc: "Classifies user biometrics into calibrated fitness & diet archetypes with Euclidean distance matching.",
               icon: Code2,
             },
             {
