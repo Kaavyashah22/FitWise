@@ -135,4 +135,57 @@
   .glass-card {
     @apply bg-white/80 dark:bg-card/60 backdrop-blur-2xl border border-border/80 dark:border-white/10 shadow-[0_4px_24px_-2px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300;
   }
+
+  /* Safe Area Insets for Mobile / PWA Notch & Dynamic Island */
+  .safe-top-padding {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 1.25rem);
+  }
+
+  .safe-top-padding-tight {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-bottom-padding {
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5rem);
+  }
+
+  .safe-bottom-floating {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  }
+
+  .safe-top-status-bar {
+    height: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Standalone PWA Mode (Added to Home Screen on iOS / Android) */
+@media (display-mode: standalone) {
+  .safe-top-padding {
+    padding-top: max(calc(env(safe-area-inset-top, 0px) + 1.25rem), 3.75rem);
+  }
+
+  .safe-top-padding-tight {
+    padding-top: max(env(safe-area-inset-top, 0px), 2.5rem);
+  }
+
+  .safe-top-status-bar {
+    height: max(env(safe-area-inset-top, 0px), 2.5rem);
+  }
+
+  .safe-bottom-floating {
+    bottom: max(calc(env(safe-area-inset-bottom, 0px) + 0.75rem), 1.25rem);
+  }
+}
+
+/* Desktop Viewport (md: 768px+) resets in favor of fixed desktop navbar */
+@media (min-width: 768px) {
+  .safe-top-padding {
+    padding-top: 5rem !important; /* 80px = pt-20 */
+  }
+  .safe-top-padding-tight {
+    padding-top: 4rem !important; /* 64px = pt-16 */
+  }
+  .safe-bottom-padding {
+    padding-bottom: 2rem !important; /* 32px = pb-8 */
+  }
 }

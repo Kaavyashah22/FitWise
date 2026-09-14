@@ -33,10 +33,10 @@ function MainLayout({ children, noPadding = false }: { children: React.ReactNode
       <AppNavigation />
       <main className={cn(
         "flex-1 w-full max-w-7xl mx-auto flex flex-col transition-all duration-300 relative",
-        // Desktop: top padding for fixed TopNav (h-16). Mobile: bottom padding for BottomTabBar
+        // Desktop: top padding for fixed TopNav (h-16). Mobile: safe-area padding for notch/Dynamic Island & bottom bar
         noPadding 
-          ? "h-[100dvh] pt-0 md:pt-16 pb-24 md:pb-0 overflow-hidden !max-w-none !px-0" 
-          : "px-4 md:px-8 pt-4 md:pt-20 pb-28 md:pb-8 overflow-auto"
+          ? "h-[100dvh] safe-top-padding-tight pb-24 md:pb-0 overflow-hidden !max-w-none !px-0" 
+          : "px-4 md:px-8 safe-top-padding safe-bottom-padding overflow-auto"
       )}>
         {children}
       </main>

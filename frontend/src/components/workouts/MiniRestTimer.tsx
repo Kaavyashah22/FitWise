@@ -28,7 +28,7 @@ export const MiniRestTimer: React.FC = () => {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 20, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 flex items-center gap-2 p-2 pl-3 rounded-full bg-background/95 backdrop-blur-xl border border-primary/40 shadow-2xl shadow-primary/20"
+          className="fixed bottom-[calc(env(safe-area-inset-bottom,0px)+5.5rem)] md:bottom-6 right-4 md:right-6 z-50 flex items-center gap-2 p-2 pl-3 rounded-full bg-background/95 backdrop-blur-xl border border-primary/40 shadow-2xl shadow-primary/20"
         >
           {/* Pulsing Timer Icon & Digits */}
           <div 

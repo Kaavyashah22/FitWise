@@ -561,7 +561,7 @@ export default function LandingPage() {
       {/* =========================================================================
           1. FLOATING NAVIGATION BAR
           ========================================================================= */}
-      <header className="sticky top-4 z-50 w-[94%] max-w-6xl mx-auto">
+      <header className="sticky top-[calc(env(safe-area-inset-top,0px)+1rem)] md:top-4 z-50 w-[94%] max-w-6xl mx-auto">
         <nav className="flex items-center justify-between px-5 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-xl shadow-black/5 dark:shadow-primary/5">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105">

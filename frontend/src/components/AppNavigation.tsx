@@ -116,6 +116,9 @@ export default function AppNavigation() {
 
   return (
     <>
+      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past Dynamic Island / notch) */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 safe-top-status-bar bg-background/80 backdrop-blur-xl pointer-events-none transition-all" />
+
       {/* DESKTOP TOP NAV (Edge-to-Edge Sticky Header) */}
       <header className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-16 w-full items-center border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm transition-all duration-200">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-full">
@@ -202,7 +205,7 @@ export default function AppNavigation() {
       {/* MOBILE BOTTOM NAV (Floating Pill) */}
       <motion.nav 
         style={{ scale, y, x: "-50%" }} // Framer motion replaces -translate-x-1/2 with x: "-50%" when both are applied via style/class
-        className="md:hidden fixed bottom-4 left-1/2 z-50 w-[95%] flex items-center justify-between px-2 py-2 rounded-full bg-background/90 backdrop-blur-xl border border-border/50 shadow-2xl"
+        className="md:hidden fixed safe-bottom-floating left-1/2 z-50 w-[95%] flex items-center justify-between px-2 py-2 rounded-full bg-background/90 backdrop-blur-xl border border-border/50 shadow-2xl"
       >
         {links.map((link) => {
           const isActive = location.pathname === link.to;
