@@ -640,7 +640,7 @@ export default function LandingPage() {
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 hover:bg-secondary border border-border/60 hover:border-primary/40 text-foreground transition-all cursor-pointer hover:scale-105"
             >
               <Smartphone className="h-3.5 w-3.5 text-primary" />
-              <strong>iOS & Android Native App</strong>
+              <strong>iOS & Android App</strong>
             </button>
             <button
               type="button"
@@ -1362,12 +1362,12 @@ export default function LandingPage() {
             FitWise on <span className="text-primary">iOS & Android</span>
           </h2>
           <p className="text-muted-foreground mt-3 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            Engineered as an installable standalone native app with zero App Store friction. Works 100% offline in gym basements, launches full-screen with native touch gestures, and delivers hardware haptic feedback.
+            Engineered as an installable Progressive Web App (PWA) with zero App Store friction. Works 100% offline in gym basements, launches full-screen directly from your home screen, and delivers hardware haptic feedback.
           </p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          {/* Left Column: 3 Core Native Features */}
+          {/* Left Column: 3 Core App Features */}
           <motion.div 
             variants={appleFadeUp}
             initial="hidden"
@@ -1395,7 +1395,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Feature 2: Standalone Native Feel */}
+            {/* Feature 2: Standalone Full-Screen Experience */}
             <div className="p-5 sm:p-6 rounded-2xl bg-card/60 backdrop-blur-xl border border-border/70 shadow-lg hover:border-primary/40 transition-all group">
               <div className="flex items-start gap-4">
                 <div className="p-3 rounded-2xl bg-primary/15 text-primary border border-primary/30 shrink-0 group-hover:scale-110 transition-transform">

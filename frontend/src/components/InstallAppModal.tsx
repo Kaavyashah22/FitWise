@@ -117,7 +117,7 @@ export function InstallAppModal({
             Install FitWise Mobile App
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Standalone native experience for iOS & Android — zero app store downloads, full-screen immersion, and 100% offline gym workout logging.
+            Standalone experience for iOS & Android — zero app store downloads, full-screen immersion, and 100% offline gym workout logging.
           </DialogDescription>
         </DialogHeader>
 
@@ -268,7 +268,7 @@ export function InstallAppModal({
                     <div>
                       <p className="font-semibold text-foreground text-xs">Launch from Home Screen</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">
-                        FitWise launches in standalone native mode with vibration haptics & 100% offline gym tracking.
+                        FitWise launches in standalone mode with vibration haptics & 100% offline gym tracking.
                       </p>
                     </div>
                   </div>
@@ -298,9 +298,9 @@ export function InstallAppModal({
                   <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/40 border border-border/60">
                     <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">3</div>
                     <div>
-                      <p className="font-semibold text-foreground text-xs">Launch Native App</p>
+                      <p className="font-semibold text-foreground text-xs">Launch from Home Screen</p>
                       <p className="text-[11px] text-muted-foreground mt-0.5">
-                        Tap the FitWise dumbbell icon on your Home Screen. Full-screen native immersion and offline logging are active.
+                        Tap the FitWise dumbbell icon on your Home Screen. Full-screen immersion and offline logging are active.
                       </p>
                     </div>
                   </div>

@@ -566,11 +566,11 @@ const DashboardPage = () => {
                     <WifiOff className="h-3 w-3" /> 100% Offline Gym Logging
                   </Badge>
                   <Badge variant="outline" className="text-[10px] border-primary/40 text-primary bg-primary/10">
-                    Native Standalone
+                    Progressive Web App
                   </Badge>
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">
-                  Experience FitWise as a standalone native app on iPhone & Android. Record sets without internet in gym dead zones, receive haptic rest alerts, and auto-sync when online.
+                  Experience FitWise as an installable app on iPhone & Android. Record sets without internet in gym dead zones, receive haptic rest alerts, and auto-sync when online.
                 </p>
               </div>
             </div>

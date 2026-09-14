@@ -148,7 +148,7 @@ export default function AppNavigation() {
                 size="sm"
                 onClick={() => setIsInstallOpen(true)}
                 className="hidden lg:inline-flex items-center gap-1.5 rounded-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary h-9 px-3.5 text-xs font-semibold transition-all hover:scale-105"
-                title="Install FitWise Native Mobile App or Scan QR Code"
+                title="Install FitWise Mobile App or Scan QR Code"
               >
                 <Smartphone className="h-3.5 w-3.5" />
                 <span>Install App</span>
