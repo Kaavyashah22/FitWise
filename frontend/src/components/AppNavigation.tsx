@@ -16,7 +16,8 @@ import {
   Edit2,
   Loader2,
   Sparkles,
-  Smartphone
+  Smartphone,
+  Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -54,6 +55,39 @@ export default function AppNavigation() {
   const [isInstallOpen, setIsInstallOpen] = useState(false);
   const [newName, setNewName] = useState("");
   const [isSavingName, setIsSavingName] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [installDevice, setInstallDevice] = useState<"android" | "ios">("android");
+
+  useEffect(() => {
+    if (typeof navigator !== "undefined") {
+      const ua = navigator.userAgent.toLowerCase();
+      if (/iphone|ipad|ipod/.test(ua)) {
+        setInstallDevice("ios");
+      } else {
+        setInstallDevice("android");
+      }
+    }
+
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleNativeInstall = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsInstallOpen(false);
+      }
+      setDeferredPrompt(null);
+    }
+  };
 
   // Scroll animations for Mobile Nav
   const { scrollY } = useScroll();
@@ -264,54 +298,129 @@ export default function AppNavigation() {
         </DialogContent>
       </Dialog>
 
-      {/* INSTALL APP / PWA MODAL */}
+      {/* INSTALL APP / PWA MODAL (Android Chrome & iOS Safari) */}
       <Dialog open={isInstallOpen} onOpenChange={setIsInstallOpen}>
-        <DialogContent className="sm:max-w-[420px] glass-card border-primary/20 bg-background/95">
+        <DialogContent className="sm:max-w-[440px] glass-card border-primary/20 bg-background/95">
           <DialogHeader className="text-left">
             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/10 border border-primary/30 flex items-center justify-center mb-2">
               <Dumbbell className="w-6 h-6 text-primary" />
             </div>
-            <DialogTitle className="text-xl font-bold">Install FitWise on iPhone</DialogTitle>
+            <DialogTitle className="text-xl font-bold">Install FitWise Mobile App</DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
-              Run FitWise in full-screen standalone mode without any browser bars — perfect for gym sessions.
+              Install FitWise as a standalone native app on Android (Chrome) or iPhone (Safari) — zero browser bars, instant offline launch, and haptic rest alerts.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-3 py-2 text-sm">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
-              <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">1</div>
-              <div>
-                <p className="font-semibold text-foreground text-xs">Open in Safari & Tap Share</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Tap the Safari <strong>Share</strong> icon at the bottom of your screen (<span className="text-primary font-mono text-xs">⎋ / [↑]</span>).
-                </p>
-              </div>
+          {/* Android 1-Tap Direct Install (when Chrome beforeinstallprompt is ready) */}
+          {deferredPrompt && (
+            <div className="p-3.5 rounded-xl bg-primary/10 border border-primary/30 flex flex-col gap-2">
+              <p className="text-xs font-semibold text-primary">Chrome detected 1-click installation:</p>
+              <Button onClick={handleNativeInstall} className="w-full bg-primary text-primary-foreground font-bold flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                <Download className="w-4 h-4" /> Install App to Android Now
+              </Button>
             </div>
+          )}
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
-              <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">2</div>
-              <div>
-                <p className="font-semibold text-foreground text-xs">Tap &quot;Add to Home Screen&quot;</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Scroll down the share sheet and select <strong>&quot;Add to Home Screen&quot;</strong>, then tap <strong>Add</strong>.
-                </p>
-              </div>
-            </div>
+          {/* Device Platform Selector */}
+          <div className="grid grid-cols-2 gap-1 p-1 bg-secondary/60 rounded-xl border border-border/60 text-xs font-semibold text-center">
+            <button
+              type="button"
+              onClick={() => setInstallDevice("android")}
+              className={cn(
+                "py-1.5 rounded-lg transition-all",
+                installDevice === "android"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              🤖 Android (Chrome)
+            </button>
+            <button
+              type="button"
+              onClick={() => setInstallDevice("ios")}
+              className={cn(
+                "py-1.5 rounded-lg transition-all",
+                installDevice === "ios"
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              🍎 iPhone (Safari)
+            </button>
+          </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
-              <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">3</div>
-              <div>
-                <p className="font-semibold text-foreground text-xs">Launch from Home Screen</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5">
-                  Tap the FitWise icon on your Home Screen for the full native gym app experience!
-                </p>
-              </div>
-            </div>
+          {/* Step-by-Step Instructions */}
+          <div className="space-y-2.5 py-1 text-sm">
+            {installDevice === "android" ? (
+              <>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">1</div>
+                  <div>
+                    <p className="font-semibold text-foreground text-xs">Open in Google Chrome</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Tap the three vertical dots menu icon (<strong className="text-foreground">⋮</strong>) in the top-right corner of Chrome.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">2</div>
+                  <div>
+                    <p className="font-semibold text-foreground text-xs">Tap &quot;Install app&quot;</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Select <strong>&quot;Install app&quot;</strong> (or <strong>&quot;Add to Home screen&quot;</strong>) from the menu list.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+                  <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">3</div>
+                  <div>
+                    <p className="font-semibold text-foreground text-xs">Launch from App Drawer</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Chrome automatically installs FitWise into your Android Home Screen and App Drawer with vibration haptics enabled!
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">1</div>
+                  <div>
+                    <p className="font-semibold text-foreground text-xs">Open in Safari & Tap Share</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Tap the Safari <strong>Share</strong> icon at the bottom of your screen (<span className="text-primary font-mono text-xs">⎋ / [↑]</span>).
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary font-bold text-xs shrink-0">2</div>
+                  <div>
+                    <p className="font-semibold text-foreground text-xs">Tap &quot;Add to Home Screen&quot;</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Scroll down the share sheet and select <strong>&quot;Add to Home Screen&quot;</strong>, then tap <strong>Add</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-xl bg-secondary/50 border border-border/60">
+                  <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs shrink-0">3</div>
+                  <div>
+                    <p className="font-semibold text-foreground text-xs">Launch from Home Screen</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Tap the FitWise icon on your Home Screen for the full native gym app experience!
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setIsInstallOpen(false)} className="w-full bg-primary text-primary-foreground font-semibold">
-              Got it!
+            <Button onClick={() => setIsInstallOpen(false)} className="w-full bg-secondary hover:bg-secondary/80 text-foreground font-semibold">
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
