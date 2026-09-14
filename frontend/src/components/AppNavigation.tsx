@@ -82,7 +82,7 @@ export default function AppNavigation() {
     <>
       {/* DESKTOP TOP NAV (Edge-to-Edge Sticky Header) */}
       <header className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-16 w-full items-center border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm transition-all duration-200">
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-full">
           {/* Logo */}
           <Link to="/landing" className="flex items-center gap-2.5 transition-transform hover:scale-105" title="FitWise Home">
             <div className="p-1.5 rounded-xl bg-primary/20 text-primary">
@@ -91,8 +91,8 @@ export default function AppNavigation() {
             <span className="font-bold text-lg text-foreground tracking-tight font-sans">FitWise</span>
           </Link>
 
-          {/* Center Links */}
-          <div className="flex items-center gap-1 bg-secondary/60 p-1 rounded-full border border-border/50 backdrop-blur-sm">
+          {/* Center Links (Clean Spaced Headings) */}
+          <nav className="flex items-center h-full gap-2 lg:gap-6" aria-label="Main navigation">
             {links.map((link) => {
               const isActive = location.pathname === link.to;
               return (
@@ -100,17 +100,26 @@ export default function AppNavigation() {
                   key={link.to}
                   to={link.to}
                   className={cn(
-                    "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+                    "relative h-full flex items-center px-3.5 text-sm font-medium transition-colors duration-150 group",
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
-                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                      ? "text-foreground font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  {link.label}
+                  <span className="py-1 px-1 rounded-md group-hover:text-foreground transition-colors">
+                    {link.label}
+                  </span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="desktopNavActiveIndicator"
+                      className="absolute bottom-0 inset-x-1 h-[2px] bg-primary rounded-t-full shadow-[0_0_10px_rgba(16,185,129,0.75)]"
+                      transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                    />
+                  )}
                 </NavLink>
               );
             })}
-          </div>
+          </nav>
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">
