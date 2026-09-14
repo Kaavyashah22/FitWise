@@ -40,6 +40,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InstallAppModal } from "@/components/InstallAppModal";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { useIsAppInstalled } from "@/hooks/useIsAppInstalled";
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -53,6 +54,7 @@ export default function AppNavigation() {
   const { theme, toggle } = useTheme();
   const location = useLocation();
   const { isOnline } = useOnlineStatus();
+  const { isInstalled } = useIsAppInstalled();
 
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isInstallOpen, setIsInstallOpen] = useState(false);
@@ -94,7 +96,7 @@ export default function AppNavigation() {
         </div>
       )}
 
-      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past Dynamic Island / notch) */}
+      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past notch / status bar) */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-40 safe-top-status-bar bg-background/80 backdrop-blur-xl pointer-events-none transition-all" />
 
       {/* DESKTOP TOP NAV (Edge-to-Edge Sticky Header) */}
@@ -140,16 +142,18 @@ export default function AppNavigation() {
 
           {/* Right Actions */}
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsInstallOpen(true)}
-              className="hidden lg:inline-flex items-center gap-1.5 rounded-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary h-9 px-3.5 text-xs font-semibold transition-all hover:scale-105"
-              title="Install FitWise Native Mobile App or Scan QR Code"
-            >
-              <Smartphone className="h-3.5 w-3.5" />
-              <span>Install App</span>
-            </Button>
+            {!isInstalled && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsInstallOpen(true)}
+                className="hidden lg:inline-flex items-center gap-1.5 rounded-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary h-9 px-3.5 text-xs font-semibold transition-all hover:scale-105"
+                title="Install FitWise Native Mobile App or Scan QR Code"
+              >
+                <Smartphone className="h-3.5 w-3.5" />
+                <span>Install App</span>
+              </Button>
+            )}
 
             <Button variant="ghost" size="icon" onClick={toggle} className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 h-9 w-9">
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

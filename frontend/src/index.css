@@ -136,7 +136,7 @@
     @apply bg-white/80 dark:bg-card/60 backdrop-blur-2xl border border-border/80 dark:border-white/10 shadow-[0_4px_24px_-2px_rgba(0,0,0,0.06),0_1px_4px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300;
   }
 
-  /* Safe Area Insets for Mobile / PWA Notch & Dynamic Island */
+  /* Safe Area Insets for Mobile / PWA Notch & Status Bar */
   .safe-top-padding {
     padding-top: calc(env(safe-area-inset-top, 0px) + 1.25rem);
   }

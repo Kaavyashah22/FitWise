@@ -152,7 +152,7 @@ export function InstallAppModal({
         </div>
 
         {activeTab === "qr" ? (
-          /* Live QR Code Card for Faculty & Reviewers */
+          /* Live QR Code Card for Mobile App */
           <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-secondary/40 border border-border/70 text-center space-y-3">
             <div className="p-3.5 bg-white rounded-2xl shadow-xl shadow-black/10 dark:shadow-primary/5 border border-slate-200">
               <QRCodeSVG

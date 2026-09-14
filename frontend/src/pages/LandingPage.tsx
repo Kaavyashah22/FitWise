@@ -365,8 +365,8 @@ const LANDING_NAV_LINKS = [
   { id: "preview", label: "Tour" },
   { id: "simulator", label: "Simulator" },
   { id: "features", label: "Features" },
-  { id: "mobile-app", label: "App & QR", badge: "iOS / Android" },
-  { id: "ml-benchmarks", label: "ML Telemetry", badge: "92.5%" },
+  { id: "mobile-app", label: "Mobile App" },
+  { id: "ml-benchmarks", label: "ML Telemetry" },
   { id: "architecture", label: "Architecture" },
   { id: "comparison", label: "Benchmark" },
 ];
@@ -521,7 +521,7 @@ export default function LandingPage() {
         })}
       </aside>
 
-      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past Dynamic Island / notch) */}
+      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past notch / status bar) */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 safe-top-status-bar bg-background/80 backdrop-blur-xl pointer-events-none transition-all" />
 
       {/* =========================================================================
@@ -541,7 +541,7 @@ export default function LandingPage() {
           </Link>
 
           {/* Center Links (Sliding active indicator line matching dashboard) */}
-          <nav className="hidden md:flex items-center h-full gap-1 lg:gap-4" aria-label="Landing page navigation">
+          <nav className="hidden md:flex items-center h-full gap-1 lg:gap-2.5 xl:gap-5" aria-label="Landing page navigation">
             {LANDING_NAV_LINKS.map((link) => {
               const isActive = activeSection === link.id;
               return (
@@ -549,20 +549,15 @@ export default function LandingPage() {
                   key={link.id}
                   onClick={() => scrollToSection(link.id)}
                   className={cn(
-                    "relative h-full flex items-center px-3.5 text-sm font-medium transition-colors duration-150 group",
+                    "relative h-full flex items-center px-2 lg:px-3 text-xs xl:text-sm font-medium transition-colors duration-150 group whitespace-nowrap shrink-0",
                     isActive
                       ? "text-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <span className="py-1 px-1 rounded-md group-hover:text-foreground transition-colors">
+                  <span className="py-1 px-0.5 rounded-md group-hover:text-foreground transition-colors">
                     {link.label}
                   </span>
-                  {link.badge && (
-                    <Badge variant="outline" className="ml-1.5 text-[9px] px-1.5 py-0 border-emerald-500/40 text-emerald-500 bg-emerald-500/10">
-                      {link.badge}
-                    </Badge>
-                  )}
                   {isActive && (
                     <motion.div
                       layoutId="landingNavActiveIndicator"
@@ -576,23 +571,12 @@ export default function LandingPage() {
           </nav>
 
           {/* Right Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsInstallOpen(true)}
-              className="hidden lg:inline-flex items-center gap-1.5 rounded-full border-primary/30 text-primary hover:bg-primary/10 hover:text-primary h-9 px-3.5 text-xs font-semibold transition-all hover:scale-105"
-              title="Install FitWise Native Mobile App or Scan QR Code"
-            >
-              <Smartphone className="h-3.5 w-3.5" />
-              <span>Install App</span>
-            </Button>
-
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Button 
               variant="ghost" 
               size="icon" 
               onClick={toggle} 
-              className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 h-9 w-9"
+              className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 h-9 w-9 shrink-0"
               aria-label="Toggle theme"
             >
               {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -650,18 +634,30 @@ export default function LandingPage() {
 
           {/* Mobile App & Offline Feature Badges */}
           <div className="mt-3.5 flex items-center justify-center gap-2 flex-wrap text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 border border-border/60">
+            <button
+              type="button"
+              onClick={() => scrollToSection("mobile-app")}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 hover:bg-secondary border border-border/60 hover:border-primary/40 text-foreground transition-all cursor-pointer hover:scale-105"
+            >
               <Smartphone className="h-3.5 w-3.5 text-primary" />
-              <strong className="text-foreground">iOS & Android Native App</strong>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 border border-border/60">
+              <strong>iOS & Android Native App</strong>
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("mobile-app")}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 hover:bg-secondary border border-border/60 hover:border-emerald-500/40 transition-all cursor-pointer hover:scale-105"
+            >
               <WifiOff className="h-3.5 w-3.5 text-emerald-400" />
               <span>100% Offline Gym Logging</span>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 border border-border/60">
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("mobile-app")}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary/60 hover:bg-secondary border border-border/60 hover:border-teal-500/40 transition-all cursor-pointer hover:scale-105"
+            >
               <QrCode className="h-3.5 w-3.5 text-teal-400" />
               <span>Scan QR to Test</span>
-            </span>
+            </button>
           </div>
 
           {/* Action CTAs */}
@@ -669,7 +665,7 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               onClick={() => navigate(user ? "/dashboard" : "/auth")}
-              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 h-11 sm:h-12 text-sm sm:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform duration-200"
+              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-7 h-11 sm:h-12 text-sm sm:text-base shadow-xl shadow-primary/30 hover:scale-[1.02] transition-transform duration-200 shrink-0"
             >
               Build Your Custom Plan Free
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -679,23 +675,10 @@ export default function LandingPage() {
               size="lg" 
               variant="outline" 
               onClick={() => scrollToSection("simulator")}
-              className="w-full sm:w-auto rounded-full border-border/80 bg-background/50 hover:bg-foreground/5 h-11 sm:h-12 px-6 text-sm sm:text-base font-medium backdrop-blur-md"
+              className="w-full sm:w-auto rounded-full border-border/80 bg-background/50 hover:bg-foreground/5 h-11 sm:h-12 px-6 text-sm sm:text-base font-medium backdrop-blur-md shrink-0"
             >
               <Sliders className="mr-2 h-4 w-4 text-primary" />
               Test Drive AI Simulator
-            </Button>
-
-            <Button 
-              size="lg" 
-              variant="outline" 
-              onClick={() => scrollToSection("mobile-app")}
-              className="w-full sm:w-auto rounded-full border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary h-11 sm:h-12 px-5 text-sm sm:text-base font-semibold backdrop-blur-md flex items-center justify-center gap-2 shadow-sm"
-            >
-              <Smartphone className="h-4 w-4" />
-              <span>Mobile App & QR</span>
-              <Badge variant="outline" className="text-[10px] border-primary/40 bg-primary/20 text-primary px-1.5 py-0 ml-0.5">
-                iOS & Android
-              </Badge>
             </Button>
           </div>
 
@@ -1453,7 +1436,7 @@ export default function LandingPage() {
             </div>
           </motion.div>
 
-          {/* Right Column: Faculty Live QR Code & Test Card */}
+          {/* Right Column: Live QR Code & Mobile App Card */}
           <motion.div 
             variants={appleFadeUp}
             initial="hidden"
@@ -1465,14 +1448,14 @@ export default function LandingPage() {
               {/* Header Badge */}
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-primary/30 bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
                 <QrCode className="h-3.5 w-3.5" />
-                <span>Faculty & Evaluator Live Test</span>
+                <span>Live Application</span>
               </div>
 
               <h3 className="text-xl font-bold text-foreground mb-1">
                 Scan to Open on Your Phone
               </h3>
               <p className="text-xs text-muted-foreground max-w-xs mb-5">
-                Point your iPhone Camera or Android Google Lens at the code below to test the mobile app on your personal device right now.
+                Point your iPhone Camera or Android Google Lens at the code below to launch the live app directly on your phone.
               </p>
 
               {/* QR Code Container */}
