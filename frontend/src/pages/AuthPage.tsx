@@ -101,7 +101,7 @@ const AuthPage = () => {
           <CardHeader className="text-center">
             <CardTitle className="text-xl">{isLogin ? "Welcome back" : "Create account"}</CardTitle>
             <CardDescription>
-              {isLogin ? "Sign in to your fitness dashboard" : "Start your fitness journey today"}
+              {isLogin ? "Sign in to your account" : "Start your fitness journey today"}
             </CardDescription>
           </CardHeader>
           <CardContent>
