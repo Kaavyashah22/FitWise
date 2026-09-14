@@ -412,27 +412,30 @@ export default function LandingPage() {
       }
     };
 
-    // Observer for updating active section on scroll
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id);
-          }
-        });
-      },
-      { rootMargin: "-35% 0px -35% 0px" }
-    );
+    // Observer for updating active section on scroll (only needed on desktop where quick-jump dots are visible)
+    let observer: IntersectionObserver | null = null;
+    if (typeof window !== "undefined" && window.innerWidth >= 1280) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setActiveSection(entry.target.id);
+            }
+          });
+        },
+        { rootMargin: "-35% 0px -35% 0px" }
+      );
 
-    SECTIONS.forEach((s) => {
-      const el = document.getElementById(s.id);
-      if (el) observer.observe(el);
-    });
+      SECTIONS.forEach((s) => {
+        const el = document.getElementById(s.id);
+        if (el) observer?.observe(el);
+      });
+    }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      observer.disconnect();
+      observer?.disconnect();
     };
   }, []);
 
@@ -449,84 +452,17 @@ export default function LandingPage() {
       {/* =========================================================================
           CINEMATIC ANIMATED BACKGROUND: UNDULATING ORBS + CYBER GRID + PARTICLES
           ========================================================================= */}
+      {/* =========================================================================
+          CINEMATIC BACKGROUND: HARDWARE-ACCELERATED AMBIENT GLOW ORBS + CYBER GRID
+          ========================================================================= */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        
-        {/* Animated Orb 1: Hero Emerald Pulse */}
-        <motion.div
-          animate={{
-            x: [0, 50, -40, 0],
-            y: [0, -40, 30, 0],
-            scale: [1, 1.18, 0.92, 1],
-          }}
-          transition={{
-            duration: 16,
-            repeat: Infinity,
-            repeatType: "mirror",
-            ease: "easeInOut",
-          }}
-          className="absolute -top-[20%] left-1/2 -translate-x-1/2 w-[700px] sm:w-[950px] h-[550px] bg-emerald-400/25 dark:bg-primary/20 rounded-full blur-[140px] opacity-90 dark:opacity-75"
-        />
-
-        {/* Animated Orb 2: Mid-page Deep Teal Flow */}
-        <motion.div
-          animate={{
-            x: [0, -60, 40, 0],
-            y: [0, 50, -50, 0],
-            scale: [1, 1.15, 0.88, 1],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            repeatType: "mirror",
-            ease: "easeInOut",
-          }}
-          className="absolute top-[35%] -left-[10%] w-[550px] h-[550px] bg-teal-400/20 dark:bg-emerald-500/15 rounded-full blur-[160px] opacity-80 dark:opacity-60"
-        />
-
-        {/* Animated Orb 3: Lower-page Cyan Ambient */}
-        <motion.div
-          animate={{
-            x: [0, 50, -50, 0],
-            y: [0, -50, 40, 0],
-            scale: [1, 1.12, 0.95, 1],
-          }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            repeatType: "mirror",
-            ease: "easeInOut",
-          }}
-          className="absolute top-[65%] -right-[10%] w-[650px] h-[650px] bg-emerald-300/25 dark:bg-teal-500/15 rounded-full blur-[180px] opacity-75 dark:opacity-55"
-        />
+        {/* Static Ambient Glow Orbs (GPU Memory Safe & Hardware-Accelerated) */}
+        <div className="absolute -top-[15%] left-1/2 -translate-x-1/2 w-[700px] sm:w-[900px] h-[450px] bg-emerald-500/15 dark:bg-primary/15 rounded-full blur-[90px] opacity-80" />
+        <div className="absolute top-[35%] -left-[10%] w-[500px] h-[500px] bg-teal-400/12 dark:bg-emerald-500/10 rounded-full blur-[90px] opacity-70" />
+        <div className="absolute top-[65%] -right-[10%] w-[550px] h-[550px] bg-emerald-400/12 dark:bg-teal-500/10 rounded-full blur-[90px] opacity-65" />
 
         {/* Subtle Cyber Grid Texture */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98114_1px,transparent_1px),linear-gradient(to_bottom,#10b98114_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#10b98108_1px,transparent_1px),linear-gradient(to_bottom,#10b98108_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_60%,transparent_100%)] opacity-90" />
-
-        {/* Floating Neural Particle Nodes */}
-        {[
-          { top: "15%", left: "18%", delay: 0, dur: 7 },
-          { top: "28%", left: "82%", delay: 2, dur: 9 },
-          { top: "45%", left: "12%", delay: 1, dur: 8 },
-          { top: "62%", left: "88%", delay: 3, dur: 10 },
-          { top: "80%", left: "22%", delay: 1.5, dur: 7.5 },
-        ].map((p, idx) => (
-          <motion.div
-            key={idx}
-            style={{ top: p.top, left: p.left }}
-            animate={{
-              y: [0, -25, 0],
-              opacity: [0.2, 0.7, 0.2],
-              scale: [0.8, 1.2, 0.8],
-            }}
-            transition={{
-              duration: p.dur,
-              delay: p.delay,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="absolute h-2 w-2 rounded-full bg-primary/40 blur-[1px]"
-          />
-        ))}
       </div>
 
       {/* =========================================================================
@@ -1426,7 +1362,7 @@ export default function LandingPage() {
             {activeMlTab === "learning" && (
               <div className="space-y-4">
                 <div className="h-72 sm:h-80 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={280} debounce={50}>
                     <RcLineChart data={LEARNING_CURVE_DATA} margin={{ top: 10, right: 20, left: -10, bottom: 10 }}>
                       <RcCartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
                       <RcXAxis dataKey="label" stroke="#888" fontSize={11} tickLine={false} />
@@ -1466,7 +1402,7 @@ export default function LandingPage() {
             {activeMlTab === "cv" && (
               <div className="space-y-4">
                 <div className="h-72 sm:h-80 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={280} debounce={50}>
                     <RcBarChart data={CV_FOLDS_DATA} margin={{ top: 10, right: 20, left: -10, bottom: 10 }}>
                       <RcCartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" vertical={false} />
                       <RcXAxis dataKey="fold" stroke="#888" fontSize={12} tickLine={false} />
@@ -1499,7 +1435,7 @@ export default function LandingPage() {
             {activeMlTab === "features" && (
               <div className="space-y-4">
                 <div className="h-72 sm:h-80 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minHeight={280} debounce={50}>
                     <RcBarChart data={FEATURE_IMPORTANCE_DATA} layout="vertical" margin={{ top: 5, right: 30, left: 40, bottom: 5 }}>
                       <RcCartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" horizontal={false} />
                       <RcXAxis type="number" stroke="#888" fontSize={11} unit="%" />
