@@ -80,73 +80,75 @@ export default function AppNavigation() {
 
   return (
     <>
-      {/* DESKTOP TOP NAV (Floating Pill) */}
-      <nav className="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl items-center justify-between px-6 py-3 rounded-full bg-background/80 backdrop-blur-xl border border-white/10 shadow-2xl">
-        {/* Logo */}
-        <Link to="/landing" className="flex items-center gap-2 transition-transform hover:scale-105" title="FitWise Home">
-          <div className="p-1.5 rounded-full bg-primary/20">
-            <Dumbbell className="h-5 w-5 text-primary" />
+      {/* DESKTOP TOP NAV (Edge-to-Edge Sticky Header) */}
+      <header className="hidden md:flex fixed top-0 left-0 right-0 z-50 h-16 w-full items-center border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm transition-all duration-200">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between">
+          {/* Logo */}
+          <Link to="/landing" className="flex items-center gap-2.5 transition-transform hover:scale-105" title="FitWise Home">
+            <div className="p-1.5 rounded-xl bg-primary/20 text-primary">
+              <Dumbbell className="h-5 w-5" />
+            </div>
+            <span className="font-bold text-lg text-foreground tracking-tight font-sans">FitWise</span>
+          </Link>
+
+          {/* Center Links */}
+          <div className="flex items-center gap-1 bg-secondary/60 p-1 rounded-full border border-border/50 backdrop-blur-sm">
+            {links.map((link) => {
+              const isActive = location.pathname === link.to;
+              return (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/25"
+                      : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                  )}
+                >
+                  {link.label}
+                </NavLink>
+              );
+            })}
           </div>
-          <span className="font-bold text-lg text-foreground tracking-tight">FitWise</span>
-        </Link>
 
-        {/* Center Links */}
-        <div className="flex items-center gap-1 bg-secondary/50 p-1 rounded-full border border-border/50">
-          {links.map((link) => {
-            const isActive = location.pathname === link.to;
-            return (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={cn(
-                  "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300",
-                  isActive
-                    ? "bg-primary text-primary-foreground shadow-md"
-                    : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
-                )}
-              >
-                {link.label}
-              </NavLink>
-            );
-          })}
+          {/* Right Actions */}
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="icon" onClick={toggle} className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 h-9 w-9">
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="secondary" className="rounded-full gap-2 pl-2 pr-3.5 h-9 border border-border/50 hover:bg-secondary/80 transition-colors">
+                  <div className="h-6 w-6 rounded-full bg-primary/15 border border-primary/25 flex items-center justify-center">
+                    <User className="w-3.5 h-3.5 text-primary" />
+                  </div>
+                  <span className="text-sm truncate max-w-[110px] font-medium">{user?.name?.split(' ')[0]}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 glass-card">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="cursor-pointer">
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  <span>Edit Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/landing" className="flex items-center w-full">
+                    <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                    <span>Product Overview</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-
-        {/* Right Actions */}
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={toggle} className="rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5">
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="secondary" className="rounded-full gap-2 pl-2 pr-4 border border-border/50">
-                <div className="h-7 w-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                  <User className="w-3.5 h-3.5 text-primary" />
-                </div>
-                <span className="text-sm truncate max-w-[100px] font-medium">{user?.name?.split(' ')[0]}</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 glass-card">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)} className="cursor-pointer">
-                <Edit2 className="mr-2 h-4 w-4" />
-                <span>Edit Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild className="cursor-pointer">
-                <Link to="/landing" className="flex items-center w-full">
-                  <Sparkles className="mr-2 h-4 w-4 text-primary" />
-                  <span>Product Overview</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Sign out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </nav>
+      </header>
 
       {/* MOBILE BOTTOM NAV (Floating Pill) */}
       <motion.nav 
