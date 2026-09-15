@@ -156,6 +156,14 @@
   .safe-top-status-bar {
     height: env(safe-area-inset-top, 0px);
   }
+
+  .safe-header {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .safe-hero-top {
+    padding-top: calc(env(safe-area-inset-top, 0px) + 5.5rem);
+  }
 }
 
 /* Standalone PWA Mode (Added to Home Screen on iOS / Android) */
@@ -166,10 +174,6 @@
 
   .safe-top-padding-tight {
     padding-top: max(env(safe-area-inset-top, 0px), 2.5rem);
-  }
-
-  .safe-top-status-bar {
-    height: max(env(safe-area-inset-top, 0px), 2.5rem);
   }
 
   .safe-bottom-floating {

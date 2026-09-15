@@ -521,13 +521,10 @@ export default function LandingPage() {
         })}
       </aside>
 
-      {/* Mobile Native Safe Area Status Bar Blur Shield (protects scrolling past notch / status bar) */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-50 safe-top-status-bar bg-background/80 backdrop-blur-xl pointer-events-none transition-all" />
-
       {/* =========================================================================
           1. FIXED TOP NAVIGATION BAR (EDGE-TO-EDGE WITH SLIDING ACTIVE INDICATOR)
           ========================================================================= */}
-      <header className="fixed top-0 left-0 right-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm transition-all duration-200 pt-[env(safe-area-inset-top,0px)]">
+      <header className="fixed top-0 left-0 right-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl shadow-sm transition-all duration-200 safe-header">
         <div className="w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between h-16">
           {/* Brand Logo */}
           <Link to="/" className="flex items-center gap-2.5 transition-transform hover:scale-105 shrink-0" title="FitWise Home">
@@ -606,7 +603,7 @@ export default function LandingPage() {
       {/* =========================================================================
           2. HERO SECTION (APPLE-STYLE FLUID REVEAL)
           ========================================================================= */}
-      <section id="hero" className="min-h-[calc(100vh-4.5rem)] flex flex-col justify-center items-center pt-[calc(env(safe-area-inset-top,0px)+5.5rem)] sm:pt-28 pb-8 sm:pb-12 px-4 max-w-5xl mx-auto text-center relative scroll-mt-0">
+      <section id="hero" className="min-h-[calc(100vh-4.5rem)] flex flex-col justify-center items-center safe-hero-top sm:pt-28 pb-8 sm:pb-12 px-4 max-w-5xl mx-auto text-center relative scroll-mt-0">
         <motion.div
           variants={appleFadeUp}
           initial="hidden"
