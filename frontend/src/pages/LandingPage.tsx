@@ -620,13 +620,13 @@ export default function LandingPage() {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl leading-[1.12] font-sans">
             Transform Your Body With <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-emerald-400 via-primary to-teal-300 bg-clip-text text-transparent">
-              Predictive AI Biomechanics
+              Adaptive Fitness Intelligence
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="mt-3.5 sm:mt-4 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl font-normal leading-relaxed">
-            Full-stack fitness intelligence system combining KNN archetype classification, XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
+            Full-stack fitness intelligence system combining KNN archetype classification, XGBoost injury risk modeling, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
           {/* Mobile App & Offline Feature Badges */}
