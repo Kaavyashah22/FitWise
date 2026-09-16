@@ -810,7 +810,7 @@ export default function LandingPage() {
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-primary text-[11px]">COACH LLAMA 3</span>
                         <span className="text-[10px] text-muted-foreground">• 1.9s RAG Response</span>
-                        <Badge className="text-[9px] bg-amber-500/10 text-amber-300 border-amber-500/30 px-1.5 py-0">Spinal Unload Active</Badge>
+                        <Badge className="text-[9px] bg-amber-500/10 text-amber-900 dark:text-amber-300 border-amber-500/30 px-1.5 py-0 font-medium">Spinal Unload Active</Badge>
                       </div>
                       <p className="leading-relaxed text-muted-foreground">
                         "Understood. Eliminating standing overhead barbell presses to avoid compressive axial spinal shear. We're pivoting to seated chest-supported dumbbell work and high-density cable extensions."
@@ -978,8 +978,8 @@ export default function LandingPage() {
                       Bypassing high-effort isometric holds and inverted movements to prevent arterial pressure spikes.
                     </div>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5">
-                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+                  <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5 font-medium">
+                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
                     <div>
                       <strong className="block font-semibold">Right Patellar Tendinopathy Override</strong>
                       Replaced 90° leg extensions with reverse sled pulls to promote vascular tendon remodeling.
@@ -1113,9 +1113,9 @@ export default function LandingPage() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs flex items-start gap-2.5"
+                    className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2.5 font-medium"
                   >
-                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+                    <AlertCircle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
                     <span>{currentPreset.guardrailNote}</span>
                   </motion.div>
                 ) : (
@@ -1316,10 +1316,10 @@ export default function LandingPage() {
             variants={appleChild}
             className="rounded-3xl border border-border/80 bg-card/60 backdrop-blur-md p-8 relative overflow-hidden group hover:border-primary/50 transition-all duration-300"
           >
-            <div className="p-2.5 w-fit rounded-2xl bg-amber-500/15 text-amber-400 border border-amber-500/20 mb-5">
+            <div className="p-2.5 w-fit rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 mb-5">
               <ShieldAlert className="h-6 w-6" />
             </div>
-            <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider">Predictive Machine Learning</span>
+            <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Predictive Machine Learning</span>
             <h3 className="text-xl font-bold text-foreground mt-1 mb-3">XGBoost Injury Radar</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
               Trained on 1,000 multi-sport athlete datasets with <strong>92.5% accuracy</strong> and <strong>100% high-risk precision</strong>. Continuously forecasts acute strain by evaluating trailing 7-day volume load (tonnage), sleep deficit, and Borg CR10 soreness before injuries occur.
@@ -1617,12 +1617,12 @@ export default function LandingPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-border/40 text-xs">
                   <div className="p-3 rounded-xl bg-background/50 border border-border/50">
                     <span className="text-muted-foreground block">Subsampled Baseline (N=120)</span>
-                    <span className="text-base font-bold text-amber-400 mt-0.5 block">82.2% CV (Gap: 17.8%)</span>
+                    <span className="text-base font-bold text-amber-600 dark:text-amber-400 mt-0.5 block">82.2% CV (Gap: 17.8%)</span>
                     <span className="text-[11px] text-muted-foreground">Outperforms 67.57% single-sport POC</span>
                   </div>
                   <div className="p-3 rounded-xl bg-background/50 border border-border/50">
                     <span className="text-muted-foreground block">Full Multi-Sport (N=800)</span>
-                    <span className="text-base font-bold text-emerald-400 mt-0.5 block">92.4% CV (Gap: 7.6%)</span>
+                    <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block">92.4% CV (Gap: 7.6%)</span>
                     <span className="text-[11px] text-muted-foreground">Variance shrinks by 57%</span>
                   </div>
                   <div className="col-span-2 sm:col-span-1 p-3 rounded-xl bg-background/50 border border-border/50">
@@ -1705,8 +1705,8 @@ export default function LandingPage() {
                     <thead>
                       <tr className="bg-secondary/60 border-b border-border/60 text-foreground font-semibold">
                         <th className="p-3">Evaluation Dimension</th>
-                        <th className="p-3 text-amber-400">Single-Sport POC (Athletics)</th>
-                        <th className="p-3 text-emerald-400">Multi-Sport GBDT (All 8 Sports)</th>
+                        <th className="p-3 text-amber-600 dark:text-amber-400">Single-Sport POC (Athletics)</th>
+                        <th className="p-3 text-emerald-600 dark:text-emerald-400">Multi-Sport GBDT (All 8 Sports)</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border/40">
