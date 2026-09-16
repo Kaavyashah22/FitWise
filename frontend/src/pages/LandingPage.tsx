@@ -626,7 +626,7 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="mt-3.5 sm:mt-4 text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl font-normal leading-relaxed">
-            Full-stack fitness intelligence system combining KNN archetype classification (k=3), XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
+            Full-stack fitness intelligence system combining KNN archetype classification, XGBoost predictive biomechanics, fine-tuned Meta Llama 3 (8B), and automated medical guardrails. Forecast injury risk, track 7-day volume load, and train with clinical precision.
           </p>
 
           {/* Mobile App & Offline Feature Badges */}
