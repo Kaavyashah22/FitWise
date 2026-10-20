@@ -406,79 +406,72 @@ const DashboardPage = () => {
         </div>
         
         <div className="flex items-center gap-3">
-          {/* Log Recovery Button & Modal */}
-          {!isCheckInDone && (
-            <Dialog open={isCheckInModalOpen} onOpenChange={setIsCheckInModalOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-cyan-600 hover:bg-cyan-700 text-white shadow-lg shadow-cyan-500/30 animate-pulse border border-cyan-400">
-                  <Moon className="w-4 h-4 mr-2" /> Log Recovery
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[420px] glass-card border-t-4 border-t-cyan-500">
-                <DialogHeader>
-                  <DialogTitle className="text-xl flex items-center gap-2 text-cyan-500">
-                    <Moon className="h-5 w-5" /> Recovery Check-in
-                  </DialogTitle>
-                  <DialogDescription>
-                    Log your sleep and soreness for our AI to predict your injury risk.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col gap-4 mt-2">
-                  <div className="space-y-2">
-                    <Label className="text-sm">Sleep (hours)</Label>
-                    <Input type="number" min="0" max="24" step="0.5" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder="e.g. 7.5" />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Muscle Soreness (1 - 5)</Label>
-                      {sorenessLevel && (
-                        <span className="text-xs font-semibold text-cyan-400">
-                          Level {sorenessLevel}: {SORENESS_LEVELS[sorenessLevel - 1].label}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-5 gap-1.5">
-                      {SORENESS_LEVELS.map((lvl) => {
-                        const isSelected = sorenessLevel === lvl.value;
-                        return (
-                          <button
-                            key={lvl.value}
-                            type="button"
-                            onClick={() => setSorenessLevel(lvl.value)}
-                            className={cn(
-                              "flex flex-col items-center justify-center py-2.5 px-1 rounded-xl border text-center transition-all cursor-pointer select-none",
-                              isSelected
-                                ? `${lvl.activeRing} ring-2 shadow-md scale-[1.03]`
-                                : "border-border/60 hover:bg-accent/40 text-muted-foreground hover:text-foreground"
-                            )}
-                          >
-                            <span className="text-base font-extrabold">{lvl.value}</span>
-                            <span className="text-[10px] font-medium leading-tight mt-0.5">{lvl.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <p className="text-[11px] text-muted-foreground min-h-[16px] text-center italic">
-                      {sorenessLevel
-                        ? `"${SORENESS_LEVELS[sorenessLevel - 1].desc}"`
-                        : "Tap 1 (Fresh) to 5 (Extreme Soreness)"}
-                    </p>
-                  </div>
-
-                  <Button 
-                    onClick={handleDailyCheckIn} 
-                    disabled={submittingMetrics || !sleepHours || !sorenessLevel}
-                    className="w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-md mt-2"
-                  >
-                    {submittingMetrics ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />} Save Metrics
-                  </Button>
+          {/* Recovery Check-in Modal (triggered via DailyConsistencyCard) */}
+          <Dialog open={isCheckInModalOpen} onOpenChange={setIsCheckInModalOpen}>
+            <DialogContent className="sm:max-w-[420px] glass-card border-t-4 border-t-cyan-500">
+              <DialogHeader>
+                <DialogTitle className="text-xl flex items-center gap-2 text-cyan-500">
+                  <Moon className="h-5 w-5" /> Recovery Check-in
+                </DialogTitle>
+                <DialogDescription>
+                  Log your sleep and soreness for our AI to predict your injury risk.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-4 mt-2">
+                <div className="space-y-2">
+                  <Label className="text-sm">Sleep (hours)</Label>
+                  <Input type="number" min="0" max="24" step="0.5" value={sleepHours} onChange={(e) => setSleepHours(e.target.value)} placeholder="e.g. 7.5" />
                 </div>
-              </DialogContent>
-            </Dialog>
-          )}
+                
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Muscle Soreness (1 - 5)</Label>
+                    {sorenessLevel && (
+                      <span className="text-xs font-semibold text-cyan-400">
+                        Level {sorenessLevel}: {SORENESS_LEVELS[sorenessLevel - 1].label}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-5 gap-1.5">
+                    {SORENESS_LEVELS.map((lvl) => {
+                      const isSelected = sorenessLevel === lvl.value;
+                      return (
+                        <button
+                          key={lvl.value}
+                          type="button"
+                          onClick={() => setSorenessLevel(lvl.value)}
+                          className={cn(
+                            "flex flex-col items-center justify-center py-2.5 px-1 rounded-xl border text-center transition-all cursor-pointer select-none",
+                            isSelected
+                              ? `${lvl.activeRing} ring-2 shadow-md scale-[1.03]`
+                              : "border-border/60 hover:bg-accent/40 text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          <span className="text-base font-extrabold">{lvl.value}</span>
+                          <span className="text-[10px] font-medium leading-tight mt-0.5">{lvl.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-[11px] text-muted-foreground min-h-[16px] text-center italic">
+                    {sorenessLevel
+                      ? `"${SORENESS_LEVELS[sorenessLevel - 1].desc}"`
+                      : "Tap 1 (Fresh) to 5 (Extreme Soreness)"}
+                  </p>
+                </div>
+
+                <Button 
+                  onClick={handleDailyCheckIn} 
+                  disabled={submittingMetrics || !sleepHours || !sorenessLevel}
+                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white shadow-md mt-2"
+                >
+                  {submittingMetrics ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />} Save Metrics
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Edit Profile Button & Modal */}
           <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -762,52 +755,14 @@ const DashboardPage = () => {
         </motion.div>
       )}
 
-      {/* "Start Today's Workout" Hero Mission Banner */}
-      {todayWorkoutFocus && (
-        <motion.div variants={item}>
-          <div className="p-4 sm:p-5 rounded-2xl border border-primary/25 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-teal-500/10 backdrop-blur-xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-start sm:items-center gap-3.5">
-              <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/30 shrink-0 shadow-sm shadow-primary/20">
-                <Dumbbell className="h-6 w-6" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-foreground text-sm sm:text-base">
-                    Today's Mission: {todayWorkoutFocus.title}
-                  </span>
-                  <Badge variant="outline" className="text-[10px] border-primary/40 text-primary bg-primary/10">
-                    Scheduled
-                  </Badge>
-                  {hasWorkoutToday && (
-                    <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-500 bg-emerald-500/10 flex items-center gap-1 font-semibold">
-                      <CheckCircle2 className="w-3 h-3" /> Completed Today
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">
-                  {todayWorkoutFocus.details}
-                </p>
-              </div>
-            </div>
-
-            <Button
-              onClick={() => navigate("/workouts")}
-              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 h-9 text-xs shadow-md shadow-primary/20 flex items-center justify-center gap-1.5 shrink-0"
-            >
-              <Dumbbell className="h-3.5 w-3.5" />
-              <span>{hasWorkoutToday ? "View Today's Log" : "Start Workout Session"}</span>
-            </Button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Daily Consistency Streaks & Checkpoints */}
+      {/* Daily Consistency Streaks & Checkpoints (Unified Mission Control) */}
       <motion.div variants={item}>
         <DailyConsistencyCard
           streak={currentStreak}
           hasWorkoutToday={hasWorkoutToday}
           isRecoveryDone={isCheckInDone}
           isNutritionDone={isNutritionDone}
+          todayWorkoutFocus={todayWorkoutFocus}
           onOpenRecoveryModal={() => setIsCheckInModalOpen(true)}
           onToggleNutrition={toggleNutrition}
           onGoToWorkouts={() => navigate("/workouts")}
@@ -881,22 +836,30 @@ const DashboardPage = () => {
                   </div>
                 )}
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 pt-1">
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Goal</p>
-                  <p className="font-medium capitalize">{goal.replace("_", " ")}</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">Age</p>
+                  <p className="font-semibold text-sm mt-0.5">{age ? `${age} yrs` : "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Activity</p>
-                  <p className="font-medium capitalize">{activity.replace("_", " ")}</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">Height</p>
+                  <p className="font-semibold text-sm mt-0.5">{height ? `${height} cm` : "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Diet</p>
-                  <p className="font-medium capitalize">{foodType}</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">Weight</p>
+                  <p className="font-semibold text-sm mt-0.5">{weight ? `${weight} kg` : "—"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider">Medical</p>
-                  <p className="font-medium">{medicalHistory}</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">Goal</p>
+                  <p className="font-semibold text-sm mt-0.5 capitalize">{goal.replace("_", " ")}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">Diet</p>
+                  <p className="font-semibold text-sm mt-0.5 capitalize">{foodType}</p>
+                </div>
+                <div>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-semibold">Medical</p>
+                  <p className="font-semibold text-sm mt-0.5 truncate" title={medicalHistory}>{medicalHistory}</p>
                 </div>
               </div>
               {injuryRisk && (

@@ -518,8 +518,10 @@ const AnalyticsPage = () => {
             <CardContent className="flex-1 flex flex-col">
               {volumeData.length > 0 ? (
                 <>
-                  <div className="mb-3 flex items-center gap-4 text-sm min-h-[20px] invisible">
-                    <span>Placeholder</span>
+                  <div className="mb-3 flex items-center gap-4 text-sm min-h-[20px]">
+                    <span className="text-primary font-medium">
+                      Total Tracked: {volumeData.reduce((acc, d) => acc + d.volume, 0).toLocaleString()} kg
+                    </span>
                   </div>
 
                   <ResponsiveContainer width="100%" height={250}>
@@ -543,10 +545,6 @@ const AnalyticsPage = () => {
                       <Bar dataKey="volume" fill="url(#colorVolume)" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
-
-                  <p className="text-xs text-muted-foreground mt-2 min-h-[16px] invisible">
-                    Placeholder
-                  </p>
                 </>
               ) : (
                 <div className="flex-1 flex flex-col items-center justify-center py-12 text-muted-foreground">

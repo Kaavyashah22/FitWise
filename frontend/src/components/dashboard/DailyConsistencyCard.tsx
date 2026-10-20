@@ -10,6 +10,10 @@ interface DailyConsistencyCardProps {
   hasWorkoutToday: boolean;
   isRecoveryDone: boolean;
   isNutritionDone: boolean;
+  todayWorkoutFocus?: {
+    title: string;
+    details: string;
+  } | null;
   onOpenRecoveryModal: () => void;
   onToggleNutrition: () => void;
   onGoToWorkouts: () => void;
@@ -20,6 +24,7 @@ export const DailyConsistencyCard: React.FC<DailyConsistencyCardProps> = ({
   hasWorkoutToday,
   isRecoveryDone,
   isNutritionDone,
+  todayWorkoutFocus,
   onOpenRecoveryModal,
   onToggleNutrition,
   onGoToWorkouts,
@@ -90,33 +95,40 @@ export const DailyConsistencyCard: React.FC<DailyConsistencyCardProps> = ({
               ? "bg-emerald-500/[0.07] border-emerald-500/30 shadow-sm"
               : "bg-background/50 border-border/60 hover:border-primary/40"
           )}>
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-2.5 min-w-0">
                 <div className={cn(
-                  "p-2 rounded-lg",
+                  "p-2 rounded-lg shrink-0 mt-0.5",
                   hasWorkoutToday ? "bg-emerald-500/20 text-emerald-400" : "bg-primary/10 text-primary"
                 )}>
                   <Dumbbell className="w-4 h-4" />
                 </div>
-                <div>
-                  <span className="text-xs font-bold text-foreground block">Workout Session</span>
-                  <span className="text-[11px] text-muted-foreground">
-                    {hasWorkoutToday ? "Logged for today" : "Push your limits"}
+                <div className="min-w-0">
+                  <span className="text-xs font-bold text-foreground block truncate" title={todayWorkoutFocus ? todayWorkoutFocus.title : "Workout Session"}>
+                    {todayWorkoutFocus ? todayWorkoutFocus.title : "Workout Session"}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground block truncate" title={todayWorkoutFocus ? todayWorkoutFocus.details : (hasWorkoutToday ? "Logged for today" : "Push your limits")}>
+                    {hasWorkoutToday ? "Session logged for today" : todayWorkoutFocus ? todayWorkoutFocus.details : "Push your limits"}
                   </span>
                 </div>
               </div>
               {hasWorkoutToday ? (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
               ) : (
-                <Circle className="w-5 h-5 text-muted-foreground/40 shrink-0" />
+                <Circle className="w-5 h-5 text-muted-foreground/40 shrink-0 mt-0.5" />
               )}
             </div>
 
             <div className="pt-1">
               {hasWorkoutToday ? (
-                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px] w-full justify-center py-1">
-                  Completed Today
-                </Badge>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={onGoToWorkouts}
+                  className="w-full text-xs h-7 bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20 font-medium flex items-center justify-center gap-1"
+                >
+                  <CheckCircle2 className="w-3 h-3 mr-1" /> View Today's Log
+                </Button>
               ) : (
                 <Button
                   size="sm"
@@ -124,7 +136,7 @@ export const DailyConsistencyCard: React.FC<DailyConsistencyCardProps> = ({
                   onClick={onGoToWorkouts}
                   className="w-full text-xs h-7 border-primary/30 hover:bg-primary/10 text-primary font-medium flex items-center justify-center gap-1"
                 >
-                  Log Workout <ArrowRight className="w-3 h-3" />
+                  Start Workout <ArrowRight className="w-3 h-3" />
                 </Button>
               )}
             </div>
