@@ -86,18 +86,50 @@ def get_injury_risk(
     """
     from services.injury_predictor import predict_user_injury_risk
 
-    # Fetch latest daily metric logged by the user
-    latest_metric = db.query(DailyMetric).filter(
+    # Fetch check-in metrics logged over the trailing 7 days
+    import json
+    seven_days_ago = date.today() - timedelta(days=7)
+    recent_metrics = db.query(DailyMetric).filter(
+        DailyMetric.user_id == current_user.id,
+        DailyMetric.date >= seven_days_ago
+    ).order_by(DailyMetric.date.desc()).all()
+
+    # Most recent check-in (or latest overall if none in last 7 days)
+    latest_metric = recent_metrics[0] if recent_metrics else db.query(DailyMetric).filter(
         DailyMetric.user_id == current_user.id
     ).order_by(DailyMetric.date.desc()).first()
 
-    sleep = float(latest_metric.sleep_hours) if latest_metric and latest_metric.sleep_hours is not None else 7.0
-    soreness = int(latest_metric.soreness_score) if latest_metric and latest_metric.soreness_score is not None else 3
-    nutrition = int(latest_metric.caloric_adherence) if latest_metric and latest_metric.caloric_adherence is not None else 85
+    acute_sleep = float(latest_metric.sleep_hours) if latest_metric and latest_metric.sleep_hours is not None else 7.0
+    acute_soreness = int(latest_metric.soreness_score) if latest_metric and latest_metric.soreness_score is not None else 3
+    acute_nutrition = int(latest_metric.caloric_adherence) if latest_metric and latest_metric.caloric_adherence is not None else 85
+
+    # Multi-day rolling evaluation
+    valid_sleeps = [float(m.sleep_hours) for m in recent_metrics if m.sleep_hours is not None]
+    valid_soreness = [int(m.soreness_score) for m in recent_metrics if m.soreness_score is not None]
+    valid_nutritions = [int(m.caloric_adherence) for m in recent_metrics if m.caloric_adherence is not None]
+
+    checkins_count = len(recent_metrics)
+
+    if checkins_count > 1:
+        # Hybrid blend: 50% acute shock (last night) + 50% chronic physiological baseline (7-day rolling average)
+        avg_7d_sleep = sum(valid_sleeps) / len(valid_sleeps) if valid_sleeps else acute_sleep
+        avg_7d_soreness = sum(valid_soreness) / len(valid_soreness) if valid_soreness else acute_soreness
+        avg_7d_nutrition = sum(valid_nutritions) / len(valid_nutritions) if valid_nutritions else acute_nutrition
+
+        effective_sleep = round(0.5 * acute_sleep + 0.5 * avg_7d_sleep, 1)
+        effective_soreness = int(round(0.5 * acute_soreness + 0.5 * avg_7d_soreness))
+        effective_nutrition = int(round(0.5 * acute_nutrition + 0.5 * avg_7d_nutrition))
+        evaluation_mode = f"Hybrid 7-Day Rolling Window ({checkins_count} check-ins evaluated)"
+    else:
+        avg_7d_sleep = acute_sleep
+        avg_7d_soreness = float(acute_soreness)
+        avg_7d_nutrition = float(acute_nutrition)
+        effective_sleep = acute_sleep
+        effective_soreness = acute_soreness
+        effective_nutrition = acute_nutrition
+        evaluation_mode = "Acute Single-Day Check-in"
 
     # 1. Calculate actual volume load from real workouts logged by the user over the trailing 7 days
-    import json
-    seven_days_ago = date.today() - timedelta(days=7)
     recent_workouts = db.query(Workout).filter(
         Workout.user_id == current_user.id,
         Workout.date >= seven_days_ago
@@ -134,9 +166,9 @@ def get_injury_risk(
         volume = 2500.0
 
     prediction = predict_user_injury_risk(
-        sleep_hours=sleep,
-        soreness_score=soreness,
-        caloric_adherence=nutrition,
+        sleep_hours=effective_sleep,
+        soreness_score=effective_soreness,
+        caloric_adherence=effective_nutrition,
         volume_load=volume
     )
 
@@ -145,6 +177,18 @@ def get_injury_risk(
         "has_logged_today": latest_metric is not None and latest_metric.date == date.today(),
         "logged_workouts_evaluated": workout_count,
         "seven_day_total_volume": round(total_actual_volume, 1),
+        "checkins_evaluated_7d": checkins_count,
+        "evaluation_mode": evaluation_mode,
+        "acute_metrics": {
+            "sleep_hours": acute_sleep,
+            "soreness_score": acute_soreness,
+            "caloric_adherence": acute_nutrition
+        },
+        "seven_day_avg_metrics": {
+            "sleep_hours": round(avg_7d_sleep, 1),
+            "soreness_score": round(avg_7d_soreness, 1),
+            "caloric_adherence": round(avg_7d_nutrition, 1)
+        },
         **prediction
     }
 

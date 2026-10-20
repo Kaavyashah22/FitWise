@@ -153,7 +153,9 @@ const AnalyticsPage = () => {
                       </span>
                     </CardTitle>
                     <p className="text-xs text-muted-foreground mt-0.5">
-                      Real-time strain forecasting based on acute volume spikes, sleep deficit, and recovery capacity
+                      {injuryRisk.evaluation_mode 
+                        ? `${injuryRisk.evaluation_mode} • Acute vs. Chronic Strain Engine`
+                        : "Real-time strain forecasting based on acute volume spikes, sleep deficit, and recovery capacity"}
                     </p>
                   </div>
                 </div>
@@ -196,7 +198,9 @@ const AnalyticsPage = () => {
                     {injuryRisk.metrics_evaluated.sleep_hours} <span className="text-xs font-medium text-muted-foreground">hrs/night</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Readiness Score: {injuryRisk.metrics_evaluated.recovery_index}/100
+                    {injuryRisk.seven_day_avg_metrics
+                      ? `7d avg: ${injuryRisk.seven_day_avg_metrics.sleep_hours}h • Readiness: ${injuryRisk.metrics_evaluated.recovery_index}/100`
+                      : `Readiness Score: ${injuryRisk.metrics_evaluated.recovery_index}/100`}
                   </p>
                 </div>
 
@@ -209,7 +213,9 @@ const AnalyticsPage = () => {
                     Level {Math.min(5, Math.max(1, Math.round((injuryRisk.metrics_evaluated.soreness_score || 2) / 2)))} <span className="text-xs font-medium text-muted-foreground">/ 5 ({injuryRisk.metrics_evaluated.soreness_score}/10 strain)</span>
                   </div>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    Dietary Adherence: {injuryRisk.metrics_evaluated.caloric_adherence}%
+                    {injuryRisk.seven_day_avg_metrics
+                      ? `7d avg: Level ${Math.min(5, Math.max(1, Math.round((injuryRisk.seven_day_avg_metrics.soreness_score || 2) / 2)))} • Diet: ${injuryRisk.metrics_evaluated.caloric_adherence}%`
+                      : `Dietary Adherence: ${injuryRisk.metrics_evaluated.caloric_adherence}%`}
                   </p>
                 </div>
               </div>

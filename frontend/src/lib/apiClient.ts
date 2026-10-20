@@ -288,6 +288,18 @@ export type InjuryRiskPrediction = {
   has_logged_today: boolean;
   logged_workouts_evaluated?: number;
   seven_day_total_volume?: number;
+  checkins_evaluated_7d?: number;
+  evaluation_mode?: string;
+  acute_metrics?: {
+    sleep_hours: number;
+    soreness_score: number;
+    caloric_adherence: number;
+  };
+  seven_day_avg_metrics?: {
+    sleep_hours: number;
+    soreness_score: number;
+    caloric_adherence: number;
+  };
   risk_score: number;
   risk_level: "Low" | "Moderate" | "High";
   color: string;
