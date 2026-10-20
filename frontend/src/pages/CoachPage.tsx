@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useRef, useEffect } from "react";
-import { Send, User as UserIcon, Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeft, Plus, Trash2, Sparkles, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Send, User as UserIcon, Bot, Loader2, MessageSquare, PanelLeftClose, PanelLeft, Plus, Trash2, Sparkles, Zap, ArrowRight, Dumbbell } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/hooks/useAuth";
 import { getProfile, UserProfile } from "@/lib/auth";
@@ -30,8 +31,32 @@ const LOADING_STRINGS = [
   "Generating personalized strategy..."
 ];
 
+const STARTER_PROMPTS = [
+  {
+    icon: "⏱️",
+    title: "Time Crunch",
+    text: "I only have 30 minutes today — condense my session into high-density supersets."
+  },
+  {
+    icon: "🛡️",
+    title: "Joint Relief",
+    text: "My lower back and knees feel tight today. Suggest safe exercise swaps."
+  },
+  {
+    icon: "🥗",
+    title: "Targeted Macros",
+    text: "What is my optimal post-workout meal timing and protein goal for my current plan?"
+  },
+  {
+    icon: "📊",
+    title: "Volume Readiness",
+    text: "Analyze my 7-day volume load and tell me if I'm ready for progressive overload."
+  }
+];
+
 export default function CoachPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(user ? getProfile(user.id) : null);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [input, setInput] = useState("");
@@ -462,6 +487,21 @@ export default function CoachPage() {
                 {msg.role === "assistant" ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none prose-p:leading-relaxed whitespace-pre-wrap md:text-base">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    {msg.id !== "welcome" && (msg.content.toLowerCase().includes("exercise") || msg.content.toLowerCase().includes("workout") || msg.content.toLowerCase().includes("sets") || msg.content.toLowerCase().includes("swap")) && (
+                      <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between gap-2 not-prose">
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                          <Sparkles className="w-3 h-3 text-primary" /> AI Athletic Plan Ready
+                        </span>
+                        <button
+                          onClick={() => navigate("/workouts")}
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-primary/80 transition-colors bg-primary/10 hover:bg-primary/20 px-2.5 py-1 rounded-md"
+                        >
+                          <Dumbbell className="w-3 h-3" />
+                          <span>View in Workouts</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <p className="leading-relaxed text-sm md:text-base">{msg.content}</p>
@@ -469,6 +509,34 @@ export default function CoachPage() {
               </div>
               </motion.div>
             ))}
+
+            {/* Smart Starter Prompt Pills for Zero-Typing Entry */}
+            {messages.length <= 1 && !isLoading && (
+              <div className="pt-4 max-w-xl mx-auto space-y-3">
+                <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground px-1">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <span>Suggested Athlete Queries:</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {STARTER_PROMPTS.map((p, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => handleSend(undefined, p.text)}
+                      className="p-3 rounded-xl border border-border/60 hover:border-primary/50 bg-secondary/30 hover:bg-secondary/70 text-left transition-all group flex flex-col justify-between"
+                    >
+                      <div className="flex items-center gap-1.5 font-semibold text-xs text-foreground group-hover:text-primary transition-colors">
+                        <span>{p.icon}</span>
+                        <span>{p.title}</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1 line-clamp-2">
+                        "{p.text}"
+                      </p>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
             </AnimatePresence>
           )}
           <AnimatePresence>

@@ -2,11 +2,11 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRestTimer } from "@/context/RestTimerContext";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Plus, RotateCcw, Timer, ExternalLink, Sparkles } from "lucide-react";
+import { Play, Pause, Plus, RotateCcw, Timer, ExternalLink, Sparkles, Volume2, VolumeX } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const MiniRestTimer: React.FC = () => {
-  const { timeLeft, targetSeconds, isRunning, isFinished, startTimer, pauseTimer, addSeconds, resetTimer } = useRestTimer();
+  const { timeLeft, targetSeconds, isRunning, isFinished, soundEnabled, toggleSound, startTimer, pauseTimer, addSeconds, resetTimer } = useRestTimer();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -94,6 +94,18 @@ export const MiniRestTimer: React.FC = () => {
                 <Plus className="h-3 w-3" />
               </Button>
             )}
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleSound}
+              className={`h-7 w-7 rounded-full transition-colors ${
+                soundEnabled ? "text-primary hover:bg-primary/10" : "text-muted-foreground hover:bg-foreground/5"
+              }`}
+              title={soundEnabled ? "Mute Timer Sound" : "Enable Timer Sound"}
+            >
+              {soundEnabled ? <Volume2 className="h-3 w-3" /> : <VolumeX className="h-3 w-3" />}
+            </Button>
 
             <Button
               variant="ghost"

@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { motion } from "framer-motion";
-import { Plus, Trash2, Dumbbell, Loader2, Trophy, ChevronDown, ChevronRight, Calendar, WifiOff, CloudUpload, RefreshCw } from "lucide-react";
+import { Plus, Minus, Trash2, Dumbbell, Loader2, Trophy, ChevronDown, ChevronRight, Calendar, WifiOff, CloudUpload, RefreshCw, Sparkles, CheckCircle2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -77,6 +77,61 @@ const WorkoutsPage = () => {
   const [reps, setReps] = useState("10");
   const [weight, setWeight] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+
+  // Stepper helpers for frictionless gym logging
+  const adjustWeight = (delta: number) => {
+    const current = parseFloat(weight) || 0;
+    const next = Math.max(0, current + delta);
+    setWeight(next.toString());
+  };
+
+  const adjustReps = (delta: number) => {
+    const current = parseInt(reps) || 0;
+    const next = Math.max(1, current + delta);
+    setReps(next.toString());
+  };
+
+  const adjustSets = (delta: number) => {
+    const current = parseInt(sets) || 0;
+    const next = Math.max(1, current + delta);
+    setSets(next.toString());
+  };
+
+  // Today's workout session analytics
+  const todayStr = new Date().toISOString().split("T")[0];
+  const todayWorkouts = workouts.filter((w) => w.date === todayStr);
+  const todayVolume = todayWorkouts.reduce((acc, w) => acc + (w.sets * w.reps * w.weight), 0);
+  const todaySetsCount = todayWorkouts.reduce((acc, w) => acc + w.sets, 0);
+  const distinctExercises = Array.from(new Set(todayWorkouts.map((w) => w.exercise)));
+
+  // Detect Personal Records (PRs) from today's session
+  const prsToday = React.useMemo(() => {
+    if (todayWorkouts.length === 0) return [];
+    const results: { exercise: string; weight: number; reps: number; oneRM: number }[] = [];
+    
+    distinctExercises.forEach((exName) => {
+      const historicalEx = workouts.filter((w) => w.exercise === exName && w.date !== todayStr);
+      const todayEx = todayWorkouts.filter((w) => w.exercise === exName);
+      
+      const historicalMax1RM = historicalEx.length > 0 
+        ? Math.max(...historicalEx.map((w) => w.weight * (1 + w.reps / 30)))
+        : 0;
+        
+      const todayBest = [...todayEx].sort((a, b) => (b.weight * (1 + b.reps / 30)) - (a.weight * (1 + a.reps / 30)))[0];
+      const todayBest1RM = todayBest ? todayBest.weight * (1 + todayBest.reps / 30) : 0;
+      
+      if (todayBest1RM > historicalMax1RM && historicalEx.length > 0) {
+        results.push({
+          exercise: exName,
+          weight: todayBest.weight,
+          reps: todayBest.reps,
+          oneRM: Math.round(todayBest1RM),
+        });
+      }
+    });
+    return results;
+  }, [todayWorkouts, workouts, todayStr]);
 
   const exercisesForMuscle = EXERCISE_LIBRARY[selectedMuscle] || [];
 
@@ -270,31 +325,115 @@ const WorkoutsPage = () => {
               </div>
 
               {/* Sets */}
-              <div className="space-y-2">
-                <Label>Sets</Label>
-                <Input type="number" value={sets} onChange={(e) => setSets(e.target.value)} min="1" />
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label>Sets</Label>
+                  <div className="flex gap-1">
+                    {[3, 4, 5].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setSets(s.toString())}
+                        className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                          sets === s.toString() ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => adjustSets(-1)}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Input type="number" value={sets} onChange={(e) => setSets(e.target.value)} min="1" className="text-center font-bold" />
+                  <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => adjustSets(1)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               {/* Reps */}
-              <div className="space-y-2">
-                <Label>Reps</Label>
-                <Input type="number" value={reps} onChange={(e) => setReps(e.target.value)} min="1" />
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label>Reps</Label>
+                  <div className="flex gap-1">
+                    {[8, 10, 12, 15].map((r) => (
+                      <button
+                        key={r}
+                        type="button"
+                        onClick={() => setReps(r.toString())}
+                        className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
+                          reps === r.toString() ? "bg-primary text-primary-foreground border-primary" : "bg-secondary text-muted-foreground border-border"
+                        }`}
+                      >
+                        {r}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => adjustReps(-1)}>
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <Input type="number" value={reps} onChange={(e) => setReps(e.target.value)} min="1" className="text-center font-bold" />
+                  <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0" onClick={() => adjustReps(1)}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
               {/* Weight */}
-              <div className="space-y-2">
-                <Label>Weight (kg)</Label>
-                <Input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} placeholder="60" />
-              </div>
-              
-              {/* Live 1RM Preview */}
-              <div className="space-y-2 flex items-end">
-                 <div className="w-full h-10 rounded-md border border-primary/30 bg-primary/10 flex items-center justify-between px-3">
-                   <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Est. 1RM</span>
-                   <span className="text-primary font-bold flex items-center gap-1">
-                     {estimated1RM ? <><Trophy className="w-3 h-3 text-yellow-500" /> {estimated1RM} kg</> : "—"}
-                   </span>
-                 </div>
+              <div className="space-y-1.5 sm:col-span-2">
+                <div className="flex items-center justify-between">
+                  <Label>Weight (kg)</Label>
+                  <div className="flex items-center gap-1">
+                    {[-5, -2.5, +2.5, +5].map((delta) => (
+                      <button
+                        key={delta}
+                        type="button"
+                        onClick={() => adjustWeight(delta)}
+                        className="text-[11px] font-semibold px-2 py-0.5 rounded bg-secondary hover:bg-secondary/80 border border-border text-foreground transition-all hover:scale-105"
+                      >
+                        {delta > 0 ? `+${delta}` : delta}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    step="0.5"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    placeholder="e.g. 60"
+                    className="font-bold text-base"
+                  />
+                  {/* Live 1RM preview */}
+                  <div className="h-10 rounded-md border border-primary/30 bg-primary/10 flex items-center justify-between px-3 shrink-0 min-w-[120px]">
+                    <span className="text-[10px] text-muted-foreground uppercase font-semibold">Est. 1RM</span>
+                    <span className="text-primary text-sm font-bold flex items-center gap-1 ml-2">
+                      {estimated1RM ? <><Trophy className="w-3.5 h-3.5 text-yellow-500" /> {estimated1RM} kg</> : "—"}
+                    </span>
+                  </div>
+                </div>
+                {/* Quick plate presets */}
+                <div className="flex items-center gap-1.5 flex-wrap pt-1">
+                  <span className="text-[10px] text-muted-foreground">Quick:</span>
+                  {[20, 40, 60, 80, 100].map((wVal) => (
+                    <button
+                      key={wVal}
+                      type="button"
+                      onClick={() => setWeight(wVal.toString())}
+                      className={`text-[11px] px-2 py-0.5 rounded-full border transition-all ${
+                        weight === wVal.toString() ? "bg-primary/20 border-primary text-primary font-bold" : "bg-background/60 border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {wVal}kg
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -384,6 +523,100 @@ const WorkoutsPage = () => {
       <motion.div variants={item}>
         <RestTimer />
       </motion.div>
+
+      {/* Today's Active Session Banner & Completion Summary */}
+      {todayWorkouts.length > 0 && (
+        <motion.div variants={item} className="p-4 rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-emerald-500/5 to-teal-500/10 backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-primary/20 text-primary border border-primary/30 shrink-0">
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-bold text-sm text-foreground">Today's Workout Session</span>
+                <Badge variant="outline" className="text-[10px] bg-primary/15 text-primary border-primary/30">
+                  Active
+                </Badge>
+                {prsToday.length > 0 && (
+                  <Badge variant="outline" className="text-[10px] bg-amber-500/15 text-amber-500 border-amber-500/30 flex items-center gap-1 font-semibold">
+                    <Trophy className="w-3 h-3 text-amber-500" /> {prsToday.length} New PR{prsToday.length > 1 ? "s" : ""}
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {todaySetsCount} sets logged • {todayVolume.toLocaleString()} kg lifted today across {distinctExercises.length} movement{distinctExercises.length > 1 ? "s" : ""}
+              </p>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            onClick={() => setIsSummaryModalOpen(true)}
+            className="rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 shadow-md shadow-primary/20 shrink-0 self-end sm:self-center"
+          >
+            <Trophy className="w-3.5 h-3.5 mr-1.5" />
+            Finish & View Summary
+          </Button>
+        </motion.div>
+      )}
+
+      {/* Workout Completion Summary Modal (No Confetti, Clean High-End Summary) */}
+      <Dialog open={isSummaryModalOpen} onOpenChange={setIsSummaryModalOpen}>
+        <DialogContent className="glass-card max-w-md border border-primary/30 p-6">
+          <DialogHeader className="text-center sm:text-center pb-2">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-primary/15 border border-primary/25 flex items-center justify-center text-primary mb-3 shadow-lg shadow-primary/10">
+              <Trophy className="w-7 h-7 text-primary" />
+            </div>
+            <DialogTitle className="text-2xl font-bold tracking-tight">Workout Complete! 🏋️‍♂️</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Incredible work! Your volume and biomechanical strain have been synchronized to your profile.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-3 gap-3 my-4">
+            <div className="p-3 rounded-xl bg-secondary/50 border border-border/50 text-center">
+              <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Volume</span>
+              <span className="text-lg font-black text-foreground">{todayVolume.toLocaleString()}</span>
+              <span className="text-[10px] text-muted-foreground block">kg lifted</span>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/50 border border-border/50 text-center">
+              <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Sets</span>
+              <span className="text-lg font-black text-foreground">{todaySetsCount}</span>
+              <span className="text-[10px] text-muted-foreground block">sets</span>
+            </div>
+            <div className="p-3 rounded-xl bg-secondary/50 border border-border/50 text-center">
+              <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Exercises</span>
+              <span className="text-lg font-black text-foreground">{distinctExercises.length}</span>
+              <span className="text-[10px] text-muted-foreground block">movements</span>
+            </div>
+          </div>
+
+          {prsToday.length > 0 && (
+            <div className="space-y-2 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs">
+              <div className="flex items-center gap-1.5 font-bold text-amber-500">
+                <Trophy className="w-4 h-4 text-amber-500" />
+                <span>New Personal Record{prsToday.length > 1 ? "s" : ""} Unlocked!</span>
+              </div>
+              <div className="space-y-1.5 pt-1">
+                {prsToday.map((pr, idx) => (
+                  <div key={idx} className="flex items-center justify-between bg-background/60 px-2.5 py-1.5 rounded-lg border border-amber-500/20">
+                    <span className="font-semibold text-foreground">{pr.exercise}</span>
+                    <span className="text-amber-500 font-bold">{pr.weight} kg × {pr.reps} reps (1RM: {pr.oneRM} kg)</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="pt-2">
+            <Button
+              onClick={() => setIsSummaryModalOpen(false)}
+              className="w-full rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-lg shadow-primary/20"
+            >
+              Great Job, Done!
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* History */}
       <motion.div variants={item}>

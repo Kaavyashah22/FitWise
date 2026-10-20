@@ -106,6 +106,11 @@ const DashboardPage = () => {
   const { isInstalled, dismissPrompt } = useIsAppInstalled();
   const [injuryRisk, setInjuryRisk] = useState<InjuryRiskPrediction | null>(() => getCachedInjuryRisk());
 
+  // Inline 3-Tap Check-In State
+  const [inlineSleep, setInlineSleep] = useState<number>(7.5);
+  const [inlineSoreness, setInlineSoreness] = useState<number>(2); // 1-5 scale
+  const [inlineNutrition, setInlineNutrition] = useState<number>(100);
+
   // Habit Consistency & Streak State
   const [workouts, setWorkouts] = useState<WorkoutEntry[]>(() => getCachedWorkouts());
   const [metricDates, setMetricDates] = useState<string[]>([]);
@@ -129,6 +134,48 @@ const DashboardPage = () => {
       })
       .catch((err) => console.warn("Could not fetch injury risk.", err));
   };
+
+  const handleInlineCheckIn = async () => {
+    setSubmittingMetrics(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      await logDailyMetric({
+        date: today,
+        sleep_hours: inlineSleep,
+        soreness_score: inlineSoreness * 2, // 1-5 to 2-10 for GBDT
+        caloric_adherence: inlineNutrition
+      });
+      setIsCheckInDone(true);
+      setMetricDates((prev) => Array.from(new Set([today, ...prev])));
+      fetchInjuryRisk();
+      toast({
+        title: "Daily Check-in Recorded! ⚡",
+        description: `Logged ${inlineSleep}h sleep & Level ${inlineSoreness}/5 soreness. AI Injury Radar updated.`
+      });
+    } catch (err: any) {
+      toast({
+        title: "Failed to record check-in",
+        description: err.message,
+        variant: "destructive"
+      });
+    } finally {
+      setSubmittingMetrics(false);
+    }
+  };
+
+  const todayWorkoutFocus = useMemo(() => {
+    if (!plan || !plan.workout_split) return null;
+    const splitKeys = Object.keys(plan.workout_split);
+    if (splitKeys.length === 0) return null;
+    const dayOfWeek = new Date().getDay();
+    const index = (dayOfWeek + 6) % 7; // Monday = 0
+    const scheduledKey = splitKeys[index % splitKeys.length];
+    const details = plan.workout_split[scheduledKey];
+    return {
+      title: scheduledKey.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      details: typeof details === "string" ? details : "Full session prescribed by AI Coach"
+    };
+  }, [plan]);
 
 
   useEffect(() => {
@@ -593,6 +640,163 @@ const DashboardPage = () => {
                 <X className="h-4 w-4" />
               </Button>
             </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Inline 3-Tap Fast Check-In Card (Instant logging without modals) */}
+      {!isCheckInDone && (
+        <motion.div variants={item}>
+          <Card className="glass-card border border-primary/30 bg-gradient-to-r from-background via-primary/[0.03] to-emerald-500/[0.04] p-4 sm:p-5 shadow-lg relative overflow-hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-primary/20 text-primary">
+                    <Sparkles className="w-4 h-4" />
+                  </div>
+                  <h3 className="font-bold text-sm sm:text-base text-foreground">3-Tap Daily Check-In</h3>
+                  <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/25">
+                    Fast Track
+                  </Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Calibrate your GBDT Injury Radar in under 5 seconds with zero modal popups.
+                </p>
+              </div>
+
+              {/* 3-Tap Steppers */}
+              <div className="flex items-center gap-3 flex-wrap">
+                {/* Sleep Pills */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase block">1. Sleep</span>
+                  <div className="flex gap-1">
+                    {[
+                      { label: "< 6h", val: 5.5 },
+                      { label: "7.5h", val: 7.5 },
+                      { label: "8.5h+", val: 8.5 }
+                    ].map((s) => (
+                      <button
+                        key={s.label}
+                        type="button"
+                        onClick={() => setInlineSleep(s.val)}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                          inlineSleep === s.val 
+                            ? "bg-primary text-primary-foreground border-primary font-bold shadow-sm" 
+                            : "bg-secondary/70 text-muted-foreground border-border hover:text-foreground"
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Soreness Pills */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase block">2. Soreness</span>
+                  <div className="flex gap-1">
+                    {[
+                      { label: "Fresh", val: 1 },
+                      { label: "Medium", val: 3 },
+                      { label: "High", val: 5 }
+                    ].map((s) => (
+                      <button
+                        key={s.label}
+                        type="button"
+                        onClick={() => setInlineSoreness(s.val)}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                          inlineSoreness === s.val 
+                            ? "bg-primary text-primary-foreground border-primary font-bold shadow-sm" 
+                            : "bg-secondary/70 text-muted-foreground border-border hover:text-foreground"
+                        }`}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Nutrition Pills */}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-semibold text-muted-foreground uppercase block">3. Nutrition</span>
+                  <div className="flex gap-1">
+                    {[
+                      { label: "100%", val: 100 },
+                      { label: "80%", val: 80 },
+                      { label: "50%", val: 50 }
+                    ].map((n) => (
+                      <button
+                        key={n.label}
+                        type="button"
+                        onClick={() => setInlineNutrition(n.val)}
+                        className={`text-xs px-2.5 py-1 rounded-lg border transition-all ${
+                          inlineNutrition === n.val 
+                            ? "bg-primary text-primary-foreground border-primary font-bold shadow-sm" 
+                            : "bg-secondary/70 text-muted-foreground border-border hover:text-foreground"
+                        }`}
+                      >
+                        {n.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Submit Action */}
+                <div className="pt-2 sm:pt-0 self-end sm:self-auto">
+                  <Button
+                    onClick={handleInlineCheckIn}
+                    disabled={submittingMetrics}
+                    size="sm"
+                    className="h-9 px-4 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs shadow-md shadow-primary/20 shrink-0"
+                  >
+                    {submittingMetrics ? (
+                      <><Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" /> Saving...</>
+                    ) : (
+                      <><CheckCircle2 className="w-3.5 h-3.5 mr-1.5" /> Save Check-In</>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* "Start Today's Workout" Hero Mission Banner */}
+      {todayWorkoutFocus && (
+        <motion.div variants={item}>
+          <div className="p-4 sm:p-5 rounded-2xl border border-primary/25 bg-gradient-to-r from-emerald-500/10 via-primary/5 to-teal-500/10 backdrop-blur-xl shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="p-3 rounded-2xl bg-primary/20 text-primary border border-primary/30 shrink-0 shadow-sm shadow-primary/20">
+                <Dumbbell className="h-6 w-6" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-bold text-foreground text-sm sm:text-base">
+                    Today's Mission: {todayWorkoutFocus.title}
+                  </span>
+                  <Badge variant="outline" className="text-[10px] border-primary/40 text-primary bg-primary/10">
+                    Scheduled
+                  </Badge>
+                  {hasWorkoutToday && (
+                    <Badge variant="outline" className="text-[10px] border-emerald-500/40 text-emerald-500 bg-emerald-500/10 flex items-center gap-1 font-semibold">
+                      <CheckCircle2 className="w-3 h-3" /> Completed Today
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">
+                  {todayWorkoutFocus.details}
+                </p>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => navigate("/workouts")}
+              className="w-full sm:w-auto rounded-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-5 h-9 text-xs shadow-md shadow-primary/20 flex items-center justify-center gap-1.5 shrink-0"
+            >
+              <Dumbbell className="h-3.5 w-3.5" />
+              <span>{hasWorkoutToday ? "View Today's Log" : "Start Workout Session"}</span>
+            </Button>
           </div>
         </motion.div>
       )}

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { BarChart3, TrendingUp, Weight, Plus, ShieldAlert, Activity, Moon, Dumbbell, Sparkles } from "lucide-react";
+import { BarChart3, TrendingUp, Weight, Plus, ShieldAlert, Activity, Moon, Dumbbell, Sparkles, Trophy, Target, Flame } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getInjuryRiskAPI, getCachedInjuryRisk, InjuryRiskPrediction } from "@/lib/apiClient";
 import {
@@ -100,6 +100,44 @@ const AnalyticsPage = () => {
     };
   }, [strengthData]);
 
+  // All-time 1RM Personal Records (Trophy Shelf)
+  const trophyPRs = useMemo(() => {
+    if (workouts.length === 0) return [];
+    const exerciseMap: Record<string, { max1RM: number; weight: number; reps: number; date: string }> = {};
+
+    workouts.forEach((w) => {
+      const oneRM = w.weight * (1 + w.reps / 30);
+      if (!exerciseMap[w.exercise] || oneRM > exerciseMap[w.exercise].max1RM) {
+        exerciseMap[w.exercise] = {
+          max1RM: Math.round(oneRM),
+          weight: w.weight,
+          reps: w.reps,
+          date: w.date
+        };
+      }
+    });
+
+    return Object.entries(exerciseMap)
+      .map(([exercise, data]) => ({ exercise, ...data }))
+      .sort((a, b) => b.max1RM - a.max1RM)
+      .slice(0, 4);
+  }, [workouts]);
+
+  // Weekly Volume Ring Stats
+  const weeklyVolumeStats = useMemo(() => {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString().split("T")[0];
+    const pastWeekWorkouts = workouts.filter((w) => w.date >= sevenDaysAgo);
+    const actualVolume = pastWeekWorkouts.reduce((acc, w) => acc + (w.sets * w.reps * w.weight), 0);
+    const targetVolume = Math.max(12000, Math.round(actualVolume > 15000 ? actualVolume * 1.15 : 15000));
+    const percent = Math.min(100, Math.round((actualVolume / targetVolume) * 100));
+    return {
+      actualVolume,
+      targetVolume,
+      percent,
+      workoutCount: pastWeekWorkouts.length
+    };
+  }, [workouts]);
+
   const weightChartData = weightLogs.map((l) => ({
     date: l.date,
     weight: l.weight,
@@ -174,63 +212,101 @@ const AnalyticsPage = () => {
               </div>
             </CardHeader>
 
-            <CardContent className="pt-4 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                    <Dumbbell className="w-3.5 h-3.5 text-primary" />
-                    <span>7-Day Volume Load (Tonnage)</span>
+            <CardContent className="p-5 sm:p-6 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* 1. Tonnage Card */}
+                <div className="p-4 rounded-2xl bg-secondary/30 border border-border/60 flex flex-col justify-between hover:border-primary/40 transition-all shadow-sm">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
+                        <Dumbbell className="w-4 h-4 text-primary" />
+                        <span>7-Day Volume Load</span>
+                      </div>
+                      {injuryRisk.logged_workouts_evaluated ? (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium border border-primary/20">
+                          {injuryRisk.logged_workouts_evaluated} sessions
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="text-2xl font-black text-foreground tracking-tight mt-1">
+                      {(injuryRisk.seven_day_total_volume ?? 0).toLocaleString()} <span className="text-xs font-medium text-muted-foreground">kg lifted</span>
+                    </div>
                   </div>
-                  <div className="text-xl font-extrabold text-foreground">
-                    {(injuryRisk.seven_day_total_volume ?? 0).toLocaleString()} <span className="text-xs font-medium text-muted-foreground">kg lifted</span>
+                  <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground text-[11px] font-medium">Training Density</span>
+                    <span className="font-semibold text-foreground bg-secondary px-2.5 py-0.5 rounded-md text-[11px] border border-border/50">
+                      {injuryRisk.logged_workouts_evaluated ? "Active Routine" : "No sessions logged"}
+                    </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {injuryRisk.logged_workouts_evaluated ? `${injuryRisk.logged_workouts_evaluated} workouts evaluated this week` : "No workouts logged this week"}
-                  </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                    <Moon className="w-3.5 h-3.5 text-cyan-400" />
-                    <span>Sleep & Recovery Index</span>
+                {/* 2. Sleep & Recovery Card */}
+                <div className="p-4 rounded-2xl bg-secondary/30 border border-border/60 flex flex-col justify-between hover:border-cyan-400/40 transition-all shadow-sm">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
+                        <Moon className="w-4 h-4 text-cyan-400" />
+                        <span>Sleep & Recovery</span>
+                      </div>
+                      {injuryRisk.seven_day_avg_metrics && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-medium border border-cyan-500/20">
+                          7d avg: {injuryRisk.seven_day_avg_metrics.sleep_hours}h
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-2xl font-black text-foreground tracking-tight mt-1">
+                      {injuryRisk.metrics_evaluated.sleep_hours} <span className="text-xs font-medium text-muted-foreground">hrs/night</span>
+                    </div>
                   </div>
-                  <div className="text-xl font-extrabold text-foreground">
-                    {injuryRisk.metrics_evaluated.sleep_hours} <span className="text-xs font-medium text-muted-foreground">hrs/night</span>
+                  <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground text-[11px] font-medium">Readiness Score</span>
+                    <span className="font-bold text-foreground bg-primary/10 text-primary px-2.5 py-0.5 rounded-md text-[11px] border border-primary/20">
+                      {injuryRisk.metrics_evaluated.recovery_index}/100
+                    </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {injuryRisk.seven_day_avg_metrics
-                      ? `7d avg: ${injuryRisk.seven_day_avg_metrics.sleep_hours}h • Readiness: ${injuryRisk.metrics_evaluated.recovery_index}/100`
-                      : `Readiness Score: ${injuryRisk.metrics_evaluated.recovery_index}/100`}
-                  </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-secondary/30 border border-border/50">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                    <Activity className="w-3.5 h-3.5 text-amber-400" />
-                    <span>Muscle Soreness Strain</span>
+                {/* 3. Muscle Soreness Strain Card */}
+                <div className="p-4 rounded-2xl bg-secondary/30 border border-border/60 flex flex-col justify-between hover:border-amber-400/40 transition-all shadow-sm">
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-semibold">
+                        <Activity className="w-4 h-4 text-amber-400" />
+                        <span>Muscle Soreness</span>
+                      </div>
+                      {injuryRisk.seven_day_avg_metrics && (
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-medium border border-amber-500/20">
+                          7d avg: Level {Math.min(5, Math.max(1, Math.round((injuryRisk.seven_day_avg_metrics.soreness_score || 2) / 2)))}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-2xl font-black text-foreground tracking-tight mt-1">
+                      Level {Math.min(5, Math.max(1, Math.round((injuryRisk.metrics_evaluated.soreness_score || 2) / 2)))} <span className="text-xs font-medium text-muted-foreground">/ 5 strain</span>
+                    </div>
                   </div>
-                  <div className="text-xl font-extrabold text-foreground">
-                    Level {Math.min(5, Math.max(1, Math.round((injuryRisk.metrics_evaluated.soreness_score || 2) / 2)))} <span className="text-xs font-medium text-muted-foreground">/ 5 ({injuryRisk.metrics_evaluated.soreness_score}/10 strain)</span>
+                  <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground text-[11px] font-medium">Dietary Adherence</span>
+                    <span className="font-semibold text-foreground bg-secondary px-2.5 py-0.5 rounded-md text-[11px] border border-border/50">
+                      {injuryRisk.metrics_evaluated.caloric_adherence}% On Track
+                    </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">
-                    {injuryRisk.seven_day_avg_metrics
-                      ? `7d avg: Level ${Math.min(5, Math.max(1, Math.round((injuryRisk.seven_day_avg_metrics.soreness_score || 2) / 2)))} • Diet: ${injuryRisk.metrics_evaluated.caloric_adherence}%`
-                      : `Dietary Adherence: ${injuryRisk.metrics_evaluated.caloric_adherence}%`}
-                  </p>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-primary/5 border border-primary/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-                <div className="flex items-start sm:items-center gap-2 text-muted-foreground">
-                  <Sparkles className="w-4 h-4 text-primary shrink-0 mt-0.5 sm:mt-0" />
+              {/* Clinical AI Recommendation Bar */}
+              <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs shadow-inner">
+                <div className="flex items-start sm:items-center gap-2.5 text-muted-foreground">
+                  <div className="p-1.5 rounded-lg bg-primary/10 text-primary shrink-0 mt-0.5 sm:mt-0">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
                   <div>
-                    <span className="font-semibold text-foreground mr-1.5">Clinical AI Recommendation:</span>
-                    <span>{injuryRisk.recommendation}</span>
+                    <span className="font-bold text-foreground mr-1.5">Clinical AI Recommendation:</span>
+                    <span className="text-muted-foreground leading-relaxed">{injuryRisk.recommendation}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-wrap shrink-0">
+                <div className="flex items-center gap-1.5 flex-wrap shrink-0 pt-1 md:pt-0">
                   {injuryRisk.drivers.map((driver, idx) => (
-                    <span key={idx} className="px-2.5 py-1 rounded-md bg-secondary text-[11px] font-medium text-muted-foreground border border-border/50">
+                    <span key={idx} className="px-2.5 py-1 rounded-md bg-secondary text-[11px] font-medium text-muted-foreground border border-border/60">
                       {driver}
                     </span>
                   ))}
@@ -240,6 +316,115 @@ const AnalyticsPage = () => {
           </Card>
         </motion.div>
       )}
+
+      {/* Performance Milestones Grid: 1RM Trophy Shelf & Weekly Volume Progress Ring */}
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        {/* Weekly Volume Ring Card */}
+        <motion.div variants={item} className="md:col-span-5">
+          <Card className="glass-card h-full flex flex-col justify-between">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Target className="h-4 w-4 text-primary" />
+                  Weekly Volume Target
+                </CardTitle>
+                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  {weeklyVolumeStats.percent}% Complete
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-2 flex flex-col items-center justify-center my-auto">
+              <div className="relative flex items-center justify-center w-36 h-36 my-2">
+                <svg className="w-36 h-36 -rotate-90 transform" viewBox="0 0 100 100">
+                  {/* Track Circle */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    className="stroke-muted/20"
+                    strokeWidth="8"
+                    fill="transparent"
+                  />
+                  {/* Progress Ring */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    className="stroke-primary transition-all duration-1000 ease-out"
+                    strokeWidth="8"
+                    strokeDasharray={2 * Math.PI * 40}
+                    strokeDashoffset={2 * Math.PI * 40 * (1 - weeklyVolumeStats.percent / 100)}
+                    strokeLinecap="round"
+                    fill="transparent"
+                  />
+                </svg>
+                <div className="absolute flex flex-col items-center justify-center text-center">
+                  <Flame className="w-5 h-5 text-primary mb-0.5" />
+                  <span className="text-2xl font-black text-foreground">{weeklyVolumeStats.percent}%</span>
+                  <span className="text-[10px] text-muted-foreground uppercase font-medium">Of Goal</span>
+                </div>
+              </div>
+
+              <div className="w-full grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-border/40 text-center">
+                <div>
+                  <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Lifted This Week</span>
+                  <span className="text-base font-extrabold text-foreground">{weeklyVolumeStats.actualVolume.toLocaleString()} kg</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-muted-foreground uppercase font-semibold block">Weekly Target</span>
+                  <span className="text-base font-extrabold text-muted-foreground">{weeklyVolumeStats.targetVolume.toLocaleString()} kg</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* 1RM Personal Records Trophy Shelf */}
+        <motion.div variants={item} className="md:col-span-7">
+          <Card className="glass-card h-full flex flex-col justify-between">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base font-bold flex items-center gap-2">
+                  <Trophy className="h-4 w-4 text-amber-500" />
+                  All-Time Personal Records (Est. 1RM)
+                </CardTitle>
+                <span className="text-xs text-muted-foreground">Brzycki Formula</span>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-2">
+              {trophyPRs.length === 0 ? (
+                <div className="py-8 text-center text-muted-foreground text-xs">
+                  <Trophy className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                  Log your exercise sets in Workouts to unlock personal records!
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {trophyPRs.map((pr, idx) => (
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-gradient-to-br from-secondary/50 via-secondary/30 to-background border border-border/60 hover:border-amber-500/40 transition-all flex items-center justify-between shadow-sm"
+                    >
+                      <div className="space-y-0.5">
+                        <span className="text-xs font-bold text-foreground block truncate max-w-[140px]">{pr.exercise}</span>
+                        <span className="text-[10px] text-muted-foreground block">
+                          {pr.weight}kg × {pr.reps} reps • {new Date(pr.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                        </span>
+                      </div>
+                      <div className="text-right shrink-0 pl-2">
+                        <span className="text-sm font-black text-amber-500 flex items-center justify-end gap-1">
+                          <Trophy className="w-3.5 h-3.5 text-amber-500" />
+                          {pr.max1RM} kg
+                        </span>
+                        <span className="text-[9px] uppercase font-bold text-muted-foreground tracking-wider block">Max 1RM</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
 
       {/* Weight Tracking */}
       <motion.div variants={item}>
